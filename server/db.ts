@@ -116,11 +116,11 @@ export async function getUserSessions(userId: number) {
   return await db.select().from(sessions).where(eq(sessions.userId, userId));
 }
 
-export async function updateSessionMode(sessionId: number, controlMode: "controlled" | "uncontrolled") {
+export async function updateSessionMode(sessionId: number, plantProfile: "tipo_a" | "tipo_b" | "acoplada") {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  await db.update(sessions).set({ controlMode }).where(eq(sessions.id, sessionId));
+  await db.update(sessions).set({ plantProfile }).where(eq(sessions.id, sessionId));
 }
 
 export async function createMessage(message: InsertMessage) {

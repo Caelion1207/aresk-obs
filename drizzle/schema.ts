@@ -35,7 +35,7 @@ export const sessions = mysqlTable("sessions", {
   purpose: text("purpose").notNull(),
   limits: text("limits").notNull(),
   ethics: text("ethics").notNull(),
-  controlMode: mysqlEnum("controlMode", ["controlled", "uncontrolled"]).notNull(),
+  plantProfile: mysqlEnum("plantProfile", ["tipo_a", "tipo_b", "acoplada"]).notNull(),
   controlGain: float("controlGain").default(0.5).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -43,6 +43,13 @@ export const sessions = mysqlTable("sessions", {
 
 export type Session = typeof sessions.$inferSelect;
 export type InsertSession = typeof sessions.$inferInsert;
+
+/**
+ * Perfiles Dinámicos de Planta:
+ * - tipo_a: Alta Entropía / Bajo Control (planta estocástica sin gobierno)
+ * - tipo_b: Ruido Estocástico Moderado / Sin Referencia (deriva natural)
+ * - acoplada: Régimen CAELION (ganancia Licurgo + referencia Bucéfalo)
+ */
 
 /**
  * Tabla de mensajes de conversación

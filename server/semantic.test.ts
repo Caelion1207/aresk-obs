@@ -41,7 +41,7 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "controlled",
+        plantProfile: "acoplada",
         controlGain: 0.5,
       });
 
@@ -59,7 +59,7 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
           purpose: "Corto",
           limits: "Límites operacionales adecuados para el sistema",
           ethics: "Ética definida correctamente para el control",
-          controlMode: "controlled",
+          plantProfile: "acoplada",
         })
       ).rejects.toThrow();
     });
@@ -75,7 +75,7 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "controlled",
+        plantProfile: "acoplada",
       });
 
       // Enviar mensaje
@@ -108,7 +108,7 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "controlled",
+        plantProfile: "acoplada",
       });
 
       const result = await caller.conversation.sendMessage({
@@ -128,7 +128,7 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "uncontrolled",
+        plantProfile: "tipo_a",
       });
 
       const result = await caller.conversation.sendMessage({
@@ -150,7 +150,7 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "controlled",
+        plantProfile: "acoplada",
       });
 
       // Enviar varios mensajes
@@ -190,7 +190,7 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "controlled",
+        plantProfile: "acoplada",
       });
 
       await caller.conversation.sendMessage({
@@ -219,23 +219,23 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "controlled",
+        plantProfile: "acoplada",
       });
 
       // Cambiar a modo sin control
       const result = await caller.session.toggleMode({
         sessionId: session.sessionId,
-        controlMode: "uncontrolled",
+        plantProfile: "tipo_a",
       });
 
       expect(result.success).toBe(true);
 
-      // Verificar que el modo cambió
+      // Verificar que el perfil cambió
       const updatedSession = await caller.session.get({
         sessionId: session.sessionId,
       });
 
-      expect(updatedSession?.controlMode).toBe("uncontrolled");
+      expect(updatedSession?.plantProfile).toBe("tipo_a");
     });
   });
 
@@ -248,7 +248,7 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "controlled",
+        plantProfile: "acoplada",
       });
 
       // Enviar múltiples mensajes
@@ -280,12 +280,12 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
       const ctx = createTestContext();
       const caller = appRouter.createCaller(ctx);
 
-      // Sesión controlada
+      // Sesión acoplada (régimen CAELION)
       const controlledSession = await caller.session.create({
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "controlled",
+        plantProfile: "acoplada",
       });
 
       const controlledResult = await caller.conversation.sendMessage({
@@ -293,12 +293,12 @@ describe("ARESK-OBS: Sistema de Control Semántico", () => {
         content: "Dame información sobre análisis de datos",
       });
 
-      // Sesión sin control
+      // Sesión tipo A (alta entropía)
       const uncontrolledSession = await caller.session.create({
         purpose: "Asistir al usuario en análisis de datos con precisión y objetividad",
         limits: "No hacer recomendaciones de inversión específicas sin disclaimer",
         ethics: "Mantener transparencia sobre las limitaciones del análisis",
-        controlMode: "uncontrolled",
+        plantProfile: "tipo_a",
       });
 
       const uncontrolledResult = await caller.conversation.sendMessage({

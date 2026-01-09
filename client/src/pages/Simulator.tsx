@@ -4,18 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Activity, 
   Brain, 
   LineChart, 
   Shield, 
-  Play, 
-  Pause,
+  Play,
   RotateCcw,
   ArrowLeft,
   TrendingDown,
@@ -26,9 +25,11 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter } from "recharts";
 
+type PlantProfile = "tipo_a" | "tipo_b" | "acoplada";
+
 export default function Simulator() {
   const [sessionId, setSessionId] = useState<number | null>(null);
-  const [controlMode, setControlMode] = useState<"controlled" | "uncontrolled">("controlled");
+  const [plantProfile, setPlantProfile] = useState<PlantProfile>("acoplada");
   const [isSessionActive, setIsSessionActive] = useState(false);
   
   // Form state for reference ontology
@@ -71,7 +72,7 @@ export default function Simulator() {
         purpose,
         limits,
         ethics,
-        controlMode,
+        plantProfile,
       });
       
       setSessionId(result.sessionId);
@@ -104,21 +105,19 @@ export default function Simulator() {
     }
   };
   
-  const handleToggleMode = async () => {
+  const handleToggleProfile = async (newProfile: PlantProfile) => {
     if (!sessionId) return;
-    
-    const newMode = controlMode === "controlled" ? "uncontrolled" : "controlled";
     
     try {
       await toggleModeMutation.mutateAsync({
         sessionId,
-        controlMode: newMode,
+        plantProfile: newProfile,
       });
       
-      setControlMode(newMode);
-      toast.success(`Modo cambiado a: ${newMode === "controlled" ? "Controlado" : "Sin Control"}`);
+      setPlantProfile(newProfile);
+      toast.success(`Perfil cambiado a: ${getProfileLabel(newProfile)}`);
     } catch (error) {
-      toast.error("Error al cambiar el modo");
+      toast.error("Error al cambiar el perfil");
       console.error(error);
     }
   };
@@ -130,6 +129,28 @@ export default function Simulator() {
     setLimits("");
     setEthics("");
     setUserInput("");
+  };
+  
+  const getProfileLabel = (profile: PlantProfile) => {
+    switch (profile) {
+      case "tipo_a":
+        return "Tipo A (Alta Entropía)";
+      case "tipo_b":
+        return "Tipo B (Ruido Moderado)";
+      case "acoplada":
+        return "Acoplada (Régimen CAELION)";
+    }
+  };
+  
+  const getProfileColor = (profile: PlantProfile) => {
+    switch (profile) {
+      case "tipo_a":
+        return "destructive";
+      case "tipo_b":
+        return "secondary";
+      case "acoplada":
+        return "default";
+    }
   };
   
   // Preparar datos para gráficos
@@ -164,21 +185,26 @@ export default function Simulator() {
               <Separator orientation="vertical" className="h-6" />
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-primary" />
-                <span className="font-semibold">ARESK-OBS Simulator</span>
+                <span className="font-semibold">ARESK-OBS: Medición de Régimen</span>
               </div>
             </div>
             <div className="flex items-center gap-4">
               {isSessionActive && (
                 <>
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="control-mode" className="text-sm">Modo:</Label>
-                    <Switch
-                      id="control-mode"
-                      checked={controlMode === "controlled"}
-                      onCheckedChange={handleToggleMode}
-                    />
-                    <Badge variant={controlMode === "controlled" ? "default" : "secondary"}>
-                      {controlMode === "controlled" ? "Controlado" : "Sin Control"}
+                    <Label htmlFor="plant-profile" className="text-sm">Perfil de Planta:</Label>
+                    <Select value={plantProfile} onValueChange={(value) => handleToggleProfile(value as PlantProfile)}>
+                      <SelectTrigger id="plant-profile" className="w-[220px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="tipo_a">Tipo A (Alta Entropía)</SelectItem>
+                        <SelectItem value="tipo_b">Tipo B (Ruido Moderado)</SelectItem>
+                        <SelectItem value="acoplada">Acoplada (CAELION)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Badge variant={getProfileColor(plantProfile)}>
+                      {getProfileLabel(plantProfile)}
                     </Badge>
                   </div>
                   <Button variant="outline" size="sm" onClick={handleReset}>
@@ -200,10 +226,10 @@ export default function Simulator() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-6 w-6 text-primary" />
-                  Configuración de Referencia Ontológica
+                  Configuración de Referencia Ontológica (Bucéfalo)
                 </CardTitle>
                 <CardDescription>
-                  Define el estado de referencia x_ref = (P, L, E) para el sistema de control semántico
+                  Define el estado de referencia x_ref = (P, L, E) que establece el régimen de estabilidad del Campo
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -240,28 +266,65 @@ export default function Simulator() {
                   />
                 </div>
                 
-                <div className="flex items-center justify-between pt-4">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="initial-mode">Modo inicial:</Label>
-                    <Switch
-                      id="initial-mode"
-                      checked={controlMode === "controlled"}
-                      onCheckedChange={(checked) => 
-                        setControlMode(checked ? "controlled" : "uncontrolled")
-                      }
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {controlMode === "controlled" ? "Controlado" : "Sin Control"}
-                    </span>
-                  </div>
+                <div className="space-y-3 pt-4 border-t">
+                  <Label htmlFor="initial-profile">Perfil de Planta Inicial:</Label>
+                  <Select value={plantProfile} onValueChange={(value) => setPlantProfile(value as PlantProfile)}>
+                    <SelectTrigger id="initial-profile">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tipo_a">
+                        <div className="flex flex-col items-start">
+                          <span className="font-semibold">Planta Tipo A</span>
+                          <span className="text-xs text-muted-foreground">Alta Entropía / Bajo Control</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="tipo_b">
+                        <div className="flex flex-col items-start">
+                          <span className="font-semibold">Planta Tipo B</span>
+                          <span className="text-xs text-muted-foreground">Ruido Estocástico Moderado / Sin Referencia</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="acoplada">
+                        <div className="flex flex-col items-start">
+                          <span className="font-semibold">Planta Acoplada</span>
+                          <span className="text-xs text-muted-foreground">Régimen CAELION (Licurgo + Bucéfalo)</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                   
+                  <div className="rounded-lg bg-muted/50 p-4 text-sm">
+                    <p className="font-semibold mb-2">Descripción del Perfil Seleccionado:</p>
+                    {plantProfile === "tipo_a" && (
+                      <p className="text-muted-foreground">
+                        La planta opera sin gobierno. Alta entropía semántica, deriva libre. 
+                        No se aplica corrección de trayectoria. Ideal para observar colapso de coherencia.
+                      </p>
+                    )}
+                    {plantProfile === "tipo_b" && (
+                      <p className="text-muted-foreground">
+                        La planta presenta ruido estocástico moderado sin referencia ontológica. 
+                        Comportamiento natural sin imposición de régimen. Deriva controlada.
+                      </p>
+                    )}
+                    {plantProfile === "acoplada" && (
+                      <p className="text-muted-foreground">
+                        Régimen CAELION activo. La ganancia Licurgo (K) y la referencia Bucéfalo (x_ref) 
+                        fuerzan la estabilidad. Control u(t) = -K·e(t) aplicado en cada paso.
+                      </p>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex justify-end pt-4">
                   <Button 
                     size="lg" 
                     onClick={handleStartSession}
                     disabled={createSessionMutation.isPending}
                   >
                     <Play className="mr-2 h-5 w-5" />
-                    Iniciar Simulación
+                    Iniciar Medición de Régimen
                   </Button>
                 </div>
               </CardContent>
@@ -274,9 +337,12 @@ export default function Simulator() {
             <div className="lg:col-span-1">
               <Card className="h-[calc(100vh-200px)]">
                 <CardHeader>
-                  <CardTitle className="text-lg">Conversación</CardTitle>
+                  <CardTitle className="text-lg">Interacción con Planta Estocástica</CardTitle>
+                  <CardDescription className="text-xs">
+                    Observación de trayectoria bajo régimen {getProfileLabel(plantProfile)}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="flex h-[calc(100%-80px)] flex-col">
+                <CardContent className="flex h-[calc(100%-100px)] flex-col">
                   <ScrollArea className="flex-1 pr-4">
                     <div className="space-y-4">
                       {messages?.map((msg) => (
@@ -289,7 +355,7 @@ export default function Simulator() {
                           }`}
                         >
                           <div className="mb-1 text-xs font-semibold text-muted-foreground">
-                            {msg.role === "user" ? "Usuario" : "Asistente"}
+                            {msg.role === "user" ? "Entrada" : "Salida de Planta"}
                           </div>
                           <div className="text-sm">{msg.content}</div>
                         </div>
@@ -299,7 +365,7 @@ export default function Simulator() {
                   
                   <div className="mt-4 flex gap-2">
                     <Input
-                      placeholder="Escribe tu mensaje..."
+                      placeholder="Entrada al sistema..."
                       value={userInput}
                       onChange={(e) => setUserInput(e.target.value)}
                       onKeyDown={(e) => {
@@ -341,7 +407,7 @@ export default function Simulator() {
                         ) : (
                           <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
                         )}
-                        Similitud del coseno
+                        Similitud direccional
                       </div>
                     </CardContent>
                   </Card>
@@ -375,7 +441,7 @@ export default function Simulator() {
                       </div>
                       <div className="mt-1 flex items-center text-xs text-muted-foreground">
                         <LineChart className="mr-1 h-3 w-3" />
-                        Distancia a referencia
+                        Distancia a Bucéfalo
                       </div>
                     </CardContent>
                   </Card>
@@ -395,7 +461,7 @@ export default function Simulator() {
                     <CardHeader>
                       <CardTitle className="text-lg">V(t) - Función de Lyapunov</CardTitle>
                       <CardDescription>
-                        Decaimiento monótono hacia cero demuestra estabilidad asintótica
+                        Decaimiento monótono demuestra estabilidad asintótica del Campo
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -404,7 +470,7 @@ export default function Simulator() {
                           <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
                           <XAxis 
                             dataKey="step" 
-                            label={{ value: 'Paso de conversación', position: 'insideBottom', offset: -5 }}
+                            label={{ value: 'Paso de interacción', position: 'insideBottom', offset: -5 }}
                             stroke="oklch(from var(--foreground) l c h / 0.5)"
                           />
                           <YAxis 
@@ -435,7 +501,7 @@ export default function Simulator() {
                     <CardHeader>
                       <CardTitle className="text-lg">Ω(t) - Coherencia Observable</CardTitle>
                       <CardDescription>
-                        Meseta de alta coherencia en modo controlado vs. colapso sin control
+                        Meseta de alta coherencia en régimen acoplado vs. colapso en deriva libre
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -444,7 +510,7 @@ export default function Simulator() {
                           <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
                           <XAxis 
                             dataKey="step" 
-                            label={{ value: 'Paso de conversación', position: 'insideBottom', offset: -5 }}
+                            label={{ value: 'Paso de interacción', position: 'insideBottom', offset: -5 }}
                             stroke="oklch(from var(--foreground) l c h / 0.5)"
                           />
                           <YAxis 
@@ -476,7 +542,7 @@ export default function Simulator() {
                     <CardHeader>
                       <CardTitle className="text-lg">Mapa de Fase (H vs C)</CardTitle>
                       <CardDescription>
-                        Trayectoria del estado siendo atraída hacia el atractor de estabilidad
+                        Trayectoria del estado en el espacio de fases del régimen
                       </CardDescription>
                     </CardHeader>
                     <CardContent>

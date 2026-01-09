@@ -42,7 +42,7 @@ export const appRouter = router({
         purpose: z.string().min(10, "El propósito debe tener al menos 10 caracteres"),
         limits: z.string().min(10, "Los límites deben tener al menos 10 caracteres"),
         ethics: z.string().min(10, "La ética debe tener al menos 10 caracteres"),
-        controlMode: z.enum(["controlled", "uncontrolled"]),
+        plantProfile: z.enum(["tipo_a", "tipo_b", "acoplada"]),
         controlGain: z.number().min(0).max(2).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -51,7 +51,7 @@ export const appRouter = router({
           purpose: input.purpose,
           limits: input.limits,
           ethics: input.ethics,
-          controlMode: input.controlMode,
+          plantProfile: input.plantProfile,
           controlGain: input.controlGain ?? 0.5,
         });
         
@@ -81,10 +81,10 @@ export const appRouter = router({
     toggleMode: protectedProcedure
       .input(z.object({
         sessionId: z.number(),
-        controlMode: z.enum(["controlled", "uncontrolled"]),
+        plantProfile: z.enum(["tipo_a", "tipo_b", "acoplada"]),
       }))
       .mutation(async ({ input }) => {
-        await updateSessionMode(input.sessionId, input.controlMode);
+        await updateSessionMode(input.sessionId, input.plantProfile);
         return { success: true };
       }),
   }),
@@ -123,8 +123,8 @@ export const appRouter = router({
         // Agregar el mensaje actual
         let userPrompt = input.content;
         
-        // Si está en modo controlado, aplicar el control
-        if (session.controlMode === "controlled") {
+        // Si está en régimen acoplado (CAELION), aplicar el control
+        if (session.plantProfile === "acoplada") {
           // Aquí necesitamos ejecutar Python para el control semántico
           // Por ahora, agregamos la referencia al prompt
           userPrompt = `${input.content}\n\n[Referencia Ontológica]\nPropósito: ${session.purpose}\nLímites: ${session.limits}\nÉtica: ${session.ethics}`;
@@ -149,10 +149,12 @@ export const appRouter = router({
         
         // Calcular métricas usando el puente semántico
         const referenceText = `Propósito: ${session.purpose}\nLímites: ${session.limits}\nÉtica: ${session.ethics}`;
+        // Determinar si aplicar control basado en el perfil de planta
+        const applyControl = session.plantProfile === "acoplada";
         const metrics = calculateMetricsSimplified(
           referenceText,
           assistantContent,
-          session.controlMode
+          applyControl ? "controlled" : "uncontrolled"
         );
         
         // Guardar métricas en la base de datos
