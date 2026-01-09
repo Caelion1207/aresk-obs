@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, float } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,4 +25,56 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Tabla de sesiones de simulación ARESK-OBS
+ * Almacena las configuraciones de referencia ontológica para cada sesión
+ */
+export const sessions = mysqlTable("sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  purpose: text("purpose").notNull(),
+  limits: text("limits").notNull(),
+  ethics: text("ethics").notNull(),
+  controlMode: mysqlEnum("controlMode", ["controlled", "uncontrolled"]).notNull(),
+  controlGain: float("controlGain").default(0.5).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Session = typeof sessions.$inferSelect;
+export type InsertSession = typeof sessions.$inferInsert;
+
+/**
+ * Tabla de mensajes de conversación
+ * Almacena cada turno de la conversación con el LLM
+ */
+export const messages = mysqlTable("messages", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: int("sessionId").notNull(),
+  role: mysqlEnum("role", ["user", "assistant", "system"]).notNull(),
+  content: text("content").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = typeof messages.$inferInsert;
+
+/**
+ * Tabla de métricas de control semántico
+ * Almacena las mediciones de cada estado semántico
+ */
+export const metrics = mysqlTable("metrics", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: int("sessionId").notNull(),
+  messageId: int("messageId").notNull(),
+  coherenciaObservable: float("coherenciaObservable").notNull(),
+  funcionLyapunov: float("funcionLyapunov").notNull(),
+  errorCognitivoMagnitud: float("errorCognitivoMagnitud").notNull(),
+  controlActionMagnitud: float("controlActionMagnitud").notNull(),
+  entropiaH: float("entropiaH").notNull(),
+  coherenciaInternaC: float("coherenciaInternaC").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+export type Metric = typeof metrics.$inferSelect;
+export type InsertMetric = typeof metrics.$inferInsert;

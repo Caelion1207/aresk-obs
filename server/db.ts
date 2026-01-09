@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, sessions, messages, metrics, InsertSession, InsertMessage, InsertMetric } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,65 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// ============================================
+// ARESK-OBS: Funciones de sesiones y métricas
+// ============================================
+
+export async function createSession(session: InsertSession) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(sessions).values(session);
+  return result[0].insertId;
+}
+
+export async function getSession(sessionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.select().from(sessions).where(eq(sessions.id, sessionId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getUserSessions(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.select().from(sessions).where(eq(sessions.userId, userId));
+}
+
+export async function updateSessionMode(sessionId: number, controlMode: "controlled" | "uncontrolled") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(sessions).set({ controlMode }).where(eq(sessions.id, sessionId));
+}
+
+export async function createMessage(message: InsertMessage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(messages).values(message);
+  return result[0].insertId;
+}
+
+export async function getSessionMessages(sessionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.select().from(messages).where(eq(messages.sessionId, sessionId));
+}
+
+export async function createMetric(metric: InsertMetric) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.insert(metrics).values(metric);
+}
+
+export async function getSessionMetrics(sessionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.select().from(metrics).where(eq(metrics.sessionId, sessionId));
+}
