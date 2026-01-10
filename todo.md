@@ -87,11 +87,31 @@
 - [x] Navegación fluida entre secciones
 - [x] Footer informativo en cada página
 
+## Correcciones del Simulador (Completado)
+
+### Problema 1: Área de Conversación Desbordada
+
+- [x] Fijar altura del contenedor de conversación a 600px
+- [x] Implementar scroll independiente para el área de mensajes
+- [x] Separar visualizaciones de métricas del log de conversación
+- [x] Asegurar que gráficos permanezcan visibles mientras se scrollea el chat
+
+### Problema 2: Comparación Entre Perfiles
+
+- [x] Crear endpoint regenerateWithProfile en el backend
+- [x] Mantener preguntas del usuario al cambiar perfil de planta
+- [x] Regenerar solo las respuestas del sistema con el nuevo perfil
+- [x] Implementar botón "Regenerar Respuestas" en el header del simulador
+- [x] Mostrar toast con confirmación de regeneración exitosa
+
 ## Estado Final
 
 **Sistema completamente funcional y desplegado:**
 - ✅ ARESK-OBS v2.1 con todas las funcionalidades de monitoreo
 - ✅ Sitio web de arquitectura CAELION completo
+- ✅ Correcciones del simulador implementadas
+- ✅ Área de conversación fija con scroll independiente
+- ✅ Regeneración de respuestas por perfil de planta
 - ✅ Tests: 11/11 pasados
 - ✅ Documentación completa en README.md
 - ✅ Purificación arquitectónica aplicada

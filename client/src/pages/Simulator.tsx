@@ -52,6 +52,7 @@ export default function Simulator() {
   const createSessionMutation = trpc.session.create.useMutation();
   const sendMessageMutation = trpc.conversation.sendMessage.useMutation();
   const toggleModeMutation = trpc.session.toggleMode.useMutation();
+  const regenerateMutation = trpc.conversation.regenerateWithProfile.useMutation();
   
   // Queries
   const { data: messages, refetch: refetchMessages } = trpc.conversation.getHistory.useQuery(
@@ -134,6 +135,21 @@ export default function Simulator() {
       toast.success(`Perfil cambiado a: ${getProfileLabel(newProfile)}`);
     } catch (error) {
       toast.error("Error al cambiar el perfil");
+      console.error(error);
+    }
+  };
+  
+  const handleRegenerateResponses = async () => {
+    if (!sessionId) return;
+    
+    try {
+      const result = await regenerateMutation.mutateAsync({ sessionId });
+      await refetchMessages();
+      await refetchMetrics();
+      await refetchPhaseSpace();
+      toast.success(result.message);
+    } catch (error) {
+      toast.error("Error al regenerar respuestas");
       console.error(error);
     }
   };
@@ -240,6 +256,15 @@ export default function Simulator() {
                       {getProfileLabel(plantProfile)}
                     </Badge>
                   </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleRegenerateResponses}
+                    disabled={regenerateMutation.isPending}
+                  >
+                    <Play className="mr-2 h-4 w-4" />
+                    Regenerar Respuestas
+                  </Button>
                   <Button variant="outline" size="sm" onClick={handleReset}>
                     <RotateCcw className="mr-2 h-4 w-4" />
                     Reiniciar
@@ -382,15 +407,15 @@ export default function Simulator() {
             <div className="grid gap-6 lg:grid-cols-3">
               {/* Left Column - Conversation */}
               <div className="lg:col-span-1">
-                <Card className="h-[calc(100vh-400px)]">
-                  <CardHeader>
+                <Card className="flex flex-col" style={{ height: '600px' }}>
+                  <CardHeader className="flex-shrink-0">
                     <CardTitle className="text-lg">Interacción con Planta Estocástica</CardTitle>
                     <CardDescription className="text-xs">
                       Observación de trayectoria bajo régimen {getProfileLabel(plantProfile)}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="flex h-[calc(100%-100px)] flex-col">
-                    <ScrollArea className="flex-1 pr-4">
+                  <CardContent className="flex flex-col flex-1 overflow-hidden">
+                    <ScrollArea className="flex-1 pr-4" style={{ maxHeight: 'calc(600px - 180px)' }}>
                       <div className="space-y-4">
                         {messages?.map((msg) => (
                           <div
@@ -410,7 +435,7 @@ export default function Simulator() {
                       </div>
                     </ScrollArea>
                     
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 flex gap-2 flex-shrink-0">
                       <Input
                         placeholder="Entrada al sistema..."
                         value={userInput}

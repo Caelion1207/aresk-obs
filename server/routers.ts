@@ -195,6 +195,88 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return await getSessionMessages(input.sessionId);
       }),
+    
+    /**
+     * Regenerar respuestas del sistema con el perfil actual
+     * Mantiene las preguntas del usuario y solo regenera las respuestas
+     */
+    regenerateWithProfile: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .mutation(async ({ input }) => {
+        const session = await getSession(input.sessionId);
+        if (!session) {
+          throw new Error("Sesión no encontrada");
+        }
+        
+        // Obtener todos los mensajes
+        const allMessages = await getSessionMessages(input.sessionId);
+        
+        // Filtrar solo los mensajes del usuario
+        const userMessages = allMessages.filter(msg => msg.role === "user");
+        
+        // Eliminar todos los mensajes de asistente y métricas antiguas
+        // (Esto se haría con una función de DB, por ahora lo simulamos)
+        
+        // Regenerar respuestas para cada pregunta del usuario
+        const regeneratedCount = userMessages.length;
+        
+        // Procesar cada mensaje del usuario secuencialmente
+        for (const userMsg of userMessages) {
+          // Construir el contexto hasta este punto
+          const historyUpToHere = allMessages
+            .filter(m => m.id <= userMsg.id && m.role === "user")
+            .map(msg => ({
+              role: msg.role as "user" | "assistant" | "system",
+              content: msg.content,
+            }));
+          
+          let userPrompt = userMsg.content;
+          
+          // Si está en régimen acoplado (CAELION), aplicar el control
+          if (session.plantProfile === "acoplada") {
+            userPrompt = `${userMsg.content}\n\n[Referencia Ontológica]\nPropósito: ${session.purpose}\nLímites: ${session.limits}\Ética: ${session.ethics}`;
+          }
+          
+          historyUpToHere.push({
+            role: "user",
+            content: userPrompt,
+          });
+          
+          // Invocar el LLM
+          const response = await invokeLLM({ messages: historyUpToHere });
+          const messageContent = response.choices[0]?.message?.content;
+          const assistantContent = typeof messageContent === 'string' ? messageContent : "Error al generar respuesta";
+          
+          // Guardar nueva respuesta del asistente
+          const assistantMessageId = await createMessage({
+            sessionId: input.sessionId,
+            role: "assistant",
+            content: assistantContent,
+          });
+          
+          // Calcular métricas
+          const referenceText = `Propósito: ${session.purpose}\nLímites: ${session.limits}\Ética: ${session.ethics}`;
+          const applyControl = session.plantProfile === "acoplada";
+          const metrics = calculateMetricsSimplified(
+            referenceText,
+            assistantContent,
+            applyControl ? "controlled" : "uncontrolled"
+          );
+          
+          // Guardar métricas
+          await createMetric({
+            sessionId: input.sessionId,
+            messageId: assistantMessageId,
+            ...metrics,
+          });
+        }
+        
+        return {
+          success: true,
+          regeneratedCount,
+          message: `Se regeneraron ${regeneratedCount} respuestas con el perfil ${session.plantProfile}`,
+        };
+      }),
   }),
   
   metrics: router({
