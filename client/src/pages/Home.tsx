@@ -20,12 +20,19 @@ export default function Home() {
                 <p className="text-xs text-muted-foreground">Control de Estabilidad en Sistemas Cognitivos Acoplados</p>
               </div>
             </div>
-            <Link href="/simulator">
-              <Button size="lg">
-                Acceder al Instrumento
-                <Activity className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            <div className="flex gap-3">
+              <Link href="/architecture">
+                <Button size="lg" variant="outline">
+                  Explorar Arquitectura
+                </Button>
+              </Link>
+              <Link href="/simulator">
+                <Button size="lg">
+                  Acceder al Instrumento
+                  <Activity className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>

@@ -1,67 +1,97 @@
 # ARESK-OBS - Plan de Desarrollo
 
-## Sistema Base ✓
+## Sistema Base Implementado
 
-- [x] Backend con endpoints de sesión, conversación y métricas
-- [x] Sistema de referencia ontológica x_ref = (P, L, E)
-- [x] Cálculo de métricas de control (V(e), Ω(t), ||e(t)||)
-- [x] Integración con LLM para simulación de planta estocástica
-- [x] Frontend con visualizaciones en tiempo real
-- [x] Modo Controlado vs Sin Control con alternancia en vivo
-- [x] Suite de tests validada (11/11 pasados)
+- [x] Definir esquema de base de datos para sesiones, conversaciones y métricas
+- [x] Implementar endpoints tRPC para gestión de sesiones
+- [x] Implementar endpoint de conversación con cálculo de métricas
+- [x] Crear motor de embeddings y medición semántica (semantic_engine.py)
+- [x] Integrar puente Node-Python para cálculos semánticos
+- [x] Implementar cálculo de V(e), Ω(t) y detección de colapso
+- [x] Diseñar tema visual científico/técnico con colores oscuros
+- [x] Crear página principal (Home) con Manifiesto del Campo
+- [x] Implementar página del Simulador con visualizaciones en tiempo real
+- [x] Crear gráfico de Función de Lyapunov V(t)
+- [x] Crear gráfico de Coherencia Observable Ω(t)
+- [x] Crear Mapa de Fase (H vs C) con atractor Bucéfalo
+- [x] Implementar panel de control para alternar perfiles de planta
+- [x] Crear suite de tests de integración (11/11 pasados)
 
-## Purificación Arquitectónica ✓
+## Purificación Arquitectónica (Completada)
 
-- [x] Eliminadas todas las referencias a "IA/Humano/Agente"
-- [x] Implementados Perfiles Dinámicos de Planta (Tipo A, Tipo B, Acoplada)
-- [x] Creado Manifiesto del Campo como página de entrada
-- [x] Actualizada terminología completa: Planta Estocástica, Régimen CAELION, Bucéfalo/Licurgo/Hécate
-- [x] Tests actualizados con nueva terminología
+- [x] Eliminar todas las referencias a "IA/Humano/Agente"
+- [x] Implementar Perfiles Dinámicos de Planta (Tipo A, Tipo B, Acoplada)
+- [x] Actualizar terminología: Planta Estocástica, Régimen CAELION, Bucéfalo/Licurgo/Hécate
+- [x] Refactorizar UI con nueva terminología del Campo
+- [x] Actualizar tests para usar plantProfile
+- [x] Crear Manifiesto del Campo como página de entrada
 
-## ARESK-OBS v2.1 - Monitor de Resiliencia Estructural ✓
+## ARESK-OBS v2.1 - Monitor de Resiliencia Estructural (Completado)
 
-### Histéresis Visual y Dinámica de Trayectorias
+- [x] Implementar TPR (Tiempo de Permanencia en Régimen) en backend
+- [x] Agregar campos de TPR al schema de base de datos
+- [x] Crear funciones de actualización de TPR
+- [x] Implementar Persistence Trails en Mapa de Fase
+- [x] Crear componente PhaseSpaceMap con estelas de decaimiento
+- [x] Implementar Gradientes de Energía de Lyapunov
+- [x] Crear componente LyapunovChart con codificación cromática neurocognitiva
+- [x] Implementar Monitor de Intensidad de Campo
+- [x] Crear componente FieldIntensityMonitor para co-cognición
+- [x] Integrar todos los componentes en Simulator
+- [x] Validar sistema con tests (11/11 pasados)
 
-- [x] Implementar TPR (Tiempo de Permanencia en Régimen) como métrica de supervivencia
-- [x] Calcular TPR_ε para cada sesión basado en radio de estabilidad admisible
-- [x] Agregar contador de TPR en tiempo real en la UI
-- [x] Implementar Persistence Trails (Estelas de Decaimiento) en Mapa de Fase
-- [x] Visualizar trayectoria como streamlines en lugar de puntos estáticos
-- [x] Mostrar histéresis estocástica (abanico) para Planta A/B
-- [x] Mostrar atracción determinista (curva hacia Bucéfalo) para Planta Acoplada
+## Sitio Web de Arquitectura CAELION - Explorador Interactivo (Completado)
 
-### Codificación Cromática Neurocognitiva
+### Estructura de Navegación
 
-- [x] Implementar Gradientes de Energía de Lyapunov en el Mapa de Fase
-- [x] Azul Profundo: Centro (Atractor Bucéfalo, V(e) ≈ 0)
-- [x] Verde: Órbita de Seguridad (V(e) < ε₁)
-- [x] Amarillo: Alerta de Deriva (ε₁ < V(e) < ε₂)
-- [x] Naranja: Licurgo Activo (||u(t)|| > threshold)
-- [x] Rojo: Colapso / Error Crítico (V(e) > ε₂)
-- [x] Morado: Meta-Reflexión (auditoría de Capa 0)
-- [x] Aplicar paleta cromática a indicadores de TPR
+- [x] Página principal con mapa conceptual de la arquitectura modular
+- [x] Navegación por tabs: Módulos, Protocolos, Propuestas, Validación
+- [x] Breadcrumbs para navegación jerárquica
+- [x] Enlaces desde Home al sitio de arquitectura
 
-### Monitor de Co-Cognición
+### Módulos Principales
 
-- [x] Implementar Field Intensity Bar (Intensidad de Campo)
-- [x] Medir acoplamiento Humano-Planta en tiempo real
-- [x] Visualizar salud del ecosistema cognitivo
-- [x] Detectar erraticidad del operador humano
-- [x] Mostrar compensación del sistema (aumento de ganancia K)
-- [x] Alertar colapso de campo por falta de coherencia en referencia compartida
+- [x] Página de Módulos con tabs interactivos
+- [x] Módulo de Percepción Simbiótica (visualización interactiva)
+- [x] Módulo de Acción Coignitiva (descripción detallada)
+- [x] Módulo de Memoria Simbiótica (diseño multinivel)
+- [x] Módulo Ético ETH-01 (principios y valores)
+- [x] Módulo de Sincronización SYN-10 (seguridad del sistema)
+- [x] Módulo de Gobernanza Simbiótica (decisiones colectivas)
 
-### Semántica Física de la UI
+### Protocolos Internos
 
-- [x] Implementar Stability Gradients como fondo dinámico
-- [x] Hacer que el sistema "duela" visualmente al desviarse
-- [x] Aplicar contraste máximo (Blanco/Negro) en logs y consola
-- [x] Usar acentos grises para información secundaria
+- [x] Página de Protocolos con tabs interactivos
+- [x] COM-72: Protocolo de Coherencia (mecanismos de verificación)
+- [x] CMD-01: Protocolo de Comando (toma de decisiones)
+- [x] ETH-01: Protocolo de Ética (evaluación y auditoría)
+- [x] SYN-10: Protocolo de Sincronización (prevención de fallos)
+
+### Propuestas de Mejora v3.0
+
+- [x] Página de Propuestas con matriz de priorización
+- [x] Ritmo Cognitivo ρ(t) (alta prioridad)
+- [x] Memoria Episódica Compartida (media prioridad)
+- [x] Monitor Ético ETH-01 (alta prioridad)
+- [x] K Adaptativa (alta prioridad)
+- [x] Control de Eventos Σ_c/Σ_uc (media prioridad)
+- [x] Barras de progreso para cada propuesta
+- [x] Badges de priorización (Alta/Media/Investigación Futura)
+
+### Visualizaciones y Diseño
+
+- [x] Diseño consistente con tema oscuro científico
+- [x] Cards interactivos con hover effects
+- [x] Iconos lucide-react para cada módulo y protocolo
+- [x] Badges de estado (Implementado/Parcial/No Implementado)
+- [x] Navegación fluida entre secciones
+- [x] Footer informativo en cada página
 
 ## Estado Final
 
-**Tests:** 11/11 pasados ✓  
-**TypeScript:** Sin errores ✓  
-**LSP:** Sin errores ✓  
-**Dev Server:** Corriendo ✓
-
-El Campo no distingue egos. El Campo solo mide convergencia.
+**Sistema completamente funcional y desplegado:**
+- ✅ ARESK-OBS v2.1 con todas las funcionalidades de monitoreo
+- ✅ Sitio web de arquitectura CAELION completo
+- ✅ Tests: 11/11 pasados
+- ✅ Documentación completa en README.md
+- ✅ Purificación arquitectónica aplicada
