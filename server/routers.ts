@@ -8,6 +8,7 @@ import {
   getSession, 
   getUserSessions, 
   updateSessionMode,
+  updateTPR,
   createMessage,
   getSessionMessages,
   createMetric,
@@ -164,10 +165,25 @@ export const appRouter = router({
           ...metrics,
         });
         
+        // Actualizar TPR (Tiempo de Permanencia en Régimen)
+        await updateTPR(
+          input.sessionId,
+          metrics.errorCognitivoMagnitud,
+          session.stabilityRadius
+        );
+        
+        // Obtener la sesión actualizada con TPR
+        const updatedSession = await getSession(input.sessionId);
+        
         return {
           messageId: assistantMessageId,
           content: assistantContent,
           metrics,
+          tpr: {
+            current: updatedSession?.tprCurrent || 0,
+            max: updatedSession?.tprMax || 0,
+            stabilityRadius: session.stabilityRadius,
+          },
         };
       }),
     

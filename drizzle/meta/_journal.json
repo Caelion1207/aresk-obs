@@ -22,6 +22,13 @@
       "when": 1767952120337,
       "tag": "0002_thick_hobgoblin",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1768028238501,
+      "tag": "0003_living_sphinx",
+      "breakpoints": true
     }
   ]
 }

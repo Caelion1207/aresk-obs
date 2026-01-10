@@ -123,6 +123,38 @@ export async function updateSessionMode(sessionId: number, plantProfile: "tipo_a
   await db.update(sessions).set({ plantProfile }).where(eq(sessions.id, sessionId));
 }
 
+export async function updateTPR(sessionId: number, errorMagnitud: number, stabilityRadius: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Obtener la sesión actual
+  const sessionResult = await db.select().from(sessions).where(eq(sessions.id, sessionId)).limit(1);
+  if (sessionResult.length === 0) throw new Error("Session not found");
+  
+  const session = sessionResult[0];
+  
+  // Verificar si el sistema está dentro del conjunto de estabilidad admisible
+  const isStable = errorMagnitud <= stabilityRadius;
+  
+  if (isStable) {
+    // Incrementar TPR actual
+    const newTprCurrent = session.tprCurrent + 1;
+    const newTprMax = Math.max(newTprCurrent, session.tprMax);
+    
+    await db.update(sessions)
+      .set({ 
+        tprCurrent: newTprCurrent,
+        tprMax: newTprMax
+      })
+      .where(eq(sessions.id, sessionId));
+  } else {
+    // Resetear TPR actual (el sistema salió del régimen)
+    await db.update(sessions)
+      .set({ tprCurrent: 0 })
+      .where(eq(sessions.id, sessionId));
+  }
+}
+
 export async function createMessage(message: InsertMessage) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

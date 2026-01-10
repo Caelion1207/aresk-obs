@@ -1,63 +1,67 @@
 # ARESK-OBS - Plan de Desarrollo
 
-## Sistema Base - COMPLETADO ✓
+## Sistema Base ✓
 
-- [x] Configurar estructura del proyecto y entorno de desarrollo
-- [x] Implementar backend Flask con Sistema de Medición de Estados Semánticos
-- [x] Crear endpoints `/reference` y `/interact` con cálculo de métricas
-- [x] Desarrollar frontend con visualizaciones en tiempo real
-- [x] Integrar sistema de embeddings usando SentenceTransformers
-- [x] Implementar simulador de conversación con modo Controlado vs Sin Control
-- [x] Crear visualización de Función de Lyapunov V(t)
-- [x] Crear gráfico de Coherencia Observable Ω(t)
-- [x] Implementar Mapa de Fase (H vs C)
-- [x] Crear panel de control interactivo para alternar modos
-- [x] Integrar LLM como planta estocástica
-- [x] Crear dashboard de auditoría con métricas en tiempo real
-- [x] Implementar tests de integración completos
-- [x] Validar suite de tests (11/11 pasados)
+- [x] Backend con endpoints de sesión, conversación y métricas
+- [x] Sistema de referencia ontológica x_ref = (P, L, E)
+- [x] Cálculo de métricas de control (V(e), Ω(t), ||e(t)||)
+- [x] Integración con LLM para simulación de planta estocástica
+- [x] Frontend con visualizaciones en tiempo real
+- [x] Modo Controlado vs Sin Control con alternancia en vivo
+- [x] Suite de tests validada (11/11 pasados)
 
-## Purificación Arquitectónica - COMPLETADO ✓
+## Purificación Arquitectónica ✓
 
-- [x] Eliminar todas las referencias a "IA", "Humano", "Agente" de la UI
-- [x] Implementar Perfiles Dinámicos de Planta en el backend
-- [x] Crear Planta Tipo A (Alta Entropía / Bajo Control)
-- [x] Crear Planta Tipo B (Ruido Estocástico Moderado / Sin Referencia)
-- [x] Crear Planta Acoplada (Régimen CAELION con Licurgo y Bucéfalo)
-- [x] Refactorizar UI para mostrar "Parámetros de Planta" en lugar de "Modo Controlado"
-- [x] Crear página del Manifiesto del Campo como entrada principal
-- [x] Actualizar terminología: "LLM" → "Planta Estocástica"
-- [x] Implementar visualización de "Perfiles de Ruido" en graficador
-- [x] Actualizar README con la nueva terminología del Campo
-- [x] Migrar schema de base de datos de controlMode a plantProfile
-- [x] Actualizar todos los tests para usar la nueva terminología
-- [x] Validar tests después de purificación (11/11 pasados)
+- [x] Eliminadas todas las referencias a "IA/Humano/Agente"
+- [x] Implementados Perfiles Dinámicos de Planta (Tipo A, Tipo B, Acoplada)
+- [x] Creado Manifiesto del Campo como página de entrada
+- [x] Actualizada terminología completa: Planta Estocástica, Régimen CAELION, Bucéfalo/Licurgo/Hécate
+- [x] Tests actualizados con nueva terminología
 
-## Estado del Sistema
+## ARESK-OBS v2.1 - Monitor de Resiliencia Estructural ✓
 
-**Fase actual:** Purificación Arquitectónica Completada
+### Histéresis Visual y Dinámica de Trayectorias
 
-**Funcionalidades operativas:**
-- Backend con endpoints de sesión, conversación y métricas
-- Frontend con Manifiesto del Campo y visualizaciones científicas
-- Sistema de referencia ontológica Bucéfalo (x_ref)
-- Tres perfiles dinámicos de planta (Tipo A, Tipo B, Acoplada)
-- Medición en tiempo real de V(t), Ω(t), e(t)
-- Integración completa con LLM y cálculo de métricas de control
-- Suite de tests validada: **11/11 pasados**
+- [x] Implementar TPR (Tiempo de Permanencia en Régimen) como métrica de supervivencia
+- [x] Calcular TPR_ε para cada sesión basado en radio de estabilidad admisible
+- [x] Agregar contador de TPR en tiempo real en la UI
+- [x] Implementar Persistence Trails (Estelas de Decaimiento) en Mapa de Fase
+- [x] Visualizar trayectoria como streamlines en lugar de puntos estáticos
+- [x] Mostrar histéresis estocástica (abanico) para Planta A/B
+- [x] Mostrar atracción determinista (curva hacia Bucéfalo) para Planta Acoplada
 
-**Terminología purificada:**
-- ❌ "IA" / "Inteligencia Artificial"
-- ❌ "Humano vs Máquina"
-- ❌ "Agente" / "Modo Controlado"
-- ✅ "Planta Estocástica"
-- ✅ "Perfil Dinámico de Planta"
-- ✅ "Régimen CAELION"
-- ✅ "Campo de Control"
-- ✅ "Bucéfalo" (referencia), "Licurgo" (ganancia), "Hécate" (observación)
+### Codificación Cromática Neurocognitiva
 
-**Próximas mejoras potenciales:**
-- Implementar control adaptativo con K(t) variable
-- Agregar comparación lado a lado de perfiles
-- Integrar motor Python real con SentenceTransformers completo
-- Exportar datos de sesión para análisis externo
+- [x] Implementar Gradientes de Energía de Lyapunov en el Mapa de Fase
+- [x] Azul Profundo: Centro (Atractor Bucéfalo, V(e) ≈ 0)
+- [x] Verde: Órbita de Seguridad (V(e) < ε₁)
+- [x] Amarillo: Alerta de Deriva (ε₁ < V(e) < ε₂)
+- [x] Naranja: Licurgo Activo (||u(t)|| > threshold)
+- [x] Rojo: Colapso / Error Crítico (V(e) > ε₂)
+- [x] Morado: Meta-Reflexión (auditoría de Capa 0)
+- [x] Aplicar paleta cromática a indicadores de TPR
+
+### Monitor de Co-Cognición
+
+- [x] Implementar Field Intensity Bar (Intensidad de Campo)
+- [x] Medir acoplamiento Humano-Planta en tiempo real
+- [x] Visualizar salud del ecosistema cognitivo
+- [x] Detectar erraticidad del operador humano
+- [x] Mostrar compensación del sistema (aumento de ganancia K)
+- [x] Alertar colapso de campo por falta de coherencia en referencia compartida
+
+### Semántica Física de la UI
+
+- [x] Implementar Stability Gradients como fondo dinámico
+- [x] Hacer que el sistema "duela" visualmente al desviarse
+- [x] Aplicar contraste máximo (Blanco/Negro) en logs y consola
+- [x] Usar acentos grises para información secundaria
+
+## Estado Final
+
+**Tests:** 11/11 pasados ✓  
+**TypeScript:** Sin errores ✓  
+**LSP:** Sin errores ✓  
+**Dev Server:** Corriendo ✓
+
+El Campo no distingue egos. El Campo solo mide convergencia.

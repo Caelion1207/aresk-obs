@@ -18,12 +18,16 @@ import {
   RotateCcw,
   ArrowLeft,
   TrendingDown,
-  TrendingUp
+  TrendingUp,
+  Clock
 } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter } from "recharts";
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import PhaseSpaceMap from "@/components/PhaseSpaceMap";
+import LyapunovChart from "@/components/LyapunovChart";
+import FieldIntensityMonitor from "@/components/FieldIntensityMonitor";
 
 type PlantProfile = "tipo_a" | "tipo_b" | "acoplada";
 
@@ -39,6 +43,10 @@ export default function Simulator() {
   
   // Conversation state
   const [userInput, setUserInput] = useState("");
+  
+  // TPR state
+  const [tprCurrent, setTprCurrent] = useState(0);
+  const [tprMax, setTprMax] = useState(0);
   
   // Mutations
   const createSessionMutation = trpc.session.create.useMutation();
@@ -77,6 +85,8 @@ export default function Simulator() {
       
       setSessionId(result.sessionId);
       setIsSessionActive(true);
+      setTprCurrent(0);
+      setTprMax(0);
       toast.success("Sesión iniciada correctamente");
     } catch (error) {
       toast.error("Error al iniciar la sesión");
@@ -88,17 +98,23 @@ export default function Simulator() {
     if (!sessionId || !userInput.trim()) return;
     
     try {
-      await sendMessageMutation.mutateAsync({
+      const result = await sendMessageMutation.mutateAsync({
         sessionId,
         content: userInput,
       });
+      
+      // Actualizar TPR desde la respuesta
+      if (result.tpr) {
+        setTprCurrent(result.tpr.current);
+        setTprMax(result.tpr.max);
+      }
       
       setUserInput("");
       await refetchMessages();
       await refetchMetrics();
       await refetchPhaseSpace();
       
-      toast.success("Mensaje enviado");
+      toast.success("Mensaje procesado");
     } catch (error) {
       toast.error("Error al enviar el mensaje");
       console.error(error);
@@ -129,6 +145,8 @@ export default function Simulator() {
     setLimits("");
     setEthics("");
     setUserInput("");
+    setTprCurrent(0);
+    setTprMax(0);
   };
   
   const getProfileLabel = (profile: PlantProfile) => {
@@ -165,7 +183,11 @@ export default function Simulator() {
   })) || [];
   
   const phaseSpaceData = phaseSpace ? 
-    phaseSpace.H.map((h, i) => ({ H: h, C: phaseSpace.C[i] })) : [];
+    phaseSpace.H.map((h, i) => ({ 
+      H: h, 
+      C: phaseSpace.C[i],
+      step: i + 1,
+    })) : [];
   
   const latestMetrics = metrics && metrics.length > 0 ? metrics[metrics.length - 1] : null;
 
@@ -185,12 +207,23 @@ export default function Simulator() {
               <Separator orientation="vertical" className="h-6" />
               <div className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-primary" />
-                <span className="font-semibold">ARESK-OBS: Medición de Régimen</span>
+                <span className="font-semibold">ARESK-OBS v2.1: Monitor de Resiliencia Estructural</span>
               </div>
             </div>
             <div className="flex items-center gap-4">
               {isSessionActive && (
                 <>
+                  {/* TPR Display */}
+                  <div className="flex items-center gap-2 rounded-lg border px-3 py-1.5 bg-card">
+                    <Clock className="h-4 w-4 text-primary" />
+                    <div className="text-xs">
+                      <div className="font-semibold">TPR: {tprCurrent}</div>
+                      <div className="text-muted-foreground">Máx: {tprMax}</div>
+                    </div>
+                  </div>
+                  
+                  <Separator orientation="vertical" className="h-8" />
+                  
                   <div className="flex items-center gap-2">
                     <Label htmlFor="plant-profile" className="text-sm">Perfil de Planta:</Label>
                     <Select value={plantProfile} onValueChange={(value) => handleToggleProfile(value as PlantProfile)}>
@@ -332,252 +365,194 @@ export default function Simulator() {
           </div>
         ) : (
           /* Simulation Dashboard */
-          <div className="grid gap-6 lg:grid-cols-3">
-            {/* Left Column - Conversation */}
-            <div className="lg:col-span-1">
-              <Card className="h-[calc(100vh-200px)]">
-                <CardHeader>
-                  <CardTitle className="text-lg">Interacción con Planta Estocástica</CardTitle>
-                  <CardDescription className="text-xs">
-                    Observación de trayectoria bajo régimen {getProfileLabel(plantProfile)}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex h-[calc(100%-100px)] flex-col">
-                  <ScrollArea className="flex-1 pr-4">
-                    <div className="space-y-4">
-                      {messages?.map((msg) => (
-                        <div
-                          key={msg.id}
-                          className={`rounded-lg p-3 ${
-                            msg.role === "user"
-                              ? "bg-primary/10 ml-4"
-                              : "bg-muted mr-4"
-                          }`}
-                        >
-                          <div className="mb-1 text-xs font-semibold text-muted-foreground">
-                            {msg.role === "user" ? "Entrada" : "Salida de Planta"}
-                          </div>
-                          <div className="text-sm">{msg.content}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                  
-                  <div className="mt-4 flex gap-2">
-                    <Input
-                      placeholder="Entrada al sistema..."
-                      value={userInput}
-                      onChange={(e) => setUserInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }
-                      }}
-                    />
-                    <Button 
-                      onClick={handleSendMessage}
-                      disabled={sendMessageMutation.isPending}
-                    >
-                      Enviar
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+          <div className="space-y-6">
+            {/* Monitor de Intensidad de Campo */}
+            {latestMetrics && (
+              <FieldIntensityMonitor
+                tprCurrent={tprCurrent}
+                tprMax={tprMax}
+                stabilityRadius={0.3}
+                latestError={latestMetrics.errorCognitivoMagnitud}
+                latestCoherence={latestMetrics.coherenciaObservable}
+                controlActionMagnitud={latestMetrics.controlActionMagnitud}
+                plantProfile={plantProfile}
+              />
+            )}
             
-            {/* Right Column - Metrics and Visualizations */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Real-time Metrics Cards */}
-              {latestMetrics && (
-                <div className="grid gap-4 md:grid-cols-3">
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Coherencia Observable Ω(t)
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold text-primary">
-                        {latestMetrics.coherenciaObservable.toFixed(3)}
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Left Column - Conversation */}
+              <div className="lg:col-span-1">
+                <Card className="h-[calc(100vh-400px)]">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Interacción con Planta Estocástica</CardTitle>
+                    <CardDescription className="text-xs">
+                      Observación de trayectoria bajo régimen {getProfileLabel(plantProfile)}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex h-[calc(100%-100px)] flex-col">
+                    <ScrollArea className="flex-1 pr-4">
+                      <div className="space-y-4">
+                        {messages?.map((msg) => (
+                          <div
+                            key={msg.id}
+                            className={`rounded-lg p-3 ${
+                              msg.role === "user"
+                                ? "bg-primary/10 ml-4"
+                                : "bg-muted mr-4"
+                            }`}
+                          >
+                            <div className="mb-1 text-xs font-semibold text-muted-foreground">
+                              {msg.role === "user" ? "Entrada" : "Salida de Planta"}
+                            </div>
+                            <div className="text-sm">{msg.content}</div>
+                          </div>
+                        ))}
                       </div>
-                      <div className="mt-1 flex items-center text-xs text-muted-foreground">
-                        {latestMetrics.coherenciaObservable > 0.7 ? (
-                          <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
-                        ) : (
-                          <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
-                        )}
-                        Similitud direccional
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Función de Lyapunov V(e)
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold text-chart-2">
-                        {latestMetrics.funcionLyapunov.toFixed(3)}
-                      </div>
-                      <div className="mt-1 flex items-center text-xs text-muted-foreground">
-                        <Activity className="mr-1 h-3 w-3" />
-                        Energía de desalineación
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Error Cognitivo ||e(t)||
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-3xl font-bold text-chart-3">
-                        {latestMetrics.errorCognitivoMagnitud.toFixed(3)}
-                      </div>
-                      <div className="mt-1 flex items-center text-xs text-muted-foreground">
-                        <LineChart className="mr-1 h-3 w-3" />
-                        Distancia a Bucéfalo
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
+                    </ScrollArea>
+                    
+                    <div className="mt-4 flex gap-2">
+                      <Input
+                        placeholder="Entrada al sistema..."
+                        value={userInput}
+                        onChange={(e) => setUserInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage();
+                          }
+                        }}
+                      />
+                      <Button 
+                        onClick={handleSendMessage}
+                        disabled={sendMessageMutation.isPending}
+                      >
+                        Enviar
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
               
-              {/* Charts */}
-              <Tabs defaultValue="lyapunov" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="lyapunov">Función de Lyapunov</TabsTrigger>
-                  <TabsTrigger value="coherence">Coherencia Observable</TabsTrigger>
-                  <TabsTrigger value="phase">Mapa de Fase</TabsTrigger>
-                </TabsList>
+              {/* Right Column - Metrics and Visualizations */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Real-time Metrics Cards */}
+                {latestMetrics && (
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Coherencia Observable Ω(t)
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-3xl font-bold text-primary">
+                          {latestMetrics.coherenciaObservable.toFixed(3)}
+                        </div>
+                        <div className="mt-1 flex items-center text-xs text-muted-foreground">
+                          {latestMetrics.coherenciaObservable > 0.7 ? (
+                            <TrendingUp className="mr-1 h-3 w-3 text-green-500" />
+                          ) : (
+                            <TrendingDown className="mr-1 h-3 w-3 text-red-500" />
+                          )}
+                          Similitud direccional
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Función de Lyapunov V(e)
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-3xl font-bold text-chart-2">
+                          {latestMetrics.funcionLyapunov.toFixed(3)}
+                        </div>
+                        <div className="mt-1 flex items-center text-xs text-muted-foreground">
+                          <Activity className="mr-1 h-3 w-3" />
+                          Energía de desalineación
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          Error Cognitivo ||e(t)||
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-3xl font-bold text-chart-3">
+                          {latestMetrics.errorCognitivoMagnitud.toFixed(3)}
+                        </div>
+                        <div className="mt-1 flex items-center text-xs text-muted-foreground">
+                          <LineChart className="mr-1 h-3 w-3" />
+                          Distancia a Bucéfalo
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
                 
-                <TabsContent value="lyapunov" className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">V(t) - Función de Lyapunov</CardTitle>
-                      <CardDescription>
-                        Decaimiento monótono demuestra estabilidad asintótica del Campo
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <RechartsLineChart data={lyapunovData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
-                          <XAxis 
-                            dataKey="step" 
-                            label={{ value: 'Paso de interacción', position: 'insideBottom', offset: -5 }}
-                            stroke="oklch(from var(--foreground) l c h / 0.5)"
-                          />
-                          <YAxis 
-                            label={{ value: 'V(e)', angle: -90, position: 'insideLeft' }}
-                            stroke="oklch(from var(--foreground) l c h / 0.5)"
-                          />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: 'oklch(from var(--card) l c h)', 
-                              border: '1px solid oklch(from var(--border) l c h)'
-                            }}
-                          />
-                          <Line 
-                            type="monotone" 
-                            dataKey="V" 
-                            stroke="oklch(from var(--chart-2) l c h)" 
-                            strokeWidth={2}
-                            dot={{ fill: 'oklch(from var(--chart-2) l c h)' }}
-                          />
-                        </RechartsLineChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                
-                <TabsContent value="coherence" className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Ω(t) - Coherencia Observable</CardTitle>
-                      <CardDescription>
-                        Meseta de alta coherencia en régimen acoplado vs. colapso en deriva libre
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <RechartsLineChart data={coherenceData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
-                          <XAxis 
-                            dataKey="step" 
-                            label={{ value: 'Paso de interacción', position: 'insideBottom', offset: -5 }}
-                            stroke="oklch(from var(--foreground) l c h / 0.5)"
-                          />
-                          <YAxis 
-                            domain={[-1, 1]}
-                            label={{ value: 'Ω(t)', angle: -90, position: 'insideLeft' }}
-                            stroke="oklch(from var(--foreground) l c h / 0.5)"
-                          />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: 'oklch(from var(--card) l c h)', 
-                              border: '1px solid oklch(from var(--border) l c h)'
-                            }}
-                          />
-                          <Line 
-                            type="monotone" 
-                            dataKey="omega" 
-                            stroke="oklch(from var(--primary) l c h)" 
-                            strokeWidth={2}
-                            dot={{ fill: 'oklch(from var(--primary) l c h)' }}
-                          />
-                        </RechartsLineChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                
-                <TabsContent value="phase" className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Mapa de Fase (H vs C)</CardTitle>
-                      <CardDescription>
-                        Trayectoria del estado en el espacio de fases del régimen
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <ScatterChart>
-                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
-                          <XAxis 
-                            dataKey="H" 
-                            name="Entropía H(t)"
-                            label={{ value: 'H(t) - Entropía', position: 'insideBottom', offset: -5 }}
-                            stroke="oklch(from var(--foreground) l c h / 0.5)"
-                          />
-                          <YAxis 
-                            dataKey="C" 
-                            name="Coherencia C(t)"
-                            label={{ value: 'C(t) - Coherencia', angle: -90, position: 'insideLeft' }}
-                            stroke="oklch(from var(--foreground) l c h / 0.5)"
-                          />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: 'oklch(from var(--card) l c h)', 
-                              border: '1px solid oklch(from var(--border) l c h)'
-                            }}
-                            cursor={{ strokeDasharray: '3 3' }}
-                          />
-                          <Scatter 
-                            data={phaseSpaceData} 
-                            fill="oklch(from var(--chart-3) l c h)" 
-                          />
-                        </ScatterChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-              </Tabs>
+                {/* Charts */}
+                <Tabs defaultValue="lyapunov" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="lyapunov">Función de Lyapunov</TabsTrigger>
+                    <TabsTrigger value="coherence">Coherencia Observable</TabsTrigger>
+                    <TabsTrigger value="phase">Mapa de Fase</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="lyapunov" className="mt-4">
+                    <LyapunovChart data={lyapunovData} stabilityRadius={0.3} />
+                  </TabsContent>
+                  
+                  <TabsContent value="coherence" className="mt-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">Ω(t) - Coherencia Observable</CardTitle>
+                        <CardDescription>
+                          Meseta de alta coherencia en régimen acoplado vs. colapso en deriva libre
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <RechartsLineChart data={coherenceData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
+                            <XAxis 
+                              dataKey="step" 
+                              label={{ value: 'Paso de interacción', position: 'insideBottom', offset: -5 }}
+                              stroke="oklch(from var(--foreground) l c h / 0.5)"
+                            />
+                            <YAxis 
+                              domain={[-1, 1]}
+                              label={{ value: 'Ω(t)', angle: -90, position: 'insideLeft' }}
+                              stroke="oklch(from var(--foreground) l c h / 0.5)"
+                            />
+                            <Tooltip 
+                              contentStyle={{ 
+                                backgroundColor: 'oklch(from var(--card) l c h)', 
+                                border: '1px solid oklch(from var(--border) l c h)'
+                              }}
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="omega" 
+                              stroke="oklch(from var(--primary) l c h)" 
+                              strokeWidth={2}
+                              dot={{ fill: 'oklch(from var(--primary) l c h)' }}
+                            />
+                          </RechartsLineChart>
+                        </ResponsiveContainer>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                  
+                  <TabsContent value="phase" className="mt-4">
+                    <PhaseSpaceMap data={phaseSpaceData} plantProfile={plantProfile} />
+                  </TabsContent>
+                </Tabs>
+              </div>
             </div>
           </div>
         )}

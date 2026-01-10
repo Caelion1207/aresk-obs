@@ -37,6 +37,9 @@ export const sessions = mysqlTable("sessions", {
   ethics: text("ethics").notNull(),
   plantProfile: mysqlEnum("plantProfile", ["tipo_a", "tipo_b", "acoplada"]).notNull(),
   controlGain: float("controlGain").default(0.5).notNull(),
+  stabilityRadius: float("stabilityRadius").default(0.3).notNull(), // Radio ε del conjunto de estabilidad admisible
+  tprCurrent: int("tprCurrent").default(0).notNull(), // Tiempo de Permanencia en Régimen actual (en turnos)
+  tprMax: int("tprMax").default(0).notNull(), // TPR máximo alcanzado en la sesión
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
