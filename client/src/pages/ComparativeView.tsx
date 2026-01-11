@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Play, Send, ArrowLeftRight, TrendingUp, TrendingDown, Activity, LineChart } from "lucide-react";
+import { Play, Send, ArrowLeftRight, TrendingUp, TrendingDown, Activity, LineChart, FileDown } from "lucide-react";
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 type PlantProfile = "tipo_a" | "tipo_b" | "acoplada";
@@ -40,6 +40,7 @@ export default function ComparativeView() {
   // Mutations
   const createSessionMutation = trpc.session.create.useMutation();
   const sendToMultipleMutation = trpc.conversation.sendToMultiple.useMutation();
+  const exportComparativeDualMutation = trpc.session.exportComparativeDual.useMutation();
   
   // Queries para sesión izquierda
   const { data: messagesLeft, refetch: refetchMessagesLeft } = trpc.conversation.getHistory.useQuery(
@@ -336,7 +337,7 @@ export default function ComparativeView() {
             Observación paralela de trayectorias bajo diferentes regímenes
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Badge variant={getProfileColor(profileLeft)}>
             {getProfileLabel(profileLeft)}
           </Badge>
@@ -344,6 +345,29 @@ export default function ComparativeView() {
           <Badge variant={getProfileColor(profileRight)}>
             {getProfileLabel(profileRight)}
           </Badge>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              if (!sessionLeftId || !sessionRightId) return;
+              try {
+                const data = await exportComparativeDualMutation.mutateAsync({
+                  sessionId1: sessionLeftId,
+                  sessionId2: sessionRightId,
+                });
+                const { generateComparativeDualPDF } = await import("@/lib/pdfComparativeGenerator");
+                await generateComparativeDualPDF(data);
+                toast.success("PDF comparativo exportado correctamente");
+              } catch (error) {
+                console.error("Error al exportar PDF:", error);
+                toast.error("Error al exportar PDF comparativo");
+              }
+            }}
+            disabled={exportComparativeDualMutation.isPending}
+          >
+            <FileDown className="h-4 w-4 mr-2" />
+            {exportComparativeDualMutation.isPending ? "Exportando..." : "Exportar PDF"}
+          </Button>
         </div>
       </div>
       

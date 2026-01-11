@@ -9,7 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { ArrowLeftRight, Send, Activity } from "lucide-react";
+import { ArrowLeftRight, Send, Activity, FileDown } from "lucide-react";
 import { ThresholdConfig, getSimilarityColor, type SimilarityThresholds } from "@/components/ThresholdConfig";
 
 type PlantProfile = "tipo_a" | "tipo_b" | "acoplada";
@@ -40,6 +40,7 @@ export default function TripleComparative() {
   // Mutations
   const createSessionMutation = trpc.session.create.useMutation();
   const sendToMultipleMutation = trpc.conversation.sendToMultiple.useMutation();
+  const exportComparativeTripleMutation = trpc.session.exportComparativeTriple.useMutation();
   
   // Queries para sesión izquierda
   const { data: messagesLeft, refetch: refetchMessagesLeft } = trpc.conversation.getHistory.useQuery(
@@ -220,14 +221,42 @@ export default function TripleComparative() {
   
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-          <Activity className="h-10 w-10" />
-          Comparación Triple de Perfiles
-        </h1>
-        <p className="text-muted-foreground">
-          Análisis exhaustivo de tres perfiles de planta en paralelo
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+            <Activity className="h-10 w-10" />
+            Comparación Triple de Perfiles
+          </h1>
+          <p className="text-muted-foreground">
+            Análisis exhaustivo de tres perfiles de planta en paralelo
+          </p>
+        </div>
+        {isConfigured && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              if (!sessionLeftId || !sessionCenterId || !sessionRightId) return;
+              try {
+                const data = await exportComparativeTripleMutation.mutateAsync({
+                  sessionId1: sessionLeftId,
+                  sessionId2: sessionCenterId,
+                  sessionId3: sessionRightId,
+                });
+                const { generateComparativeTriplePDF } = await import("@/lib/pdfComparativeGenerator");
+                await generateComparativeTriplePDF(data);
+                toast.success("PDF comparativo triple exportado correctamente");
+              } catch (error) {
+                console.error("Error al exportar PDF:", error);
+                toast.error("Error al exportar PDF comparativo");
+              }
+            }}
+            disabled={exportComparativeTripleMutation.isPending}
+          >
+            <FileDown className="h-4 w-4 mr-2" />
+            {exportComparativeTripleMutation.isPending ? "Exportando..." : "Exportar PDF"}
+          </Button>
+        )}
       </div>
       
       {/* Configuración Inicial */}

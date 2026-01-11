@@ -161,6 +161,322 @@ export const appRouter = router({
           },
         };
       }),
+    
+    /**
+     * Exportar análisis comparativo de dos sesiones como PDF
+     */
+    exportComparativeDual: protectedProcedure
+      .input(z.object({ 
+        sessionId1: z.number(),
+        sessionId2: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        // Obtener datos de ambas sesiones
+        const [session1, session2] = await Promise.all([
+          getSession(input.sessionId1),
+          getSession(input.sessionId2),
+        ]);
+        
+        if (!session1 || !session2) {
+          throw new Error("Una o ambas sesiones no fueron encontradas");
+        }
+        
+        const [messages1, messages2, metrics1, metrics2] = await Promise.all([
+          getSessionMessages(input.sessionId1),
+          getSessionMessages(input.sessionId2),
+          getSessionMetrics(input.sessionId1),
+          getSessionMetrics(input.sessionId2),
+        ]);
+        
+        // Función helper para calcular estadísticas
+        const calculateStats = (values: number[]) => {
+          if (values.length === 0) return { mean: 0, std: 0, min: 0, max: 0 };
+          const mean = values.reduce((a, b) => a + b, 0) / values.length;
+          const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+          const std = Math.sqrt(variance);
+          return {
+            mean: Number(mean.toFixed(4)),
+            std: Number(std.toFixed(4)),
+            min: Number(Math.min(...values).toFixed(4)),
+            max: Number(Math.max(...values).toFixed(4)),
+          };
+        };
+        
+        // Calcular estadísticas para sesión 1
+        const vValues1 = metrics1.map(m => m.funcionLyapunov);
+        const omegaValues1 = metrics1.map(m => m.coherenciaObservable);
+        const errorValues1 = metrics1.map(m => m.errorCognitivoMagnitud);
+        const stableSteps1 = metrics1.filter(m => m.coherenciaObservable > 0.7).length;
+        const tprPercent1 = metrics1.length > 0 ? (stableSteps1 / metrics1.length) * 100 : 0;
+        
+        // Calcular estadísticas para sesión 2
+        const vValues2 = metrics2.map(m => m.funcionLyapunov);
+        const omegaValues2 = metrics2.map(m => m.coherenciaObservable);
+        const errorValues2 = metrics2.map(m => m.errorCognitivoMagnitud);
+        const stableSteps2 = metrics2.filter(m => m.coherenciaObservable > 0.7).length;
+        const tprPercent2 = metrics2.length > 0 ? (stableSteps2 / metrics2.length) * 100 : 0;
+        
+        // Analizar diferencias entre respuestas
+        const assistantMessages1 = messages1.filter(m => m.role === "assistant");
+        const assistantMessages2 = messages2.filter(m => m.role === "assistant");
+        const minLength = Math.min(assistantMessages1.length, assistantMessages2.length);
+        
+        const differences = [];
+        for (let i = 0; i < minLength; i++) {
+          const msg1 = assistantMessages1[i];
+          const msg2 = assistantMessages2[i];
+          
+          if (!msg1 || !msg2) continue;
+          
+          const lengthDiff = Math.abs(msg1.content.length - msg2.content.length);
+          const lengthDiffPercent = (lengthDiff / Math.max(msg1.content.length, msg2.content.length)) * 100;
+          
+          // Calcular similitud semántica
+          const similarity = await calculateCosineSimilarity(msg1.content, msg2.content);
+          
+          differences.push({
+            index: i,
+            lengthDiff,
+            lengthDiffPercent: Number(lengthDiffPercent.toFixed(2)),
+            semanticSimilarity: Number(similarity.toFixed(4)),
+          });
+        }
+        
+        // Calcular similitud promedio
+        const avgSimilarity = differences.length > 0
+          ? differences.reduce((sum, d) => sum + d.semanticSimilarity, 0) / differences.length
+          : 0;
+        
+        return {
+          sessions: [
+            {
+              id: session1.id,
+              createdAt: session1.createdAt,
+              plantProfile: session1.plantProfile,
+              purpose: session1.purpose,
+              limits: session1.limits,
+              ethics: session1.ethics,
+              tprCurrent: session1.tprCurrent,
+              tprMax: session1.tprMax,
+            },
+            {
+              id: session2.id,
+              createdAt: session2.createdAt,
+              plantProfile: session2.plantProfile,
+              purpose: session2.purpose,
+              limits: session2.limits,
+              ethics: session2.ethics,
+              tprCurrent: session2.tprCurrent,
+              tprMax: session2.tprMax,
+            },
+          ],
+          statistics: [
+            {
+              lyapunov: calculateStats(vValues1),
+              omega: calculateStats(omegaValues1),
+              error: calculateStats(errorValues1),
+              tprPercent: Number(tprPercent1.toFixed(2)),
+              totalSteps: metrics1.length,
+            },
+            {
+              lyapunov: calculateStats(vValues2),
+              omega: calculateStats(omegaValues2),
+              error: calculateStats(errorValues2),
+              tprPercent: Number(tprPercent2.toFixed(2)),
+              totalSteps: metrics2.length,
+            },
+          ],
+          metrics: [
+            metrics1.map(m => ({
+              timestamp: m.timestamp,
+              errorNorm: m.errorCognitivoMagnitud,
+              funcionLyapunov: m.funcionLyapunov,
+              coherenciaObservable: m.coherenciaObservable,
+            })),
+            metrics2.map(m => ({
+              timestamp: m.timestamp,
+              errorNorm: m.errorCognitivoMagnitud,
+              funcionLyapunov: m.funcionLyapunov,
+              coherenciaObservable: m.coherenciaObservable,
+            })),
+          ],
+          differences,
+          comparison: {
+            avgSemanticSimilarity: Number(avgSimilarity.toFixed(4)),
+            significantDifferences: differences.filter(d => d.semanticSimilarity < 0.7).length,
+            totalComparisons: differences.length,
+          },
+        };
+      }),
+    
+    /**
+     * Exportar análisis comparativo de tres sesiones como PDF
+     */
+    exportComparativeTriple: protectedProcedure
+      .input(z.object({ 
+        sessionId1: z.number(),
+        sessionId2: z.number(),
+        sessionId3: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        // Obtener datos de las tres sesiones
+        const [session1, session2, session3] = await Promise.all([
+          getSession(input.sessionId1),
+          getSession(input.sessionId2),
+          getSession(input.sessionId3),
+        ]);
+        
+        if (!session1 || !session2 || !session3) {
+          throw new Error("Una o más sesiones no fueron encontradas");
+        }
+        
+        const [messages1, messages2, messages3, metrics1, metrics2, metrics3] = await Promise.all([
+          getSessionMessages(input.sessionId1),
+          getSessionMessages(input.sessionId2),
+          getSessionMessages(input.sessionId3),
+          getSessionMetrics(input.sessionId1),
+          getSessionMetrics(input.sessionId2),
+          getSessionMetrics(input.sessionId3),
+        ]);
+        
+        // Función helper para calcular estadísticas
+        const calculateStats = (values: number[]) => {
+          if (values.length === 0) return { mean: 0, std: 0, min: 0, max: 0 };
+          const mean = values.reduce((a, b) => a + b, 0) / values.length;
+          const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+          const std = Math.sqrt(variance);
+          return {
+            mean: Number(mean.toFixed(4)),
+            std: Number(std.toFixed(4)),
+            min: Number(Math.min(...values).toFixed(4)),
+            max: Number(Math.max(...values).toFixed(4)),
+          };
+        };
+        
+        // Calcular estadísticas para cada sesión
+        const allMetrics = [metrics1, metrics2, metrics3];
+        const statistics = allMetrics.map(metrics => {
+          const vValues = metrics.map(m => m.funcionLyapunov);
+          const omegaValues = metrics.map(m => m.coherenciaObservable);
+          const errorValues = metrics.map(m => m.errorCognitivoMagnitud);
+          const stableSteps = metrics.filter(m => m.coherenciaObservable > 0.7).length;
+          const tprPercent = metrics.length > 0 ? (stableSteps / metrics.length) * 100 : 0;
+          
+          return {
+            lyapunov: calculateStats(vValues),
+            omega: calculateStats(omegaValues),
+            error: calculateStats(errorValues),
+            tprPercent: Number(tprPercent.toFixed(2)),
+            totalSteps: metrics.length,
+          };
+        });
+        
+        // Analizar diferencias por pares
+        const allMessages = [messages1, messages2, messages3];
+        const assistantMessages = allMessages.map(msgs => msgs.filter(m => m.role === "assistant"));
+        
+        // Calcular similitud para cada par: 1-2, 1-3, 2-3
+        const pairs = [
+          { idx1: 0, idx2: 1, label: "1-2" },
+          { idx1: 0, idx2: 2, label: "1-3" },
+          { idx1: 1, idx2: 2, label: "2-3" },
+        ];
+        
+        const pairwiseComparisons = [];
+        for (const pair of pairs) {
+          const msgs1 = assistantMessages[pair.idx1];
+          const msgs2 = assistantMessages[pair.idx2];
+          const minLength = Math.min(msgs1!.length, msgs2!.length);
+          
+          const differences = [];
+          for (let i = 0; i < minLength; i++) {
+            const msg1 = msgs1![i];
+            const msg2 = msgs2![i];
+            
+            if (!msg1 || !msg2) continue;
+            
+            const lengthDiff = Math.abs(msg1.content.length - msg2.content.length);
+            const lengthDiffPercent = (lengthDiff / Math.max(msg1.content.length, msg2.content.length)) * 100;
+            const similarity = await calculateCosineSimilarity(msg1.content, msg2.content);
+            
+            differences.push({
+              index: i,
+              lengthDiff,
+              lengthDiffPercent: Number(lengthDiffPercent.toFixed(2)),
+              semanticSimilarity: Number(similarity.toFixed(4)),
+            });
+          }
+          
+          const avgSimilarity = differences.length > 0
+            ? differences.reduce((sum, d) => sum + d.semanticSimilarity, 0) / differences.length
+            : 0;
+          
+          pairwiseComparisons.push({
+            pair: pair.label,
+            differences,
+            avgSemanticSimilarity: Number(avgSimilarity.toFixed(4)),
+            significantDifferences: differences.filter(d => d.semanticSimilarity < 0.7).length,
+            totalComparisons: differences.length,
+          });
+        }
+        
+        return {
+          sessions: [
+            {
+              id: session1.id,
+              createdAt: session1.createdAt,
+              plantProfile: session1.plantProfile,
+              purpose: session1.purpose,
+              limits: session1.limits,
+              ethics: session1.ethics,
+              tprCurrent: session1.tprCurrent,
+              tprMax: session1.tprMax,
+            },
+            {
+              id: session2.id,
+              createdAt: session2.createdAt,
+              plantProfile: session2.plantProfile,
+              purpose: session2.purpose,
+              limits: session2.limits,
+              ethics: session2.ethics,
+              tprCurrent: session2.tprCurrent,
+              tprMax: session2.tprMax,
+            },
+            {
+              id: session3.id,
+              createdAt: session3.createdAt,
+              plantProfile: session3.plantProfile,
+              purpose: session3.purpose,
+              limits: session3.limits,
+              ethics: session3.ethics,
+              tprCurrent: session3.tprCurrent,
+              tprMax: session3.tprMax,
+            },
+          ],
+          statistics,
+          metrics: [
+            metrics1.map(m => ({
+              timestamp: m.timestamp,
+              errorNorm: m.errorCognitivoMagnitud,
+              funcionLyapunov: m.funcionLyapunov,
+              coherenciaObservable: m.coherenciaObservable,
+            })),
+            metrics2.map(m => ({
+              timestamp: m.timestamp,
+              errorNorm: m.errorCognitivoMagnitud,
+              funcionLyapunov: m.funcionLyapunov,
+              coherenciaObservable: m.coherenciaObservable,
+            })),
+            metrics3.map(m => ({
+              timestamp: m.timestamp,
+              errorNorm: m.errorCognitivoMagnitud,
+              funcionLyapunov: m.funcionLyapunov,
+              coherenciaObservable: m.coherenciaObservable,
+            })),
+          ],
+          pairwiseComparisons,
+        };
+      }),
   }),
   
   conversation: router({

@@ -262,3 +262,18 @@
 - [x] Incluir análisis de TPR (tiempo de permanencia en régimen)
 - [x] Agregar botón "Exportar PDF" en SessionReplay y Simulator
 - [x] Implementar descarga automática del archivo generado
+
+## Exportación PDF Comparativa de Múltiples Perfiles (Completado)
+
+- [x] Crear endpoint `session.exportComparativeDual` para análisis de 2 sesiones
+- [x] Crear endpoint `session.exportComparativeTriple` para análisis de 3 sesiones
+- [x] Incluir portada comparativa con información de todas las sesiones
+- [x] Crear tabla comparativa de estadísticas descriptivas lado a lado
+- [x] Incluir matriz de similitud semántica entre perfiles
+- [x] Agregar análisis de divergencias con porcentajes y métricas
+- [x] Generar tabla de diferencias por paso temporal
+- [x] Incluir sección de conclusiones comparativas (TPR, estabilidad, coherencia)
+- [x] Crear generador de PDF comparativo en cliente (pdfComparativeGenerator.ts)
+- [x] Agregar botón "Exportar PDF Comparativo" en ComparativeView
+- [x] Agregar botón "Exportar PDF Comparativo" en TripleComparative
+- [x] Implementar descarga automática con nombre descriptivo
