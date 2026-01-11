@@ -279,6 +279,123 @@ export const appRouter = router({
           message: `Se regeneraron ${regeneratedCount} respuestas con el perfil ${session.plantProfile}`,
         };
       }),
+    
+    /**
+     * Enviar el mismo mensaje a múltiples sesiones simultáneamente
+     * Útil para vista comparativa
+     */
+    sendToMultiple: protectedProcedure
+      .input(z.object({
+        sessionIds: z.array(z.number()).min(2).max(4),
+        content: z.string().min(1),
+      }))
+      .mutation(async ({ input }) => {
+        const results = [];
+        
+        // Procesar cada sesión en paralelo
+        for (const sessionId of input.sessionIds) {
+          const session = await getSession(sessionId);
+          if (!session) {
+            results.push({
+              sessionId,
+              success: false,
+              error: "Sesión no encontrada",
+            });
+            continue;
+          }
+          
+          try {
+            // Guardar mensaje del usuario
+            await createMessage({
+              sessionId,
+              role: "user",
+              content: input.content,
+            });
+            
+            // Obtener historial de mensajes
+            const history = await getSessionMessages(sessionId);
+            
+            // Construir el contexto de la conversación
+            const messages = history.map(msg => ({
+              role: msg.role as "user" | "assistant" | "system",
+              content: msg.content,
+            }));
+            
+            // Agregar el mensaje actual
+            let userPrompt = input.content;
+            
+            // Si está en régimen acoplado (CAELION), aplicar el control
+            if (session.plantProfile === "acoplada") {
+              userPrompt = `${input.content}\n\n[Referencia Ontológica]\nPropósito: ${session.purpose}\nLímites: ${session.limits}\nÉtica: ${session.ethics}`;
+            }
+            
+            messages.push({
+              role: "user",
+              content: userPrompt,
+            });
+            
+            // Invocar el LLM
+            const response = await invokeLLM({ messages });
+            const messageContent = response.choices[0]?.message?.content;
+            const assistantContent = typeof messageContent === 'string' ? messageContent : "Error al generar respuesta";
+            
+            // Guardar respuesta del asistente con el perfil actual
+            const assistantMessageId = await createMessage({
+              sessionId,
+              role: "assistant",
+              content: assistantContent,
+              plantProfile: session.plantProfile,
+            });
+            
+            // Calcular métricas usando el puente semántico
+            const referenceText = `Propósito: ${session.purpose}\nLímites: ${session.limits}\nÉtica: ${session.ethics}`;
+            const applyControl = session.plantProfile === "acoplada";
+            const metrics = calculateMetricsSimplified(
+              referenceText,
+              assistantContent,
+              applyControl ? "controlled" : "uncontrolled"
+            );
+            
+            // Guardar métricas en la base de datos
+            await createMetric({
+              sessionId,
+              messageId: assistantMessageId,
+              ...metrics,
+            });
+            
+            // Actualizar TPR (Tiempo de Permanencia en Régimen)
+            await updateTPR(
+              sessionId,
+              metrics.errorCognitivoMagnitud,
+              session.stabilityRadius
+            );
+            
+            // Obtener la sesión actualizada con TPR
+            const updatedSession = await getSession(sessionId);
+            
+            results.push({
+              sessionId,
+              success: true,
+              messageId: assistantMessageId,
+              content: assistantContent,
+              metrics,
+              tpr: {
+                current: updatedSession?.tprCurrent || 0,
+                max: updatedSession?.tprMax || 0,
+                stabilityRadius: session.stabilityRadius,
+              },
+            });
+          } catch (error) {
+            results.push({
+              sessionId,
+              success: false,
+              error: error instanceof Error ? error.message : "Error desconocido",
+            });
+          }
+        }
+        
+        return { results };
+      }),
   }),
   
   metrics: router({

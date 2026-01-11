@@ -139,3 +139,18 @@
 - [x] Crear badges visuales en el frontend con colores por perfil
 - [x] Mostrar badge solo en mensajes del asistente (no en mensajes del usuario)
 - [x] Aplicar colores consistentes: rojo (Tipo A), amarillo (Tipo B), verde (Acoplada)
+
+
+## Vista Comparativa Lado a Lado (Completado)
+
+- [x] Crear endpoint `conversation.sendToMultiple` para enviar mensaje a múltiples sesiones
+- [x] Crear componente `ComparativeView.tsx` con layout split-screen
+- [x] Implementar selector de perfiles para cada panel (izquierdo y derecho)
+- [x] Crear dos sesiones simultáneas con referencia ontológica compartida
+- [x] Sincronizar inputs: un solo campo de entrada envía a ambas sesiones
+- [x] Mostrar conversaciones en paralelo con badges de perfil
+- [x] Visualizar métricas lado a lado: V(t), Ω(t), TPR
+- [x] Crear gráficos comparativos superpuestos con colores diferenciados
+- [x] Implementar Mapa de Fase dual mostrando ambas trayectorias
+- [x] Agregar ruta `/comparativa` en App.tsx
+- [x] Agregar botón de acceso desde Home y Simulator

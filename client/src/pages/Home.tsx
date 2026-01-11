@@ -26,6 +26,11 @@ export default function Home() {
                   Explorar Arquitectura
                 </Button>
               </Link>
+              <Link href="/comparativa">
+                <Button size="lg" variant="secondary">
+                  Vista Comparativa
+                </Button>
+              </Link>
               <Link href="/simulator">
                 <Button size="lg">
                   Acceder al Instrumento
