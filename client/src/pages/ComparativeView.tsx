@@ -63,6 +63,12 @@ export default function ComparativeView() {
     { enabled: !!sessionRightId }
   );
   
+  // Query para análisis de diferencias
+  const { data: differencesData } = trpc.conversation.analyzeDifferences.useQuery(
+    { sessionLeftId: sessionLeftId!, sessionRightId: sessionRightId! },
+    { enabled: !!sessionLeftId && !!sessionRightId && isConfigured }
+  );
+  
   const handleStartComparison = async () => {
     if (!purpose || !limits || !ethics) {
       toast.error("Por favor completa todos los campos de referencia ontológica");
@@ -168,6 +174,14 @@ export default function ComparativeView() {
       case "acoplada":
         return "Acoplada (Régimen CAELION)";
     }
+  };
+  
+  // Helper para obtener diferencia de un mensaje específico
+  const getDifferenceForMessage = (messageId: number) => {
+    if (!differencesData?.differences) return null;
+    return differencesData.differences.find(
+      d => d.messageIdLeft === messageId || d.messageIdRight === messageId
+    );
   };
   
   const getProfileColor = (profile: PlantProfile) => {
@@ -410,6 +424,55 @@ export default function ComparativeView() {
         </div>
       )}
       
+      {/* Panel de Resumen de Diferencias */}
+      {differencesData && differencesData.summary && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <ArrowLeftRight className="h-5 w-5" />
+              Análisis de Divergencias
+            </CardTitle>
+            <CardDescription>
+              Comparación automática de respuestas entre {getProfileLabel(profileLeft)} y {getProfileLabel(profileRight)}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-4">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold">{differencesData.summary.totalPairs}</div>
+                  <p className="text-xs text-muted-foreground">Pares analizados</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold text-destructive">
+                    {differencesData.summary.significantDifferences}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Divergencias significativas</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold">
+                    {differencesData.summary.significantPercent}%
+                  </div>
+                  <p className="text-xs text-muted-foreground">Tasa de divergencia</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold">
+                    {differencesData.summary.avgLengthDiff}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Diferencia promedio (caracteres)</p>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
       {/* Layout Split-Screen */}
       <div className="grid gap-6 lg:grid-cols-2 mb-6">
         {/* Panel Izquierdo */}
@@ -441,14 +504,32 @@ export default function ComparativeView() {
                       <div className="text-xs font-semibold text-muted-foreground">
                         {msg.role === "user" ? "Entrada" : "Salida"}
                       </div>
-                      {msg.role === "assistant" && msg.plantProfile && (
-                        <Badge 
-                          variant={getProfileColor(msg.plantProfile)}
-                          className="text-[10px] px-1.5 py-0"
-                        >
-                          {getProfileLabel(msg.plantProfile)}
-                        </Badge>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {msg.role === "assistant" && (() => {
+                          const diff = getDifferenceForMessage(msg.id);
+                          return (
+                            <>
+                              {diff && diff.isSignificant && (
+                                <Badge 
+                                  variant="destructive"
+                                  className="text-[10px] px-1.5 py-0"
+                                  title={`Divergencia: ${diff.lengthDiffPercent}% longitud, ${diff.wordsDiff} palabras`}
+                                >
+                                  Δ {diff.lengthDiffPercent}%
+                                </Badge>
+                              )}
+                              {msg.plantProfile && (
+                                <Badge 
+                                  variant={getProfileColor(msg.plantProfile)}
+                                  className="text-[10px] px-1.5 py-0"
+                                >
+                                  {getProfileLabel(msg.plantProfile)}
+                                </Badge>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
                     </div>
                     <div>{msg.content}</div>
                   </div>
@@ -488,14 +569,32 @@ export default function ComparativeView() {
                       <div className="text-xs font-semibold text-muted-foreground">
                         {msg.role === "user" ? "Entrada" : "Salida"}
                       </div>
-                      {msg.role === "assistant" && msg.plantProfile && (
-                        <Badge 
-                          variant={getProfileColor(msg.plantProfile)}
-                          className="text-[10px] px-1.5 py-0"
-                        >
-                          {getProfileLabel(msg.plantProfile)}
-                        </Badge>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {msg.role === "assistant" && (() => {
+                          const diff = getDifferenceForMessage(msg.id);
+                          return (
+                            <>
+                              {diff && diff.isSignificant && (
+                                <Badge 
+                                  variant="destructive"
+                                  className="text-[10px] px-1.5 py-0"
+                                  title={`Divergencia: ${diff.lengthDiffPercent}% longitud, ${diff.wordsDiff} palabras`}
+                                >
+                                  Δ {diff.lengthDiffPercent}%
+                                </Badge>
+                              )}
+                              {msg.plantProfile && (
+                                <Badge 
+                                  variant={getProfileColor(msg.plantProfile)}
+                                  className="text-[10px] px-1.5 py-0"
+                                >
+                                  {getProfileLabel(msg.plantProfile)}
+                                </Badge>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
                     </div>
                     <div>{msg.content}</div>
                   </div>

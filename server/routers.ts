@@ -396,6 +396,82 @@ export const appRouter = router({
         
         return { results };
       }),
+    
+    /**
+     * Analizar diferencias entre respuestas de dos sesiones
+     */
+    analyzeDifferences: protectedProcedure
+      .input(z.object({ 
+        sessionLeftId: z.number(), 
+        sessionRightId: z.number() 
+      }))
+      .query(async ({ input }) => {
+        const messagesLeft = await getSessionMessages(input.sessionLeftId);
+        const messagesRight = await getSessionMessages(input.sessionRightId);
+        
+        // Filtrar solo respuestas del asistente
+        const assistantLeft = messagesLeft.filter(m => m.role === "assistant");
+        const assistantRight = messagesRight.filter(m => m.role === "assistant");
+        
+        // Analizar diferencias para cada par de respuestas
+        const differences = [];
+        const minLength = Math.min(assistantLeft.length, assistantRight.length);
+        
+        for (let i = 0; i < minLength; i++) {
+          const left = assistantLeft[i];
+          const right = assistantRight[i];
+          
+          if (!left || !right) continue;
+          
+          // Calcular diferencia de longitud
+          const lengthLeft = left.content.length;
+          const lengthRight = right.content.length;
+          const lengthDiff = Math.abs(lengthLeft - lengthRight);
+          const lengthDiffPercent = (lengthDiff / Math.max(lengthLeft, lengthRight)) * 100;
+          
+          // Calcular diferencia de palabras
+          const wordsLeft = left.content.split(/\s+/).length;
+          const wordsRight = right.content.split(/\s+/).length;
+          const wordsDiff = Math.abs(wordsLeft - wordsRight);
+          
+          // Detectar diferencias estructurales
+          const hasListLeft = /[-*]\s/.test(left.content) || /\d+\.\s/.test(left.content);
+          const hasListRight = /[-*]\s/.test(right.content) || /\d+\.\s/.test(right.content);
+          const structuralDiff = hasListLeft !== hasListRight;
+          
+          // Determinar si hay divergencia significativa
+          const isSignificant = lengthDiffPercent > 30 || wordsDiff > 50 || structuralDiff;
+          
+          differences.push({
+            index: i,
+            messageIdLeft: left.id,
+            messageIdRight: right.id,
+            lengthLeft,
+            lengthRight,
+            lengthDiff,
+            lengthDiffPercent: Math.round(lengthDiffPercent),
+            wordsLeft,
+            wordsRight,
+            wordsDiff,
+            structuralDiff,
+            isSignificant,
+          });
+        }
+        
+        // Calcular estadísticas agregadas
+        const avgLengthDiff = differences.reduce((sum, d) => sum + d.lengthDiff, 0) / differences.length;
+        const significantCount = differences.filter(d => d.isSignificant).length;
+        
+        return {
+          differences,
+          summary: {
+            totalPairs: differences.length,
+            significantDifferences: significantCount,
+            significantPercent: Math.round((significantCount / differences.length) * 100),
+            avgLengthDiff: Math.round(avgLengthDiff),
+          },
+        };
+      }),
   }),
   
   metrics: router({

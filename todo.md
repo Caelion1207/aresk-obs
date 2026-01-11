@@ -164,3 +164,17 @@
 - [x] Sincronizar posición de scroll proporcionalmente
 - [x] Prevenir bucles infinitos de sincronización con flag de control
 - [x] Agregar toggle opcional para activar/desactivar sincronización
+
+
+## Sistema de Resaltado de Diferencias (Completado)
+
+- [x] Crear función de análisis de diferencias en el backend
+- [x] Calcular diferencia de longitud entre respuestas (caracteres/palabras)
+- [x] Detectar divergencia semántica usando similitud de embeddings
+- [x] Analizar diferencias de tono (formal/informal, técnico/coloquial)
+- [x] Identificar diferencias estructurales (párrafos, listas, formato)
+- [x] Crear endpoint `conversation.analyzeDifferences` que compare pares de mensajes
+- [x] Implementar badges de divergencia en mensajes del frontend
+- [x] Mostrar indicador visual cuando la diferencia supera umbral (>30% longitud, <0.7 similitud)
+- [x] Crear panel de resumen de diferencias con estadísticas agregadas
+- [x] Agregar tooltip con detalles de la divergencia al hover sobre indicadores
