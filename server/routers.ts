@@ -1309,6 +1309,110 @@ export const appRouter = router({
         
         return evolution;
       }),
+    
+    /**
+     * Comparar métricas entre períodos temporales
+     */
+    getTemporalComparison: protectedProcedure
+      .input(z.object({
+        period: z.enum(["week", "month", "quarter"]), // última semana, mes, 3 meses
+      }))
+      .query(async ({ ctx, input }) => {
+        const now = new Date();
+        const sessions = await getUserSessions(ctx.user.id);
+        
+        // Calcular fechas de corte
+        const periodDays = input.period === "week" ? 7 : input.period === "month" ? 30 : 90;
+        const currentPeriodStart = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+        const previousPeriodStart = new Date(currentPeriodStart.getTime() - periodDays * 24 * 60 * 60 * 1000);
+        
+        // Filtrar sesiones por período
+        const currentSessions = sessions.filter(s => 
+          new Date(s.createdAt) >= currentPeriodStart && new Date(s.createdAt) <= now
+        );
+        const previousSessions = sessions.filter(s => 
+          new Date(s.createdAt) >= previousPeriodStart && new Date(s.createdAt) < currentPeriodStart
+        );
+        
+        // Calcular métricas para ambos períodos
+        const calculatePeriodMetrics = async (periodSessions: typeof sessions) => {
+          let totalTpr = 0;
+          let tprCount = 0;
+          let lyapunovValues: number[] = [];
+          let omegaValues: number[] = [];
+          let errorValues: number[] = [];
+          let markerCount = 0;
+          
+          for (const session of periodSessions) {
+            const metrics = await getSessionMetrics(session.id);
+            const markers = await getTimeMarkersBySession(session.id);
+            
+            markerCount += markers.length;
+            
+            if (metrics.length > 0) {
+              const stableSteps = metrics.filter(m => m.coherenciaObservable > 0.7).length;
+              const tprPercent = (stableSteps / metrics.length) * 100;
+              totalTpr += tprPercent;
+              tprCount++;
+              
+              for (const metric of metrics) {
+                lyapunovValues.push(metric.funcionLyapunov);
+                omegaValues.push(metric.coherenciaObservable);
+                errorValues.push(metric.errorCognitivoMagnitud);
+              }
+            }
+          }
+          
+          return {
+            sessionCount: periodSessions.length,
+            avgTpr: tprCount > 0 ? totalTpr / tprCount : 0,
+            avgLyapunov: lyapunovValues.length > 0
+              ? lyapunovValues.reduce((a, b) => a + b, 0) / lyapunovValues.length
+              : 0,
+            avgOmega: omegaValues.length > 0
+              ? omegaValues.reduce((a, b) => a + b, 0) / omegaValues.length
+              : 0,
+            avgError: errorValues.length > 0
+              ? errorValues.reduce((a, b) => a + b, 0) / errorValues.length
+              : 0,
+            markerCount,
+          };
+        };
+        
+        const currentMetrics = await calculatePeriodMetrics(currentSessions);
+        const previousMetrics = await calculatePeriodMetrics(previousSessions);
+        
+        // Calcular deltas porcentuales
+        const calculateDelta = (current: number, previous: number): number => {
+          if (previous === 0) return current > 0 ? 100 : 0;
+          return ((current - previous) / previous) * 100;
+        };
+        
+        return {
+          current: {
+            ...currentMetrics,
+            avgTpr: Number(currentMetrics.avgTpr.toFixed(2)),
+            avgLyapunov: Number(currentMetrics.avgLyapunov.toFixed(4)),
+            avgOmega: Number(currentMetrics.avgOmega.toFixed(4)),
+            avgError: Number(currentMetrics.avgError.toFixed(4)),
+          },
+          previous: {
+            ...previousMetrics,
+            avgTpr: Number(previousMetrics.avgTpr.toFixed(2)),
+            avgLyapunov: Number(previousMetrics.avgLyapunov.toFixed(4)),
+            avgOmega: Number(previousMetrics.avgOmega.toFixed(4)),
+            avgError: Number(previousMetrics.avgError.toFixed(4)),
+          },
+          deltas: {
+            sessionCount: calculateDelta(currentMetrics.sessionCount, previousMetrics.sessionCount),
+            avgTpr: calculateDelta(currentMetrics.avgTpr, previousMetrics.avgTpr),
+            avgLyapunov: calculateDelta(currentMetrics.avgLyapunov, previousMetrics.avgLyapunov),
+            avgOmega: calculateDelta(currentMetrics.avgOmega, previousMetrics.avgOmega),
+            avgError: calculateDelta(currentMetrics.avgError, previousMetrics.avgError),
+            markerCount: calculateDelta(currentMetrics.markerCount, previousMetrics.markerCount),
+          },
+        };
+      }),
   }),
 });
 

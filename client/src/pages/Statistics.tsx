@@ -1,12 +1,21 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { TrendingUp, Bookmark, Activity } from "lucide-react";
+import { TrendingUp, Bookmark, Activity, ArrowUp, ArrowDown, Minus } from "lucide-react";
+
+type Period = "week" | "month" | "quarter";
 
 export default function Statistics() {
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>("week");
+  
   const { data: tprTrends, isLoading: loadingTpr } = trpc.stats.getTprTrends.useQuery();
   const { data: markerDist, isLoading: loadingMarkers } = trpc.stats.getMarkerDistribution.useQuery();
   const { data: metricsEvolution, isLoading: loadingEvolution } = trpc.stats.getMetricsEvolution.useQuery();
+  const { data: comparison, isLoading: loadingComparison } = trpc.stats.getTemporalComparison.useQuery(
+    { period: selectedPeriod }
+  );
 
   const getProfileLabel = (profile: string): string => {
     switch (profile) {
@@ -38,7 +47,33 @@ export default function Statistics() {
 
   const MARKER_COLORS = ["#ef4444", "#10b981", "#3b82f6", "#a855f7"];
 
-  if (loadingTpr || loadingMarkers || loadingEvolution) {
+  const getPeriodLabel = (period: Period): string => {
+    switch (period) {
+      case "week": return "Última Semana";
+      case "month": return "Último Mes";
+      case "quarter": return "Últimos 3 Meses";
+    }
+  };
+  
+  const getTrendIcon = (delta: number) => {
+    if (delta > 5) return <ArrowUp className="h-4 w-4 text-green-500" />;
+    if (delta < -5) return <ArrowDown className="h-4 w-4 text-red-500" />;
+    return <Minus className="h-4 w-4 text-muted-foreground" />;
+  };
+  
+  const getTrendColor = (delta: number, inverse = false): string => {
+    const threshold = 5;
+    if (inverse) {
+      if (delta < -threshold) return "text-green-500";
+      if (delta > threshold) return "text-red-500";
+    } else {
+      if (delta > threshold) return "text-green-500";
+      if (delta < -threshold) return "text-red-500";
+    }
+    return "text-muted-foreground";
+  };
+
+  if (loadingTpr || loadingMarkers || loadingEvolution || loadingComparison) {
     return (
       <div className="container py-8">
         <div className="flex items-center justify-center h-64">
@@ -62,12 +97,137 @@ export default function Statistics() {
 
   return (
     <div className="container py-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Estadísticas Globales</h1>
-        <p className="text-muted-foreground mt-2">
-          Análisis agregado de todas las sesiones del sistema
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Estadísticas Globales</h1>
+          <p className="text-muted-foreground mt-2">
+            Análisis agregado de todas las sesiones del sistema
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Período:</span>
+          <Select value={selectedPeriod} onValueChange={(v) => setSelectedPeriod(v as Period)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="week">Última Semana</SelectItem>
+              <SelectItem value="month">Último Mes</SelectItem>
+              <SelectItem value="quarter">Últimos 3 Meses</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+      
+      {/* Comparación Temporal */}
+      {comparison && (
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Comparación: {getPeriodLabel(selectedPeriod)}</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* TPR Promedio */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>TPR Promedio</CardDescription>
+                <CardTitle className="text-3xl">{comparison.current.avgTpr}%</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-sm">
+                  {getTrendIcon(comparison.deltas.avgTpr)}
+                  <span className={getTrendColor(comparison.deltas.avgTpr)}>
+                    {comparison.deltas.avgTpr > 0 ? "+" : ""}{comparison.deltas.avgTpr.toFixed(1)}%
+                  </span>
+                  <span className="text-muted-foreground">vs. período anterior</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Sesiones */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Sesiones Realizadas</CardDescription>
+                <CardTitle className="text-3xl">{comparison.current.sessionCount}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-sm">
+                  {getTrendIcon(comparison.deltas.sessionCount)}
+                  <span className={getTrendColor(comparison.deltas.sessionCount)}>
+                    {comparison.deltas.sessionCount > 0 ? "+" : ""}{comparison.deltas.sessionCount.toFixed(1)}%
+                  </span>
+                  <span className="text-muted-foreground">vs. período anterior</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* V(e) Promedio */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>V(e) Promedio</CardDescription>
+                <CardTitle className="text-3xl">{comparison.current.avgLyapunov.toFixed(3)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-sm">
+                  {getTrendIcon(comparison.deltas.avgLyapunov)}
+                  <span className={getTrendColor(comparison.deltas.avgLyapunov, true)}>
+                    {comparison.deltas.avgLyapunov > 0 ? "+" : ""}{comparison.deltas.avgLyapunov.toFixed(1)}%
+                  </span>
+                  <span className="text-muted-foreground">vs. período anterior</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Ω(t) Promedio */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Ω(t) Promedio</CardDescription>
+                <CardTitle className="text-3xl">{comparison.current.avgOmega.toFixed(3)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-sm">
+                  {getTrendIcon(comparison.deltas.avgOmega)}
+                  <span className={getTrendColor(comparison.deltas.avgOmega)}>
+                    {comparison.deltas.avgOmega > 0 ? "+" : ""}{comparison.deltas.avgOmega.toFixed(1)}%
+                  </span>
+                  <span className="text-muted-foreground">vs. período anterior</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* ||e(t)|| Promedio */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>||e(t)|| Promedio</CardDescription>
+                <CardTitle className="text-3xl">{comparison.current.avgError.toFixed(3)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-sm">
+                  {getTrendIcon(comparison.deltas.avgError)}
+                  <span className={getTrendColor(comparison.deltas.avgError, true)}>
+                    {comparison.deltas.avgError > 0 ? "+" : ""}{comparison.deltas.avgError.toFixed(1)}%
+                  </span>
+                  <span className="text-muted-foreground">vs. período anterior</span>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Marcadores */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Marcadores Añadidos</CardDescription>
+                <CardTitle className="text-3xl">{comparison.current.markerCount}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-sm">
+                  {getTrendIcon(comparison.deltas.markerCount)}
+                  <span className={getTrendColor(comparison.deltas.markerCount)}>
+                    {comparison.deltas.markerCount > 0 ? "+" : ""}{comparison.deltas.markerCount.toFixed(1)}%
+                  </span>
+                  <span className="text-muted-foreground">vs. período anterior</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
 
       {/* TPR por Perfil */}
       <div className="grid gap-6 md:grid-cols-2">

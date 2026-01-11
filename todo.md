@@ -321,3 +321,17 @@
 - [x] Agregar gráfico de evolución temporal de V(e), Ω(t) y ||e(t)|| promedio
 - [x] Agregar enlace a `/estadisticas` en navegación principal
 - [x] Implementar estado de carga y manejo de errores
+
+## Comparación Temporal de Métricas (Completado)
+
+- [x] Crear endpoint `stats.getTemporalComparison` para comparar períodos
+- [x] Implementar lógica de cálculo de rangos (última semana, último mes, últimos 3 meses)
+- [x] Calcular deltas porcentuales entre período actual y anterior
+- [x] Agregar selector de período en página de estadísticas
+- [x] Crear tarjetas de comparación para mostrar métricas con deltas
+- [x] Implementar indicadores visuales de tendencia (↑ ascendente, ↓ descendente, → estable)
+- [x] Agregar tarjetas de comparación para TPR promedio
+- [x] Agregar tarjetas de comparación para métricas V(e), Ω(t), ||e(t)||
+- [x] Agregar tarjeta de comparación para actividad de marcadores
+- [x] Agregar tarjeta de comparación para sesiones realizadas
+- [x] Implementar código de colores (verde para mejora, rojo para deterioro)
