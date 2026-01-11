@@ -1192,6 +1192,124 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ============================================
+  // STATS: Estadísticas agregadas del sistema
+  // ============================================
+  
+  stats: router({
+    /**
+     * Obtener tendencias de TPR por perfil de planta
+     */
+    getTprTrends: protectedProcedure
+      .query(async ({ ctx }) => {
+        const sessions = await getUserSessions(ctx.user.id);
+        
+        // Agrupar por perfil
+        const byProfile: Record<string, { tprValues: number[]; count: number }> = {};
+        
+        for (const session of sessions) {
+          if (!byProfile[session.plantProfile]) {
+            byProfile[session.plantProfile] = { tprValues: [], count: 0 };
+          }
+          
+          const metrics = await getSessionMetrics(session.id);
+          if (metrics.length > 0) {
+            const stableSteps = metrics.filter(m => m.coherenciaObservable > 0.7).length;
+            const tprPercent = (stableSteps / metrics.length) * 100;
+            byProfile[session.plantProfile]!.tprValues.push(tprPercent);
+            byProfile[session.plantProfile]!.count++;
+          }
+        }
+        
+        // Calcular promedios
+        const trends = Object.entries(byProfile).map(([profile, data]) => {
+          const avg = data.tprValues.length > 0
+            ? data.tprValues.reduce((a, b) => a + b, 0) / data.tprValues.length
+            : 0;
+          return {
+            profile,
+            averageTpr: Number(avg.toFixed(2)),
+            sessionCount: data.count,
+          };
+        });
+        
+        return trends;
+      }),
+    
+    /**
+     * Obtener distribución de tipos de marcadores
+     */
+    getMarkerDistribution: protectedProcedure
+      .query(async ({ ctx }) => {
+        const sessions = await getUserSessions(ctx.user.id);
+        const distribution: Record<string, number> = {
+          colapso_semantico: 0,
+          recuperacion: 0,
+          transicion: 0,
+          observacion: 0,
+        };
+        
+        for (const session of sessions) {
+          const markers = await getTimeMarkersBySession(session.id);
+          for (const marker of markers) {
+            distribution[marker.markerType]++;
+          }
+        }
+        
+        return Object.entries(distribution).map(([type, count]) => ({
+          type,
+          count,
+        }));
+      }),
+    
+    /**
+     * Obtener evolución temporal de métricas promedio
+     */
+    getMetricsEvolution: protectedProcedure
+      .query(async ({ ctx }) => {
+        const sessions = await getUserSessions(ctx.user.id);
+        
+        // Agrupar por fecha (día)
+        const byDate: Record<string, {
+          lyapunov: number[];
+          omega: number[];
+          error: number[];
+        }> = {};
+        
+        for (const session of sessions) {
+          const dateKey = new Date(session.createdAt).toISOString().split('T')[0]!;
+          if (!byDate[dateKey]) {
+            byDate[dateKey] = { lyapunov: [], omega: [], error: [] };
+          }
+          
+          const metrics = await getSessionMetrics(session.id);
+          for (const metric of metrics) {
+            byDate[dateKey]!.lyapunov.push(metric.funcionLyapunov);
+            byDate[dateKey]!.omega.push(metric.coherenciaObservable);
+            byDate[dateKey]!.error.push(metric.errorCognitivoMagnitud);
+          }
+        }
+        
+        // Calcular promedios por día
+        const evolution = Object.entries(byDate)
+          .map(([date, data]) => ({
+            date,
+            avgLyapunov: data.lyapunov.length > 0
+              ? Number((data.lyapunov.reduce((a, b) => a + b, 0) / data.lyapunov.length).toFixed(4))
+              : 0,
+            avgOmega: data.omega.length > 0
+              ? Number((data.omega.reduce((a, b) => a + b, 0) / data.omega.length).toFixed(4))
+              : 0,
+            avgError: data.error.length > 0
+              ? Number((data.error.reduce((a, b) => a + b, 0) / data.error.length).toFixed(4))
+              : 0,
+          }))
+          .sort((a, b) => a.date.localeCompare(b.date));
+        
+        return evolution;
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

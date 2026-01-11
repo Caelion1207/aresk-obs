@@ -308,3 +308,16 @@
 - [x] Agregar tipos de marcador (colapso semántico, recuperación, transición, observación)
 - [x] Incluir sección "Eventos Destacados" en PDF con marcadores
 - [x] Sincronizar reproducción al hacer clic en marcador
+
+## Vista de Estadísticas Globales (Completado)
+
+- [x] Crear endpoint `stats.getTprTrends` para tendencias de TPR por perfil
+- [x] Crear endpoint `stats.getMarkerDistribution` para distribución de tipos de marcadores
+- [x] Crear endpoint `stats.getMetricsEvolution` para evolución temporal de métricas promedio
+- [x] Crear página `/estadisticas` con layout y estructura base
+- [x] Implementar gráfico de barras de TPR promedio por perfil
+- [x] Implementar tabla de estadísticas descriptivas por perfil
+- [x] Implementar gráfico circular de distribución de tipos de marcadores
+- [x] Agregar gráfico de evolución temporal de V(e), Ω(t) y ||e(t)|| promedio
+- [x] Agregar enlace a `/estadisticas` en navegación principal
+- [x] Implementar estado de carga y manejo de errores

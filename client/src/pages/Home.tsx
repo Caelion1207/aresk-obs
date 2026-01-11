@@ -36,6 +36,11 @@ export default function Home() {
                   Vista Comparativa (3 Perfiles)
                 </Button>
               </Link>
+              <Link href="/estadisticas">
+                <Button variant="outline" size="lg">
+                  Estadísticas
+                </Button>
+              </Link>
               <Link href="/simulator">
                 <Button size="lg">
                   Acceder al Instrumento

@@ -13,6 +13,7 @@ import Architecture from "./pages/Architecture";
 import Modules from "./pages/Modules";
 import Protocols from "./pages/Protocols";
 import Proposals from "./pages/Proposals";
+import Statistics from "./pages/Statistics";
 
 function Router() {
   return (
@@ -26,6 +27,7 @@ function Router() {
       <Route path={"/modules"} component={Modules} />
       <Route path={"/protocols"} component={Protocols} />
       <Route path={"/proposals"} component={Proposals} />
+      <Route path={"/estadisticas"} component={Statistics} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
