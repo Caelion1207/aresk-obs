@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { ArrowLeftRight, Send, Activity } from "lucide-react";
+import { ThresholdConfig, getSimilarityColor, type SimilarityThresholds } from "@/components/ThresholdConfig";
 
 type PlantProfile = "tipo_a" | "tipo_b" | "acoplada";
 
@@ -32,6 +33,9 @@ export default function TripleComparative() {
   
   // Input de mensaje
   const [userInput, setUserInput] = useState("");
+  
+  // Umbrales de similitud
+  const [thresholds, setThresholds] = useState<SimilarityThresholds>({ high: 0.8, medium: 0.6 });
   
   // Mutations
   const createSessionMutation = trpc.session.create.useMutation();
@@ -407,6 +411,13 @@ export default function TripleComparative() {
         </div>
       )}
       
+      {/* Configuración de Umbrales */}
+      {isConfigured && (
+        <div className="mb-6">
+          <ThresholdConfig onThresholdsChange={setThresholds} />
+        </div>
+      )}
+      
       {/* Panel de Análisis de Diferencias por Pares */}
       {isConfigured && tripleDifferences && (
         <Card className="mb-6">
@@ -461,7 +472,7 @@ export default function TripleComparative() {
                           <span className="text-xs text-muted-foreground">({tripleDifferences.pair1_2.avgLengthDiff} chars)</span>
                         </div>
                         {tripleDifferences.pair1_2.avgSemanticSimilarity !== undefined && (
-                          <span className="text-xs text-muted-foreground">
+                          <span className={`text-xs font-bold ${getSimilarityColor(tripleDifferences.pair1_2.avgSemanticSimilarity, thresholds)}`}>
                             Similitud: {tripleDifferences.pair1_2.avgSemanticSimilarity.toFixed(2)}
                           </span>
                         )}
@@ -479,7 +490,7 @@ export default function TripleComparative() {
                           <span className="text-xs text-muted-foreground">({tripleDifferences.pair1_3.avgLengthDiff} chars)</span>
                         </div>
                         {tripleDifferences.pair1_3.avgSemanticSimilarity !== undefined && (
-                          <span className="text-xs text-muted-foreground">
+                          <span className={`text-xs font-bold ${getSimilarityColor(tripleDifferences.pair1_3.avgSemanticSimilarity, thresholds)}`}>
                             Similitud: {tripleDifferences.pair1_3.avgSemanticSimilarity.toFixed(2)}
                           </span>
                         )}
@@ -497,7 +508,7 @@ export default function TripleComparative() {
                           <span className="text-xs text-muted-foreground">({tripleDifferences.pair2_3.avgLengthDiff} chars)</span>
                         </div>
                         {tripleDifferences.pair2_3.avgSemanticSimilarity !== undefined && (
-                          <span className="text-xs text-muted-foreground">
+                          <span className={`text-xs font-bold ${getSimilarityColor(tripleDifferences.pair2_3.avgSemanticSimilarity, thresholds)}`}>
                             Similitud: {tripleDifferences.pair2_3.avgSemanticSimilarity.toFixed(2)}
                           </span>
                         )}

@@ -218,3 +218,17 @@
 - [x] Agregar campo `semanticSimilarity` a los resultados de análisis
 - [x] Actualizar TripleComparative para mostrar scores de similitud por pares
 - [x] Mostrar similitud semántica junto a divergencia de longitud
+
+
+## Configuración de Umbrales de Similitud (Completado)
+
+- [x] Crear componente `ThresholdConfig` con sliders para umbrales
+- [x] Definir tres umbrales ajustables: alto (>X), medio (X-Y), bajo (<Y)
+- [x] Implementar estado local para almacenar configuración de umbrales
+- [x] Crear función helper `getSimilarityColor` que use umbrales configurables
+- [x] Actualizar TripleComparative para usar umbrales personalizados
+- [x] Agregar indicadores cromáticos dinámicos en matriz de diferencias
+- [x] Implementar presets predefinidos: Estricto (0.9/0.7), Normal (0.8/0.6), Permisivo (0.7/0.5)
+- [x] Agregar botón de reset para restaurar valores por defecto
+- [x] Persistir configuración en localStorage para sesiones futuras
+- [x] Mostrar umbrales con codificación cromática (verde/amarillo/rojo)
