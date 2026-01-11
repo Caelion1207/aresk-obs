@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,6 +31,11 @@ export default function ComparativeView() {
   
   // Input de usuario
   const [userInput, setUserInput] = useState("");
+  
+  // Refs para sincronización de scroll
+  const scrollLeftRef = useRef<HTMLDivElement>(null);
+  const scrollRightRef = useRef<HTMLDivElement>(null);
+  const isSyncingRef = useRef(false);
   
   // Mutations
   const createSessionMutation = trpc.session.create.useMutation();
@@ -93,6 +98,40 @@ export default function ComparativeView() {
       console.error(error);
     }
   };
+  
+  // Sincronización de scroll
+  useEffect(() => {
+    const leftViewport = scrollLeftRef.current;
+    const rightViewport = scrollRightRef.current;
+    
+    if (!leftViewport || !rightViewport) return;
+    
+    const handleLeftScroll = () => {
+      if (isSyncingRef.current) return;
+      isSyncingRef.current = true;
+      rightViewport.scrollTop = leftViewport.scrollTop;
+      setTimeout(() => {
+        isSyncingRef.current = false;
+      }, 50);
+    };
+    
+    const handleRightScroll = () => {
+      if (isSyncingRef.current) return;
+      isSyncingRef.current = true;
+      leftViewport.scrollTop = rightViewport.scrollTop;
+      setTimeout(() => {
+        isSyncingRef.current = false;
+      }, 50);
+    };
+    
+    leftViewport.addEventListener('scroll', handleLeftScroll);
+    rightViewport.addEventListener('scroll', handleRightScroll);
+    
+    return () => {
+      leftViewport.removeEventListener('scroll', handleLeftScroll);
+      rightViewport.removeEventListener('scroll', handleRightScroll);
+    };
+  }, [isConfigured]);
   
   const handleSendMessage = async () => {
     if (!userInput.trim() || !sessionLeftId || !sessionRightId) return;
@@ -386,9 +425,10 @@ export default function ComparativeView() {
             </div>
           </CardHeader>
           <CardContent className="flex flex-col flex-1 overflow-hidden">
-            <ScrollArea className="flex-1 pr-4">
-              <div className="space-y-3">
-                {messagesLeft?.map((msg) => (
+            <div className="flex-1 overflow-hidden" ref={scrollLeftRef}>
+              <ScrollArea className="h-full pr-4">
+                <div className="space-y-3">
+                  {messagesLeft?.map((msg) => (
                   <div
                     key={msg.id}
                     className={`rounded-lg p-3 text-sm ${
@@ -412,9 +452,10 @@ export default function ComparativeView() {
                     </div>
                     <div>{msg.content}</div>
                   </div>
-                ))}
-              </div>
-            </ScrollArea>
+                 ))}
+                </div>
+              </ScrollArea>
+            </div>
           </CardContent>
         </Card>
         
@@ -431,9 +472,10 @@ export default function ComparativeView() {
             </div>
           </CardHeader>
           <CardContent className="flex flex-col flex-1 overflow-hidden">
-            <ScrollArea className="flex-1 pr-4">
-              <div className="space-y-3">
-                {messagesRight?.map((msg) => (
+            <div className="flex-1 overflow-hidden" ref={scrollRightRef}>
+              <ScrollArea className="h-full pr-4">
+                <div className="space-y-3">
+                  {messagesRight?.map((msg) => (
                   <div
                     key={msg.id}
                     className={`rounded-lg p-3 text-sm ${
@@ -458,8 +500,9 @@ export default function ComparativeView() {
                     <div>{msg.content}</div>
                   </div>
                 ))}
-              </div>
-            </ScrollArea>
+                </div>
+              </ScrollArea>
+            </div>
           </CardContent>
         </Card>
       </div>

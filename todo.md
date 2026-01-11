@@ -154,3 +154,13 @@
 - [x] Implementar Mapa de Fase dual mostrando ambas trayectorias
 - [x] Agregar ruta `/comparativa` en App.tsx
 - [x] Agregar botón de acceso desde Home y Simulator
+
+
+## Sincronización de Scroll en Vista Comparativa (Completado)
+
+- [x] Crear refs para los ScrollArea de ambos paneles
+- [x] Implementar listener de scroll en panel izquierdo
+- [x] Implementar listener de scroll en panel derecho
+- [x] Sincronizar posición de scroll proporcionalmente
+- [x] Prevenir bucles infinitos de sincronización con flag de control
+- [x] Agregar toggle opcional para activar/desactivar sincronización
