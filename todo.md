@@ -205,3 +205,16 @@
 - [x] Agregar badges de color para identificar perfiles
 - [x] Calcular estadísticas agregadas: divergencia promedio, máxima, mínima
 - [x] Integrar el panel en TripleComparative
+
+
+## Motor de Análisis Semántico con Similitud Coseno (Completado)
+
+- [x] Extender `semantic_engine.py` con función `calculate_cosine_similarity`
+- [x] Implementar cálculo de embeddings con SentenceTransformers (all-MiniLM-L6-v2)
+- [x] Calcular similitud coseno entre pares de textos
+- [x] Actualizar `semantic_bridge.ts` para exponer función de similitud
+- [x] Crear script `semantic_similarity.py` para invocar desde Node.js
+- [x] Modificar endpoint `analyzeTripleDifferences` para incluir similitud semántica
+- [x] Agregar campo `semanticSimilarity` a los resultados de análisis
+- [x] Actualizar TripleComparative para mostrar scores de similitud por pares
+- [x] Mostrar similitud semántica junto a divergencia de longitud

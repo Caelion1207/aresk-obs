@@ -163,3 +163,18 @@ export function calculateMetricsSimplified(
     controlActionUt,
   };
 }
+
+/**
+ * Calcula la similitud del coseno entre dos textos usando el motor Python
+ */
+export async function calculateCosineSimilarity(
+  text1: string,
+  text2: string
+): Promise<number> {
+  const result = await executePythonScript("semantic_similarity.py", [
+    text1,
+    text2,
+  ]);
+
+  return parseFloat(result.trim());
+}

@@ -183,3 +183,23 @@ Error detectado de magnitud {error_mag:.3f}. Corrige la trayectoria hacia la ref
             K: Nueva ganancia del controlador
         """
         self.K = K
+    
+    def calculate_cosine_similarity(self, text1: str, text2: str) -> float:
+        """
+        Calcula la similitud del coseno entre dos textos.
+        
+        Args:
+            text1: Primer texto a comparar
+            text2: Segundo texto a comparar
+            
+        Returns:
+            Similitud del coseno en el rango [-1, 1], donde 1 = idénticos
+        """
+        # Generar embeddings para ambos textos
+        embedding1 = self.model.encode([text1])[0]
+        embedding2 = self.model.encode([text2])[0]
+        
+        # Calcular similitud del coseno
+        similarity = float(cosine_similarity([embedding1], [embedding2])[0][0])
+        
+        return similarity

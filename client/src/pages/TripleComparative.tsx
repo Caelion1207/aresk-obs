@@ -455,9 +455,16 @@ export default function TripleComparative() {
                         <span className="text-xs">↔</span>
                         <Badge variant="default" className="text-[10px]">B</Badge>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold">{tripleDifferences.pair1_2.significantPercent}%</span>
-                        <span className="text-xs text-muted-foreground">({tripleDifferences.pair1_2.avgLengthDiff} chars)</span>
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold">{tripleDifferences.pair1_2.significantPercent}%</span>
+                          <span className="text-xs text-muted-foreground">({tripleDifferences.pair1_2.avgLengthDiff} chars)</span>
+                        </div>
+                        {tripleDifferences.pair1_2.avgSemanticSimilarity !== undefined && (
+                          <span className="text-xs text-muted-foreground">
+                            Similitud: {tripleDifferences.pair1_2.avgSemanticSimilarity.toFixed(2)}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center justify-between p-2 rounded bg-muted/50">
@@ -466,9 +473,16 @@ export default function TripleComparative() {
                         <span className="text-xs">↔</span>
                         <Badge variant="default" className="text-[10px] bg-green-600">C</Badge>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold">{tripleDifferences.pair1_3.significantPercent}%</span>
-                        <span className="text-xs text-muted-foreground">({tripleDifferences.pair1_3.avgLengthDiff} chars)</span>
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold">{tripleDifferences.pair1_3.significantPercent}%</span>
+                          <span className="text-xs text-muted-foreground">({tripleDifferences.pair1_3.avgLengthDiff} chars)</span>
+                        </div>
+                        {tripleDifferences.pair1_3.avgSemanticSimilarity !== undefined && (
+                          <span className="text-xs text-muted-foreground">
+                            Similitud: {tripleDifferences.pair1_3.avgSemanticSimilarity.toFixed(2)}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center justify-between p-2 rounded bg-muted/50">
@@ -477,9 +491,16 @@ export default function TripleComparative() {
                         <span className="text-xs">↔</span>
                         <Badge variant="default" className="text-[10px] bg-green-600">C</Badge>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold">{tripleDifferences.pair2_3.significantPercent}%</span>
-                        <span className="text-xs text-muted-foreground">({tripleDifferences.pair2_3.avgLengthDiff} chars)</span>
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold">{tripleDifferences.pair2_3.significantPercent}%</span>
+                          <span className="text-xs text-muted-foreground">({tripleDifferences.pair2_3.avgLengthDiff} chars)</span>
+                        </div>
+                        {tripleDifferences.pair2_3.avgSemanticSimilarity !== undefined && (
+                          <span className="text-xs text-muted-foreground">
+                            Similitud: {tripleDifferences.pair2_3.avgSemanticSimilarity.toFixed(2)}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

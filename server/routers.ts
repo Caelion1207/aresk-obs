@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { calculateCosineSimilarity } from "./semantic_bridge";
 import { z } from "zod";
 import { 
   createSession, 
@@ -496,7 +497,7 @@ export const appRouter = router({
         const assistant3 = messages3.filter(m => m.role === "assistant");
         
         // Función helper para calcular diferencias entre dos listas de mensajes
-        const calculatePairDifferences = (left: typeof assistant1, right: typeof assistant1) => {
+        const calculatePairDifferences = async (left: typeof assistant1, right: typeof assistant1) => {
           const differences = [];
           const maxLength = Math.max(left.length, right.length);
           
@@ -515,13 +516,24 @@ export const appRouter = router({
             const wordsRight = msgRight.content.split(/\s+/).length;
             const wordsDiff = Math.abs(wordsLeft - wordsRight);
             
-            const isSignificant = lengthDiffPercent > 30 || wordsDiff > 50;
+            // Calcular similitud semántica usando embeddings
+            let semanticSimilarity = 0;
+            try {
+              semanticSimilarity = await calculateCosineSimilarity(msgLeft.content, msgRight.content);
+            } catch (error) {
+              console.error("Error calculando similitud semántica:", error);
+              // Fallback: usar similitud basada en longitud
+              semanticSimilarity = Math.min(lengthLeft, lengthRight) / Math.max(lengthLeft, lengthRight);
+            }
+            
+            const isSignificant = lengthDiffPercent > 30 || wordsDiff > 50 || semanticSimilarity < 0.7;
             
             differences.push({
               index: i,
               lengthDiff,
               lengthDiffPercent: Math.round(lengthDiffPercent),
               wordsDiff,
+              semanticSimilarity: Math.round(semanticSimilarity * 100) / 100,
               isSignificant,
             });
           }
@@ -529,11 +541,15 @@ export const appRouter = router({
           const avgLengthDiff = differences.length > 0
             ? differences.reduce((sum, d) => sum + d.lengthDiff, 0) / differences.length
             : 0;
+          const avgSemanticSimilarity = differences.length > 0
+            ? differences.reduce((sum, d) => sum + d.semanticSimilarity, 0) / differences.length
+            : 0;
           const significantCount = differences.filter(d => d.isSignificant).length;
           
           return {
             differences,
             avgLengthDiff: Math.round(avgLengthDiff),
+            avgSemanticSimilarity: Math.round(avgSemanticSimilarity * 100) / 100,
             significantCount,
             significantPercent: differences.length > 0
               ? Math.round((significantCount / differences.length) * 100)
@@ -541,10 +557,10 @@ export const appRouter = router({
           };
         };
         
-        // Calcular diferencias por pares
-        const pair1_2 = calculatePairDifferences(assistant1, assistant2);
-        const pair1_3 = calculatePairDifferences(assistant1, assistant3);
-        const pair2_3 = calculatePairDifferences(assistant2, assistant3);
+        // Calcular diferencias por pares (ahora async)
+        const pair1_2 = await calculatePairDifferences(assistant1, assistant2);
+        const pair1_3 = await calculatePairDifferences(assistant1, assistant3);
+        const pair2_3 = await calculatePairDifferences(assistant2, assistant3);
         
         return {
           pair1_2,
