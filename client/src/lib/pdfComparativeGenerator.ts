@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { generateLyapunovChart, generateOmegaChart, generateCombinedChart, getProfileColor, getProfileLabel as getChartProfileLabel } from "./chartGenerator";
 
 interface SessionData {
   id: number;
@@ -189,6 +190,46 @@ export async function generateComparativeDualPDF(data: DualComparativeData) {
     theme: "striped",
     headStyles: { fillColor: [155, 89, 182] },
   });
+  
+  // ============================================
+  // GRÁFICOS COMPARATIVOS
+  // ============================================
+  doc.addPage();
+  yPos = 20;
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text("Visualización Comparativa de Métricas", 20, yPos);
+  
+  yPos += 10;
+  
+  try {
+    const labels = data.sessions.map(s => getProfileLabel(s.plantProfile));
+    const colors = data.sessions.map(s => getProfileColor(s.plantProfile));
+    
+    // Generar gráfico combinado de V(t) y Ω(t)
+    const combinedImage = await generateCombinedChart(
+      data.metrics,
+      labels,
+      colors
+    );
+    
+    doc.addImage(combinedImage, "PNG", 5, yPos, 200, 125);
+    yPos += 135;
+    
+    // Agregar nota explicativa
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(100, 100, 100);
+    const note = "Líneas sólidas representan V(e), líneas punteadas representan Ω(t). Eje izquierdo: V(e), Eje derecho: Ω(t).";
+    doc.text(note, 105, yPos, { align: "center" });
+    doc.setTextColor(0, 0, 0);
+  } catch (error) {
+    console.error("Error al generar gráficos comparativos:", error);
+    doc.setFontSize(10);
+    doc.setTextColor(200, 0, 0);
+    doc.text("Error al generar gráficos de visualización", 20, yPos);
+    doc.setTextColor(0, 0, 0);
+  }
   
   // ============================================
   // ANÁLISIS DE SIMILITUD SEMÁNTICA
@@ -480,6 +521,46 @@ export async function generateComparativeTriplePDF(data: TripleComparativeData) 
     headStyles: { fillColor: [155, 89, 182] },
     styles: { fontSize: 9 },
   });
+  
+  // ============================================
+  // GRÁFICOS COMPARATIVOS TRIPLE
+  // ============================================
+  doc.addPage();
+  yPos = 20;
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text("Visualización Comparativa de Métricas", 20, yPos);
+  
+  yPos += 10;
+  
+  try {
+    const labels = data.sessions.map(s => getProfileLabel(s.plantProfile));
+    const colors = data.sessions.map(s => getProfileColor(s.plantProfile));
+    
+    // Generar gráfico combinado de V(t) y Ω(t) para tres sesiones
+    const combinedImage = await generateCombinedChart(
+      data.metrics,
+      labels,
+      colors
+    );
+    
+    doc.addImage(combinedImage, "PNG", 5, yPos, 200, 125);
+    yPos += 135;
+    
+    // Agregar nota explicativa
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(100, 100, 100);
+    const note = "Líneas sólidas: V(e), Líneas punteadas: Ω(t). Tres perfiles superpuestos con colores distintivos.";
+    doc.text(note, 105, yPos, { align: "center" });
+    doc.setTextColor(0, 0, 0);
+  } catch (error) {
+    console.error("Error al generar gráficos comparativos:", error);
+    doc.setFontSize(10);
+    doc.setTextColor(200, 0, 0);
+    doc.text("Error al generar gráficos de visualización", 20, yPos);
+    doc.setTextColor(0, 0, 0);
+  }
   
   // ============================================
   // MATRIZ DE SIMILITUD SEMÁNTICA

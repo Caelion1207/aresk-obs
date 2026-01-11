@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { generateLyapunovChart, generateOmegaChart, getProfileColor, getProfileLabel as getChartProfileLabel } from "./chartGenerator";
 
 interface PDFData {
   session: {
@@ -228,6 +229,44 @@ export async function generatePDF(data: PDFData) {
       4: { halign: "right" },
     },
   });
+  
+  // ============================================
+  // GRÁFICOS DE MÉTRICAS
+  // ============================================
+  doc.addPage();
+  yPos = 20;
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text("Visualización de Métricas", 20, yPos);
+  
+  yPos += 10;
+  
+  try {
+    // Generar gráfico de V(t)
+    const lyapunovImage = await generateLyapunovChart(
+      [data.metrics],
+      [getProfileLabel(data.session.plantProfile)],
+      [getProfileColor(data.session.plantProfile)]
+    );
+    
+    doc.addImage(lyapunovImage, "PNG", 10, yPos, 190, 95);
+    yPos += 105;
+    
+    // Generar gráfico de Ω(t)
+    const omegaImage = await generateOmegaChart(
+      [data.metrics],
+      [getProfileLabel(data.session.plantProfile)],
+      [getProfileColor(data.session.plantProfile)]
+    );
+    
+    doc.addImage(omegaImage, "PNG", 10, yPos, 190, 95);
+  } catch (error) {
+    console.error("Error al generar gráficos:", error);
+    doc.setFontSize(10);
+    doc.setTextColor(200, 0, 0);
+    doc.text("Error al generar gráficos de visualización", 20, yPos);
+    doc.setTextColor(0, 0, 0);
+  }
   
   // ============================================
   // HISTORIAL DE MENSAJES

@@ -277,3 +277,18 @@
 - [x] Agregar botón "Exportar PDF Comparativo" en ComparativeView
 - [x] Agregar botón "Exportar PDF Comparativo" en TripleComparative
 - [x] Implementar descarga automática con nombre descriptivo
+
+## Integración de Gráficos Chart.js en PDFs (Completado)
+
+- [x] Instalar Chart.js para generación de gráficos en cliente
+- [x] Crear módulo chartGenerator.ts para generar gráficos estáticos
+- [x] Implementar función generateLyapunovChart para V(t) con líneas superpuestas
+- [x] Implementar función generateOmegaChart para Ω(t) con líneas superpuestas
+- [x] Implementar función generateCombinedChart para V(t) y Ω(t) en un solo panel
+- [x] Integrar gráficos en pdfGenerator.ts (sesión individual)
+- [x] Integrar gráficos en pdfComparativeGenerator.ts (dual)
+- [x] Integrar gráficos en pdfComparativeGenerator.ts (triple)
+- [x] Ajustar layout de PDF para acomodar gráficos de página completa
+- [x] Configurar colores distintivos por perfil (rojo, amarillo, verde)
+- [x] Agregar leyendas y etiquetas de ejes en los gráficos
+- [x] Optimizar resolución de imágenes para calidad de impresión (800x400px)
