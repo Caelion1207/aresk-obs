@@ -19,7 +19,8 @@ import {
   ArrowLeft,
   TrendingDown,
   TrendingUp,
-  Clock
+  Clock,
+  FileDown
 } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -53,6 +54,7 @@ export default function Simulator() {
   const sendMessageMutation = trpc.conversation.sendMessage.useMutation();
   const toggleModeMutation = trpc.session.toggleMode.useMutation();
   const regenerateMutation = trpc.conversation.regenerateWithProfile.useMutation();
+  const exportPDFMutation = trpc.session.exportPDF.useMutation();
   
   // Queries
   const { data: messages, refetch: refetchMessages } = trpc.conversation.getHistory.useQuery(
@@ -271,6 +273,26 @@ export default function Simulator() {
                       Modo Replay
                     </Button>
                   </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={async () => {
+                      if (!sessionId) return;
+                      try {
+                        const data = await exportPDFMutation.mutateAsync({ sessionId });
+                        const { generatePDF } = await import("@/lib/pdfGenerator");
+                        await generatePDF(data);
+                        toast.success("PDF exportado correctamente");
+                      } catch (error) {
+                        console.error("Error al exportar PDF:", error);
+                        toast.error("Error al exportar PDF");
+                      }
+                    }}
+                    disabled={exportPDFMutation.isPending}
+                  >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    {exportPDFMutation.isPending ? "Exportando..." : "Exportar PDF"}
+                  </Button>
                   <Button variant="outline" size="sm" onClick={handleReset}>
                     <RotateCcw className="mr-2 h-4 w-4" />
                     Reiniciar

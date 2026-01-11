@@ -89,6 +89,78 @@ export const appRouter = router({
         await updateSessionMode(input.sessionId, input.plantProfile);
         return { success: true };
       }),
+    
+    /**
+     * Exportar sesión como PDF con análisis completo
+     */
+    exportPDF: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .mutation(async ({ input }) => {
+        const session = await getSession(input.sessionId);
+        if (!session) {
+          throw new Error("Sesión no encontrada");
+        }
+        
+        const messages = await getSessionMessages(input.sessionId);
+        const metrics = await getSessionMetrics(input.sessionId);
+        
+        // Calcular estadísticas descriptivas
+        const vValues = metrics.map(m => m.funcionLyapunov);
+        const omegaValues = metrics.map(m => m.coherenciaObservable);
+        const errorValues = metrics.map(m => m.errorCognitivoMagnitud);
+        
+        const calculateStats = (values: number[]) => {
+          if (values.length === 0) return { mean: 0, std: 0, min: 0, max: 0 };
+          const mean = values.reduce((a, b) => a + b, 0) / values.length;
+          const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+          const std = Math.sqrt(variance);
+          return {
+            mean: Number(mean.toFixed(4)),
+            std: Number(std.toFixed(4)),
+            min: Number(Math.min(...values).toFixed(4)),
+            max: Number(Math.max(...values).toFixed(4)),
+          };
+        };
+        
+        // Calcular TPR (tiempo en régimen estable: Ω > 0.7)
+        const stableSteps = metrics.filter(m => m.coherenciaObservable > 0.7).length;
+        const tprPercent = metrics.length > 0 ? (stableSteps / metrics.length) * 100 : 0;
+        
+        return {
+          session: {
+            id: session.id,
+            createdAt: session.createdAt,
+            plantProfile: session.plantProfile,
+            purpose: session.purpose,
+            limits: session.limits,
+            ethics: session.ethics,
+            tprCurrent: session.tprCurrent,
+            tprMax: session.tprMax,
+          },
+          messages: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+            timestamp: m.timestamp,
+            plantProfile: m.plantProfile,
+          })),
+          metrics: metrics.map(m => ({
+            timestamp: m.timestamp,
+            errorNorm: m.errorCognitivoMagnitud,
+            funcionLyapunov: m.funcionLyapunov,
+            coherenciaObservable: m.coherenciaObservable,
+            entropiaH: m.entropiaH,
+            coherenciaInternaC: m.coherenciaInternaC,
+          })),
+          statistics: {
+            lyapunov: calculateStats(vValues),
+            omega: calculateStats(omegaValues),
+            error: calculateStats(errorValues),
+            tprPercent: Number(tprPercent.toFixed(2)),
+            totalSteps: metrics.length,
+            totalMessages: messages.length,
+          },
+        };
+      }),
   }),
   
   conversation: router({
@@ -581,6 +653,78 @@ export const appRouter = router({
               pair1_3.significantPercent,
               pair2_3.significantPercent
             ),
+          },
+        };
+      }),
+    
+    /**
+     * Exportar sesión como PDF con análisis completo
+     */
+    exportPDF: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .mutation(async ({ input }) => {
+        const session = await getSession(input.sessionId);
+        if (!session) {
+          throw new Error("Sesión no encontrada");
+        }
+        
+        const messages = await getSessionMessages(input.sessionId);
+        const metrics = await getSessionMetrics(input.sessionId);
+        
+        // Calcular estadísticas descriptivas
+        const vValues = metrics.map(m => m.funcionLyapunov);
+        const omegaValues = metrics.map(m => m.coherenciaObservable);
+        const errorValues = metrics.map(m => m.errorCognitivoMagnitud);
+        
+        const calculateStats = (values: number[]) => {
+          if (values.length === 0) return { mean: 0, std: 0, min: 0, max: 0 };
+          const mean = values.reduce((a, b) => a + b, 0) / values.length;
+          const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+          const std = Math.sqrt(variance);
+          return {
+            mean: Number(mean.toFixed(4)),
+            std: Number(std.toFixed(4)),
+            min: Number(Math.min(...values).toFixed(4)),
+            max: Number(Math.max(...values).toFixed(4)),
+          };
+        };
+        
+        // Calcular TPR (tiempo en régimen estable: Ω > 0.7)
+        const stableSteps = metrics.filter(m => m.coherenciaObservable > 0.7).length;
+        const tprPercent = metrics.length > 0 ? (stableSteps / metrics.length) * 100 : 0;
+        
+        return {
+          session: {
+            id: session.id,
+            createdAt: session.createdAt,
+            plantProfile: session.plantProfile,
+            purpose: session.purpose,
+            limits: session.limits,
+            ethics: session.ethics,
+            tprCurrent: session.tprCurrent,
+            tprMax: session.tprMax,
+          },
+          messages: messages.map(m => ({
+            role: m.role,
+            content: m.content,
+            timestamp: m.timestamp,
+            plantProfile: m.plantProfile,
+          })),
+          metrics: metrics.map(m => ({
+            timestamp: m.timestamp,
+            errorNorm: m.errorCognitivoMagnitud,
+            funcionLyapunov: m.funcionLyapunov,
+            coherenciaObservable: m.coherenciaObservable,
+            entropiaH: m.entropiaH,
+            coherenciaInternaC: m.coherenciaInternaC,
+          })),
+          statistics: {
+            lyapunov: calculateStats(vValues),
+            omega: calculateStats(omegaValues),
+            error: calculateStats(errorValues),
+            tprPercent: Number(tprPercent.toFixed(2)),
+            totalSteps: metrics.length,
+            totalMessages: messages.length,
           },
         };
       }),

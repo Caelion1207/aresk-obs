@@ -6,7 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { trpc } from "@/lib/trpc";
-import { Play, Pause, StopCircle, Rewind, FastForward, Activity } from "lucide-react";
+import { Play, Pause, StopCircle, Rewind, FastForward, Activity, FileDown } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 
 type PlaybackSpeed = 0.5 | 1 | 2 | 4;
@@ -20,6 +20,9 @@ export default function SessionReplay() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
+  
+  // Mutation para exportar PDF
+  const exportPDF = trpc.session.exportPDF.useMutation();
   
   // Ref para el intervalo de reproducción
   const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -216,6 +219,25 @@ export default function SessionReplay() {
             </Button>
             <Button onClick={handleSpeedChange} variant="outline" className="ml-4">
               {playbackSpeed}x
+            </Button>
+            <Button 
+              onClick={async () => {
+                if (!sessionId) return;
+                try {
+                  const data = await exportPDF.mutateAsync({ sessionId });
+                  // Generar PDF en el cliente
+                  const { generatePDF } = await import("@/lib/pdfGenerator");
+                  await generatePDF(data);
+                } catch (error) {
+                  console.error("Error al exportar PDF:", error);
+                }
+              }}
+              variant="outline"
+              className="ml-auto"
+              disabled={exportPDF.isPending}
+            >
+              <FileDown className="h-4 w-4 mr-2" />
+              {exportPDF.isPending ? "Generando..." : "Exportar PDF"}
             </Button>
           </div>
           

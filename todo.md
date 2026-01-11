@@ -248,3 +248,17 @@
 - [x] Mostrar información de la sesión (perfil, duración, total de pasos)
 - [x] Agregar ruta `/replay/:sessionId` en App.tsx
 - [x] Agregar botón de acceso a modo replay desde Simulator
+
+## Exportación de PDF con Análisis Completo (Completado)
+
+- [x] Crear endpoint `session.exportPDF` en el backend
+- [x] Generar PDF usando biblioteca (jsPDF + jspdf-autotable)
+- [x] Incluir portada con información de la sesión (ID, fecha, perfil, duración)
+- [x] Agregar sección de referencia ontológica (Propósito, Límites, Ética)
+- [x] Incluir historial completo de mensajes con timestamps
+- [x] Generar tablas de métricas (V, Ω, ||e||) con estadísticas descriptivas
+- [x] Calcular y mostrar estadísticas descriptivas (media, desviación, máx, mín)
+- [x] Agregar tabla de métricas por paso temporal
+- [x] Incluir análisis de TPR (tiempo de permanencia en régimen)
+- [x] Agregar botón "Exportar PDF" en SessionReplay y Simulator
+- [x] Implementar descarga automática del archivo generado
