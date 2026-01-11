@@ -27,8 +27,13 @@ export default function Home() {
                 </Button>
               </Link>
               <Link href="/comparativa">
-                <Button size="lg" variant="secondary">
-                  Vista Comparativa
+                <Button variant="outline" size="lg" className="w-full">
+                  Vista Comparativa (2 Perfiles)
+                </Button>
+              </Link>
+              <Link href="/comparativa-triple">
+                <Button variant="outline" size="lg" className="w-full">
+                  Vista Comparativa (3 Perfiles)
                 </Button>
               </Link>
               <Link href="/simulator">

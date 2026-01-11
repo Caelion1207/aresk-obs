@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import ComparativeView from "./pages/ComparativeView";
+import TripleComparative from "./pages/TripleComparative";
 import Simulator from "./pages/Simulator";
 import Architecture from "./pages/Architecture";
 import Modules from "./pages/Modules";
@@ -18,6 +19,7 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/simulator"} component={Simulator} />
       <Route path={"/comparativa"} component={ComparativeView} />
+      <Route path={"/comparativa-triple"} component={TripleComparative} />
       <Route path={"/architecture"} component={Architecture} />
       <Route path={"/modules"} component={Modules} />
       <Route path={"/protocols"} component={Protocols} />

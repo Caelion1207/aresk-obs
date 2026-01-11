@@ -178,3 +178,18 @@
 - [x] Mostrar indicador visual cuando la diferencia supera umbral (>30% longitud, <0.7 similitud)
 - [x] Crear panel de resumen de diferencias con estadísticas agregadas
 - [x] Agregar tooltip con detalles de la divergencia al hover sobre indicadores
+
+
+## Comparación Triple de Perfiles (Completado)
+
+- [x] Extender endpoint `sendToMultiple` para aceptar array de 3 session IDs
+- [x] Crear página `TripleComparative.tsx` para tres sesiones
+- [x] Implementar grid de 3 columnas con layout responsivo
+- [x] Agregar selector de perfil para cada panel (izquierdo, central, derecho)
+- [x] Crear tres sesiones simultáneas con referencia ontológica compartida
+- [x] Sincronizar inputs: un solo campo envía a las tres sesiones
+- [x] Adaptar sincronización de scroll para tres paneles
+- [x] Mostrar métricas comparativas para los tres perfiles
+- [x] Visualizar conversaciones en paralelo con badges de perfil
+- [x] Agregar ruta `/comparativa-triple` en App.tsx
+- [x] Agregar enlace desde Home.tsx
