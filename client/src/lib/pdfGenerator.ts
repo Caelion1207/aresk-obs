@@ -35,6 +35,14 @@ interface PDFData {
     totalSteps: number;
     totalMessages: number;
   };
+  markers: Array<{
+    id: number;
+    messageIndex: number;
+    markerType: string;
+    title: string;
+    description: string;
+    createdAt: Date;
+  }>;
 }
 
 export async function generatePDF(data: PDFData) {
@@ -324,6 +332,59 @@ export async function generatePDF(data: PDFData) {
   }
   
   // ============================================
+  // EVENTOS DESTACADOS (MARCADORES)
+  // ============================================
+  if (data.markers && data.markers.length > 0) {
+    doc.addPage();
+    yPos = 20;
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Eventos Destacados", 20, yPos);
+    
+    yPos += 10;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text("Marcadores temporales añadidos durante el análisis", 20, yPos);
+    
+    yPos += 10;
+    
+    for (const marker of data.markers) {
+      if (yPos > 260) {
+        doc.addPage();
+        yPos = 20;
+      }
+      
+      // Tipo de marcador
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      const markerTypeLabel = getMarkerTypeLabel(marker.markerType);
+      doc.text(`[${markerTypeLabel}] Paso ${marker.messageIndex + 1}`, 20, yPos);
+      
+      yPos += 6;
+      
+      // Título
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      const titleLines = doc.splitTextToSize(marker.title, 170);
+      doc.text(titleLines, 20, yPos);
+      yPos += titleLines.length * 5;
+      
+      // Descripción
+      if (marker.description) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(80, 80, 80);
+        const descLines = doc.splitTextToSize(marker.description, 170);
+        doc.text(descLines, 20, yPos);
+        yPos += descLines.length * 4.5;
+        doc.setTextColor(0, 0, 0);
+      }
+      
+      yPos += 8;
+    }
+  }
+  
+  // ============================================
   // GUARDAR PDF
   // ============================================
   const fileName = `ARESK-OBS_Sesion_${data.session.id}_${new Date().toISOString().split("T")[0]}.pdf`;
@@ -336,5 +397,15 @@ function getProfileLabel(profile: string): string {
     case "tipo_b": return "Tipo B (Ruido Moderado)";
     case "acoplada": return "Acoplada (CAELION)";
     default: return profile;
+  }
+}
+
+function getMarkerTypeLabel(type: string): string {
+  switch (type) {
+    case "colapso_semantico": return "Colapso Semántico";
+    case "recuperacion": return "Recuperación";
+    case "transicion": return "Transición de Régimen";
+    case "observacion": return "Observación General";
+    default: return type;
   }
 }

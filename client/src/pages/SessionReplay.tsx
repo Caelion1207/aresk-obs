@@ -6,8 +6,10 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { trpc } from "@/lib/trpc";
-import { Play, Pause, StopCircle, Rewind, FastForward, Activity, FileDown } from "lucide-react";
+import { Play, Pause, StopCircle, Rewind, FastForward, Activity, FileDown, Bookmark, Edit2, Trash2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
+import { MarkerDialog } from "@/components/MarkerDialog";
+import { toast } from "sonner";
 
 type PlaybackSpeed = 0.5 | 1 | 2 | 4;
 
@@ -21,8 +23,22 @@ export default function SessionReplay() {
   const [currentStep, setCurrentStep] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
   
-  // Mutation para exportar PDF
+  // Estado de marcadores
+  const [markerDialogOpen, setMarkerDialogOpen] = useState(false);
+  const [editingMarker, setEditingMarker] = useState<{ id: number; title: string; description: string; markerType: string } | null>(null);
+  
+  // Mutations
   const exportPDF = trpc.session.exportPDF.useMutation();
+  const createMarkerMutation = trpc.marker.create.useMutation();
+  const updateMarkerMutation = trpc.marker.update.useMutation();
+  const deleteMarkerMutation = trpc.marker.delete.useMutation();
+  const utils = trpc.useUtils();
+  
+  // Query de marcadores
+  const { data: markers } = trpc.marker.list.useQuery(
+    { sessionId: sessionId! },
+    { enabled: !!sessionId }
+  );
   
   // Ref para el intervalo de reproducción
   const playbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -221,6 +237,17 @@ export default function SessionReplay() {
               {playbackSpeed}x
             </Button>
             <Button 
+              onClick={() => {
+                setEditingMarker(null);
+                setMarkerDialogOpen(true);
+              }}
+              variant="outline"
+              title="Añadir marcador en el paso actual"
+            >
+              <Bookmark className="h-4 w-4 mr-2" />
+              Marcar
+            </Button>
+            <Button 
               onClick={async () => {
                 if (!sessionId) return;
                 try {
@@ -360,6 +387,133 @@ export default function SessionReplay() {
           </CardContent>
         </Card>
       )}
+      
+      {/* Lista de Marcadores */}
+      {markers && markers.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Marcadores Temporales</CardTitle>
+            <CardDescription>Eventos destacados en esta sesión</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {markers.map((marker) => (
+                <div
+                  key={marker.id}
+                  className="flex items-start gap-3 p-3 rounded border border-border hover:bg-accent/50 cursor-pointer transition-colors"
+                  onClick={() => {
+                    setCurrentStep(marker.messageIndex);
+                    setIsPlaying(false);
+                  }}
+                >
+                  <Bookmark className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="outline" className="text-[10px]">
+                        Paso {marker.messageIndex + 1}
+                      </Badge>
+                      <Badge variant="secondary" className="text-[10px]">
+                        {getMarkerTypeLabel(marker.markerType)}
+                      </Badge>
+                    </div>
+                    <p className="font-medium text-sm">{marker.title}</p>
+                    {marker.description && (
+                      <p className="text-xs text-muted-foreground mt-1">{marker.description}</p>
+                    )}
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingMarker({
+                          id: marker.id,
+                          title: marker.title,
+                          description: marker.description || "",
+                          markerType: marker.markerType,
+                        });
+                        setMarkerDialogOpen(true);
+                      }}
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-destructive"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          await deleteMarkerMutation.mutateAsync({ id: marker.id });
+                          await utils.marker.list.invalidate();
+                          toast.success("Marcador eliminado");
+                        } catch (error) {
+                          console.error("Error al eliminar marcador:", error);
+                          toast.error("Error al eliminar marcador");
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Diálogo de Marcador */}
+      <MarkerDialog
+        open={markerDialogOpen}
+        onOpenChange={setMarkerDialogOpen}
+        messageIndex={currentStep}
+        initialData={editingMarker ? {
+          title: editingMarker.title,
+          description: editingMarker.description,
+          markerType: editingMarker.markerType as any,
+        } : undefined}
+        onSave={async (data) => {
+          try {
+            if (editingMarker) {
+              await updateMarkerMutation.mutateAsync({
+                id: editingMarker.id,
+                ...data,
+              });
+              toast.success("Marcador actualizado");
+            } else {
+              await createMarkerMutation.mutateAsync({
+                sessionId: sessionId!,
+                messageIndex: currentStep,
+                ...data,
+              });
+              toast.success("Marcador añadido");
+            }
+            await utils.marker.list.invalidate();
+            setEditingMarker(null);
+          } catch (error) {
+            console.error("Error al guardar marcador:", error);
+            toast.error("Error al guardar marcador");
+          }
+        }}
+      />
     </div>
   );
+  
+  function getMarkerTypeLabel(type: string): string {
+    switch (type) {
+      case "colapso_semantico":
+        return "Colapso Semántico";
+      case "recuperacion":
+        return "Recuperación";
+      case "transicion":
+        return "Transición";
+      case "observacion":
+        return "Observación";
+      default:
+        return type;
+    }
+  }
 }

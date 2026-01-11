@@ -292,3 +292,19 @@
 - [x] Configurar colores distintivos por perfil (rojo, amarillo, verde)
 - [x] Agregar leyendas y etiquetas de ejes en los gráficos
 - [x] Optimizar resolución de imágenes para calidad de impresión (800x400px)
+
+## Sistema de Marcadores Temporales en SessionReplay (Completado)
+
+- [x] Crear tabla `timeMarkers` en esquema de base de datos
+- [x] Implementar endpoint `marker.create` para crear marcadores
+- [x] Implementar endpoint `marker.list` para listar marcadores de una sesión
+- [x] Implementar endpoint `marker.update` para editar marcadores
+- [x] Implementar endpoint `marker.delete` para eliminar marcadores
+- [x] Crear componente MarkerDialog para añadir/editar anotaciones
+- [x] Agregar botón "Añadir Marcador" en controles de SessionReplay
+- [x] Mostrar marcadores visuales en la línea de tiempo de reproducción
+- [x] Implementar lista de marcadores con navegación rápida
+- [x] Permitir edición y eliminación de marcadores existentes
+- [x] Agregar tipos de marcador (colapso semántico, recuperación, transición, observación)
+- [x] Incluir sección "Eventos Destacados" en PDF con marcadores
+- [x] Sincronizar reproducción al hacer clic en marcador

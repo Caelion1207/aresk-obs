@@ -89,3 +89,21 @@ export const metrics = mysqlTable("metrics", {
 
 export type Metric = typeof metrics.$inferSelect;
 export type InsertMetric = typeof metrics.$inferInsert;
+
+/**
+ * Tabla de marcadores temporales
+ * Permite a los usuarios anotar momentos específicos durante la reproducción de sesiones
+ */
+export const timeMarkers = mysqlTable("timeMarkers", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: int("sessionId").notNull(),
+  messageIndex: int("messageIndex").notNull(), // Índice del mensaje en la secuencia (0-based)
+  markerType: mysqlEnum("markerType", ["colapso_semantico", "recuperacion", "transicion", "observacion"]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TimeMarker = typeof timeMarkers.$inferSelect;
+export type InsertTimeMarker = typeof timeMarkers.$inferInsert;

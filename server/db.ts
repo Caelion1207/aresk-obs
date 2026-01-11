@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, sessions, messages, metrics, InsertSession, InsertMessage, InsertMetric } from "../drizzle/schema";
+import { InsertUser, users, sessions, messages, metrics, timeMarkers, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -182,4 +182,37 @@ export async function getSessionMetrics(sessionId: number) {
   if (!db) throw new Error("Database not available");
   
   return await db.select().from(metrics).where(eq(metrics.sessionId, sessionId));
+}
+
+// ============================================
+// TIME MARKERS
+// ============================================
+
+export async function createTimeMarker(marker: InsertTimeMarker) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const [result] = await db.insert(timeMarkers).values(marker);
+  return result.insertId;
+}
+
+export async function getTimeMarkersBySession(sessionId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return db.select().from(timeMarkers).where(eq(timeMarkers.sessionId, sessionId)).orderBy(timeMarkers.messageIndex);
+}
+
+export async function updateTimeMarker(id: number, updates: Partial<InsertTimeMarker>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(timeMarkers).set(updates).where(eq(timeMarkers.id, id));
+}
+
+export async function deleteTimeMarker(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(timeMarkers).where(eq(timeMarkers.id, id));
 }

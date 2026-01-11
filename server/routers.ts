@@ -13,7 +13,11 @@ import {
   createMessage,
   getSessionMessages,
   createMetric,
-  getSessionMetrics
+  getSessionMetrics,
+  createTimeMarker,
+  getTimeMarkersBySession,
+  updateTimeMarker,
+  deleteTimeMarker
 } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { calculateMetricsSimplified } from "./semantic_bridge";
@@ -103,6 +107,7 @@ export const appRouter = router({
         
         const messages = await getSessionMessages(input.sessionId);
         const metrics = await getSessionMetrics(input.sessionId);
+        const markers = await getTimeMarkersBySession(input.sessionId);
         
         // Calcular estadísticas descriptivas
         const vValues = metrics.map(m => m.funcionLyapunov);
@@ -159,6 +164,14 @@ export const appRouter = router({
             totalSteps: metrics.length,
             totalMessages: messages.length,
           },
+          markers: markers.map(m => ({
+            id: m.id,
+            messageIndex: m.messageIndex,
+            markerType: m.markerType,
+            title: m.title,
+            description: m.description || "",
+            createdAt: m.createdAt,
+          })),
         };
       }),
     
@@ -986,6 +999,7 @@ export const appRouter = router({
         
         const messages = await getSessionMessages(input.sessionId);
         const metrics = await getSessionMetrics(input.sessionId);
+        const markers = await getTimeMarkersBySession(input.sessionId);
         
         // Calcular estadísticas descriptivas
         const vValues = metrics.map(m => m.funcionLyapunov);
@@ -1115,6 +1129,67 @@ export const appRouter = router({
             : 0,
           timeSeries,
         };
+      }),
+  }),
+
+  // ============================================
+  // TIME MARKERS: Marcadores temporales para anotaciones
+  // ============================================
+  
+  marker: router({
+    /**
+     * Crear un nuevo marcador temporal
+     */
+    create: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+        messageIndex: z.number().min(0),
+        markerType: z.enum(["colapso_semantico", "recuperacion", "transicion", "observacion"]),
+        title: z.string().min(1).max(255),
+        description: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const markerId = await createTimeMarker(input);
+        return { id: markerId, ...input };
+      }),
+    
+    /**
+     * Listar marcadores de una sesión
+     */
+    list: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return await getTimeMarkersBySession(input.sessionId);
+      }),
+    
+    /**
+     * Actualizar un marcador existente
+     */
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().min(1).max(255).optional(),
+        description: z.string().optional(),
+        markerType: z.enum(["colapso_semantico", "recuperacion", "transicion", "observacion"]).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...updates } = input;
+        await updateTimeMarker(id, updates);
+        return { success: true };
+      }),
+    
+    /**
+     * Eliminar un marcador
+     */
+    delete: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await deleteTimeMarker(input.id);
+        return { success: true };
       }),
   }),
 });
