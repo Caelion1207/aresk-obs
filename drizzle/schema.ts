@@ -63,6 +63,7 @@ export const messages = mysqlTable("messages", {
   sessionId: int("sessionId").notNull(),
   role: mysqlEnum("role", ["user", "assistant", "system"]).notNull(),
   content: text("content").notNull(),
+  plantProfile: mysqlEnum("plantProfile", ["tipo_a", "tipo_b", "acoplada"]),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 

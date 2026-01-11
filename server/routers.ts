@@ -141,11 +141,12 @@ export const appRouter = router({
         const messageContent = response.choices[0]?.message?.content;
         const assistantContent = typeof messageContent === 'string' ? messageContent : "Error al generar respuesta";
         
-        // Guardar respuesta del asistente
+        // Guardar respuesta del asistente con el perfil actual
         const assistantMessageId = await createMessage({
           sessionId: input.sessionId,
           role: "assistant",
           content: assistantContent,
+          plantProfile: session.plantProfile,
         });
         
         // Calcular métricas usando el puente semántico
@@ -247,11 +248,12 @@ export const appRouter = router({
           const messageContent = response.choices[0]?.message?.content;
           const assistantContent = typeof messageContent === 'string' ? messageContent : "Error al generar respuesta";
           
-          // Guardar nueva respuesta del asistente
+          // Guardar nueva respuesta del asistente con el perfil actual
           const assistantMessageId = await createMessage({
             sessionId: input.sessionId,
             role: "assistant",
             content: assistantContent,
+            plantProfile: session.plantProfile,
           });
           
           // Calcular métricas

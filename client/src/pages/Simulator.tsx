@@ -426,8 +426,18 @@ export default function Simulator() {
                                 : "bg-muted mr-4"
                             }`}
                           >
-                            <div className="mb-1 text-xs font-semibold text-muted-foreground">
-                              {msg.role === "user" ? "Entrada" : "Salida de Planta"}
+                            <div className="mb-1 flex items-center justify-between">
+                              <div className="text-xs font-semibold text-muted-foreground">
+                                {msg.role === "user" ? "Entrada" : "Salida de Planta"}
+                              </div>
+                              {msg.role === "assistant" && msg.plantProfile && (
+                                <Badge 
+                                  variant={getProfileColor(msg.plantProfile)}
+                                  className="text-[10px] px-1.5 py-0"
+                                >
+                                  {getProfileLabel(msg.plantProfile)}
+                                </Badge>
+                              )}
                             </div>
                             <div className="text-sm">{msg.content}</div>
                           </div>

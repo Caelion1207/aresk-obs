@@ -1,0 +1,1 @@
+ALTER TABLE `messages` ADD `plantProfile` enum('tipo_a','tipo_b','acoplada');

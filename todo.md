@@ -115,3 +115,27 @@
 - ✅ Tests: 11/11 pasados
 - ✅ Documentación completa en README.md
 - ✅ Purificación arquitectónica aplicada
+
+
+## Indicadores Visuales de Perfil por Mensaje (Completado)
+
+- [x] Agregar campo `plantProfile` a la tabla `messages` en el schema
+- [x] Aplicar migración de base de datos con `pnpm db:push`
+- [x] Modificar `createMessage` en db.ts para aceptar plantProfile
+- [x] Actualizar endpoint `sendMessage` para guardar el perfil actual
+- [x] Actualizar endpoint `regenerateWithProfile` para guardar el nuevo perfil
+- [x] Crear badges visuales en el frontend con colores por perfil
+- [x] Mostrar badge solo en mensajes del asistente (no en mensajes del usuario)
+- [x] Aplicar colores consistentes: rojo (Tipo A), amarillo (Tipo B), verde (Acoplada)
+
+
+## Indicadores Visuales de Perfil por Mensaje (Completado)
+
+- [x] Agregar campo `plantProfile` a la tabla `messages` en el schema
+- [x] Aplicar migración de base de datos con `pnpm db:push`
+- [x] Modificar `createMessage` en db.ts para aceptar plantProfile
+- [x] Actualizar endpoint `sendMessage` para guardar el perfil actual
+- [x] Actualizar endpoint `regenerateWithProfile` para guardar el nuevo perfil
+- [x] Crear badges visuales en el frontend con colores por perfil
+- [x] Mostrar badge solo en mensajes del asistente (no en mensajes del usuario)
+- [x] Aplicar colores consistentes: rojo (Tipo A), amarillo (Tipo B), verde (Acoplada)
