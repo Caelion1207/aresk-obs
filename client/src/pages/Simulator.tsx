@@ -265,6 +265,12 @@ export default function Simulator() {
                     <Play className="mr-2 h-4 w-4" />
                     Regenerar Respuestas
                   </Button>
+                  <Link href={`/replay/${sessionId}`}>
+                    <Button variant="outline" size="sm">
+                      <Activity className="mr-2 h-4 w-4" />
+                      Modo Replay
+                    </Button>
+                  </Link>
                   <Button variant="outline" size="sm" onClick={handleReset}>
                     <RotateCcw className="mr-2 h-4 w-4" />
                     Reiniciar

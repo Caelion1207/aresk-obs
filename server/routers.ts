@@ -609,6 +609,53 @@ export const appRouter = router({
           C: metrics.map(m => m.coherenciaInternaC),
         };
       }),
+    
+    /**
+     * Obtener historial completo de métricas con timestamps para reproducción
+     */
+    getTimeSeriesHistory: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .query(async ({ input }) => {
+        const metrics = await getSessionMetrics(input.sessionId);
+        const messages = await getSessionMessages(input.sessionId);
+        const session = await getSession(input.sessionId);
+        
+        if (!session) {
+          throw new Error("Sesión no encontrada");
+        }
+        
+        // Construir serie temporal con métricas y mensajes sincronizados
+        const timeSeries = metrics.map((metric, index) => {
+          // Encontrar el mensaje correspondiente a esta métrica
+          const message = messages.find(m => m.id === metric.messageId);
+          
+          return {
+            timestamp: metric.timestamp,
+            step: index + 1,
+            errorNorm: metric.errorCognitivoMagnitud,
+            funcionLyapunov: metric.funcionLyapunov,
+            coherenciaObservable: metric.coherenciaObservable,
+            controlActionMagnitud: metric.controlActionMagnitud,
+            entropiaH: metric.entropiaH,
+            coherenciaInternaC: metric.coherenciaInternaC,
+            message: message ? {
+              role: message.role,
+              content: message.content,
+              plantProfile: message.plantProfile,
+            } : null,
+          };
+        });
+        
+        return {
+          sessionId: input.sessionId,
+          plantProfile: session.plantProfile,
+          totalSteps: timeSeries.length,
+          duration: timeSeries.length > 0 
+            ? new Date(timeSeries[timeSeries.length - 1]!.timestamp).getTime() - new Date(timeSeries[0]!.timestamp).getTime()
+            : 0,
+          timeSeries,
+        };
+      }),
   }),
 });
 

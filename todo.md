@@ -232,3 +232,19 @@
 - [x] Agregar botón de reset para restaurar valores por defecto
 - [x] Persistir configuración en localStorage para sesiones futuras
 - [x] Mostrar umbrales con codificación cromática (verde/amarillo/rojo)
+
+
+## Modo de Reproducción de Sesiones (Completado)
+
+- [x] Crear endpoint `metrics.getTimeSeriesHistory` para obtener historial completo de métricas
+- [x] Incluir timestamps, V(t), Ω(t), ||e(t)||, mensajes en cada punto temporal
+- [x] Crear componente `SessionReplay.tsx` con controles de reproducción
+- [x] Implementar controles: Play/Pause, Stop, velocidad de reproducción (0.5x, 1x, 2x, 4x)
+- [x] Agregar slider de progreso para navegar a cualquier punto temporal
+- [x] Crear visualización animada de gráficos que se actualicen frame a frame
+- [x] Mostrar mensajes sincronizados con la línea temporal
+- [x] Implementar línea de referencia de "tiempo actual" en los gráficos
+- [x] Agregar panel de métricas instantáneas que se actualicen durante reproducción
+- [x] Mostrar información de la sesión (perfil, duración, total de pasos)
+- [x] Agregar ruta `/replay/:sessionId` en App.tsx
+- [x] Agregar botón de acceso a modo replay desde Simulator
