@@ -70,6 +70,16 @@ export default function TripleComparative() {
     { enabled: !!sessionRightId }
   );
   
+  // Query para análisis de diferencias por pares
+  const { data: tripleDifferences } = trpc.conversation.analyzeTripleDifferences.useQuery(
+    {
+      sessionId1: sessionLeftId!,
+      sessionId2: sessionCenterId!,
+      sessionId3: sessionRightId!,
+    },
+    { enabled: !!sessionLeftId && !!sessionCenterId && !!sessionRightId }
+  );
+  
   // Refs para sincronización de scroll
   const scrollLeftRef = useRef<HTMLDivElement>(null);
   const scrollCenterRef = useRef<HTMLDivElement>(null);
@@ -395,6 +405,89 @@ export default function TripleComparative() {
             </CardContent>
           </Card>
         </div>
+      )}
+      
+      {/* Panel de Análisis de Diferencias por Pares */}
+      {isConfigured && tripleDifferences && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ArrowLeftRight className="h-5 w-5" />
+              Análisis de Diferencias por Pares
+            </CardTitle>
+            <CardDescription>
+              Comparación cuantitativa de divergencias entre perfiles
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2 mb-4">
+              {/* Resumen Agregado */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Resumen Global</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-xs text-muted-foreground">Divergencia Promedio</span>
+                    <span className="font-bold">{tripleDifferences.summary.avgDivergence}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-muted-foreground">Divergencia Máxima</span>
+                    <span className="font-bold">{tripleDifferences.summary.maxDivergence}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-xs text-muted-foreground">Divergencia Mínima</span>
+                    <span className="font-bold">{tripleDifferences.summary.minDivergence}%</span>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Matriz de Comparaciones */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">Matriz de Divergencias</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-2 rounded bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="destructive" className="text-[10px]">A</Badge>
+                        <span className="text-xs">↔</span>
+                        <Badge variant="default" className="text-[10px]">B</Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold">{tripleDifferences.pair1_2.significantPercent}%</span>
+                        <span className="text-xs text-muted-foreground">({tripleDifferences.pair1_2.avgLengthDiff} chars)</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-2 rounded bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="destructive" className="text-[10px]">A</Badge>
+                        <span className="text-xs">↔</span>
+                        <Badge variant="default" className="text-[10px] bg-green-600">C</Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold">{tripleDifferences.pair1_3.significantPercent}%</span>
+                        <span className="text-xs text-muted-foreground">({tripleDifferences.pair1_3.avgLengthDiff} chars)</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-2 rounded bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="default" className="text-[10px]">B</Badge>
+                        <span className="text-xs">↔</span>
+                        <Badge variant="default" className="text-[10px] bg-green-600">C</Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold">{tripleDifferences.pair2_3.significantPercent}%</span>
+                        <span className="text-xs text-muted-foreground">({tripleDifferences.pair2_3.avgLengthDiff} chars)</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
       )}
       
       {/* Layout de Tres Columnas */}

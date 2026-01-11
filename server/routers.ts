@@ -472,6 +472,102 @@ export const appRouter = router({
           },
         };
       }),
+    
+    /**
+     * Analizar diferencias por pares entre tres sesiones
+     */
+    analyzeTripleDifferences: protectedProcedure
+      .input(z.object({
+        sessionId1: z.number(),
+        sessionId2: z.number(),
+        sessionId3: z.number(),
+      }))
+      .query(async ({ input }) => {
+        // Obtener mensajes de las tres sesiones
+        const [messages1, messages2, messages3] = await Promise.all([
+          getSessionMessages(input.sessionId1),
+          getSessionMessages(input.sessionId2),
+          getSessionMessages(input.sessionId3),
+        ]);
+        
+        // Filtrar solo mensajes del asistente
+        const assistant1 = messages1.filter(m => m.role === "assistant");
+        const assistant2 = messages2.filter(m => m.role === "assistant");
+        const assistant3 = messages3.filter(m => m.role === "assistant");
+        
+        // Función helper para calcular diferencias entre dos listas de mensajes
+        const calculatePairDifferences = (left: typeof assistant1, right: typeof assistant1) => {
+          const differences = [];
+          const maxLength = Math.max(left.length, right.length);
+          
+          for (let i = 0; i < maxLength; i++) {
+            const msgLeft = left[i];
+            const msgRight = right[i];
+            
+            if (!msgLeft || !msgRight) continue;
+            
+            const lengthLeft = msgLeft.content.length;
+            const lengthRight = msgRight.content.length;
+            const lengthDiff = Math.abs(lengthLeft - lengthRight);
+            const lengthDiffPercent = (lengthDiff / Math.max(lengthLeft, lengthRight)) * 100;
+            
+            const wordsLeft = msgLeft.content.split(/\s+/).length;
+            const wordsRight = msgRight.content.split(/\s+/).length;
+            const wordsDiff = Math.abs(wordsLeft - wordsRight);
+            
+            const isSignificant = lengthDiffPercent > 30 || wordsDiff > 50;
+            
+            differences.push({
+              index: i,
+              lengthDiff,
+              lengthDiffPercent: Math.round(lengthDiffPercent),
+              wordsDiff,
+              isSignificant,
+            });
+          }
+          
+          const avgLengthDiff = differences.length > 0
+            ? differences.reduce((sum, d) => sum + d.lengthDiff, 0) / differences.length
+            : 0;
+          const significantCount = differences.filter(d => d.isSignificant).length;
+          
+          return {
+            differences,
+            avgLengthDiff: Math.round(avgLengthDiff),
+            significantCount,
+            significantPercent: differences.length > 0
+              ? Math.round((significantCount / differences.length) * 100)
+              : 0,
+          };
+        };
+        
+        // Calcular diferencias por pares
+        const pair1_2 = calculatePairDifferences(assistant1, assistant2);
+        const pair1_3 = calculatePairDifferences(assistant1, assistant3);
+        const pair2_3 = calculatePairDifferences(assistant2, assistant3);
+        
+        return {
+          pair1_2,
+          pair1_3,
+          pair2_3,
+          summary: {
+            totalPairs: 3,
+            avgDivergence: Math.round(
+              (pair1_2.significantPercent + pair1_3.significantPercent + pair2_3.significantPercent) / 3
+            ),
+            maxDivergence: Math.max(
+              pair1_2.significantPercent,
+              pair1_3.significantPercent,
+              pair2_3.significantPercent
+            ),
+            minDivergence: Math.min(
+              pair1_2.significantPercent,
+              pair1_3.significantPercent,
+              pair2_3.significantPercent
+            ),
+          },
+        };
+      }),
   }),
   
   metrics: router({

@@ -193,3 +193,15 @@
 - [x] Visualizar conversaciones en paralelo con badges de perfil
 - [x] Agregar ruta `/comparativa-triple` en App.tsx
 - [x] Agregar enlace desde Home.tsx
+
+
+## Panel de Análisis de Diferencias por Pares (Completado)
+
+- [x] Crear endpoint `conversation.analyzeTripleDifferences` para tres sesiones
+- [x] Calcular diferencias por pares: A-B, A-C, B-C
+- [x] Computar métricas de divergencia: longitud, palabras, estructura
+- [x] Crear panel de matriz de divergencias con visualización clara
+- [x] Mostrar porcentaje de divergencia para cada par
+- [x] Agregar badges de color para identificar perfiles
+- [x] Calcular estadísticas agregadas: divergencia promedio, máxima, mínima
+- [x] Integrar el panel en TripleComparative
