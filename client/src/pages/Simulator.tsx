@@ -55,6 +55,7 @@ export default function Simulator() {
   const toggleModeMutation = trpc.session.toggleMode.useMutation();
   const regenerateMutation = trpc.conversation.regenerateWithProfile.useMutation();
   const exportPDFMutation = trpc.session.exportPDF.useMutation();
+  const detectAnomaliesMutation = trpc.alert.detectAnomalies.useMutation();
   
   // Queries
   const { data: messages, refetch: refetchMessages } = trpc.conversation.getHistory.useQuery(
@@ -156,7 +157,16 @@ export default function Simulator() {
     }
   };
   
-  const handleReset = () => {
+  const handleReset = async () => {
+    // Ejecutar detección de anomalías antes de cerrar la sesión
+    if (sessionId) {
+      try {
+        await detectAnomaliesMutation.mutateAsync({ sessionId });
+      } catch (error) {
+        console.error("Error al detectar anomalías:", error);
+      }
+    }
+    
     setSessionId(null);
     setIsSessionActive(false);
     setPurpose("");

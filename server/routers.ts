@@ -17,7 +17,11 @@ import {
   createTimeMarker,
   getTimeMarkersBySession,
   updateTimeMarker,
-  deleteTimeMarker
+  deleteTimeMarker,
+  getUserAlerts,
+  getSessionAlerts,
+  dismissAlert,
+  detectAnomalies
 } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { calculateMetricsSimplified } from "./semantic_bridge";
@@ -1412,6 +1416,56 @@ export const appRouter = router({
             markerCount: calculateDelta(currentMetrics.markerCount, previousMetrics.markerCount),
           },
         };
+      }),
+  }),
+
+  // ============================================
+  // ALERT: Gestión de alertas de anomalías
+  // ============================================
+  
+  alert: router({
+    /**
+     * Listar alertas activas del usuario
+     */
+    list: protectedProcedure
+      .query(async ({ ctx }) => {
+        const alerts = await getUserAlerts(ctx.user.id);
+        return alerts.filter((a: any) => !a.dismissed);
+      }),
+    
+    /**
+     * Obtener alertas de una sesión específica
+     */
+    getBySession: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        return await getSessionAlerts(input.sessionId);
+      }),
+    
+    /**
+     * Descartar una alerta
+     */
+    dismiss: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await dismissAlert(input.id);
+        return { success: true };
+      }),
+    
+    /**
+     * Ejecutar detección de anomalías en una sesión
+     */
+    detectAnomalies: protectedProcedure
+      .input(z.object({
+        sessionId: z.number(),
+      }))
+      .mutation(async ({ input }) => {
+        await detectAnomalies(input.sessionId);
+        return { success: true };
       }),
   }),
 });

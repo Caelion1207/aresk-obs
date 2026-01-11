@@ -335,3 +335,18 @@
 - [x] Agregar tarjeta de comparación para actividad de marcadores
 - [x] Agregar tarjeta de comparación para sesiones realizadas
 - [x] Implementar código de colores (verde para mejora, rojo para deterioro)
+
+## Sistema de Alertas de Anomalías (Completado)
+
+- [x] Crear tabla `sessionAlerts` en esquema de base de datos
+- [x] Definir criterios de detección (TPR < 30%, V(e) > 0.5, colapsos >= 3, σ(Ω) > 0.3)
+- [x] Implementar función `detectAnomalies` en backend para análisis automático
+- [x] Crear endpoint `alert.list` para listar alertas activas
+- [x] Crear endpoint `alert.dismiss` para descartar alertas
+- [x] Crear endpoint `alert.getBySession` para obtener alertas de una sesión específica
+- [x] Crear endpoint `alert.detectAnomalies` para ejecutar detección manual
+- [x] Ejecutar detección automática al finalizar cada sesión en Simulator
+- [x] Crear componente AlertPanel para mostrar alertas activas
+- [x] Agregar AlertPanel en página de estadísticas
+- [x] Agregar indicadores visuales de severidad (crítico, advertencia, info)
+- [x] Implementar botón de descartar alerta y enlace a sesión

@@ -107,3 +107,22 @@ export const timeMarkers = mysqlTable("timeMarkers", {
 
 export type TimeMarker = typeof timeMarkers.$inferSelect;
 export type InsertTimeMarker = typeof timeMarkers.$inferInsert;
+
+/**
+ * Tabla de alertas de anomalías en sesiones
+ * Detecta automáticamente sesiones con rendimiento anómalo
+ */
+export const sessionAlerts = mysqlTable("sessionAlerts", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionId: int("sessionId").notNull(),
+  alertType: mysqlEnum("alertType", ["low_tpr", "high_lyapunov", "frequent_collapses", "unstable_omega"]).notNull(),
+  severity: mysqlEnum("severity", ["critical", "warning", "info"]).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  metricValue: float("metricValue"), // Valor de la métrica que disparó la alerta
+  dismissed: boolean("dismissed").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SessionAlert = typeof sessionAlerts.$inferSelect;
+export type InsertSessionAlert = typeof sessionAlerts.$inferInsert;

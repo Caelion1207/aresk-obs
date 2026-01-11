@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, sessions, messages, metrics, timeMarkers, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker } from "../drizzle/schema";
+import { InsertUser, users, sessions, messages, metrics, timeMarkers, sessionAlerts, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker, InsertSessionAlert } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -215,4 +215,130 @@ export async function deleteTimeMarker(id: number) {
   if (!db) throw new Error("Database not available");
   
   await db.delete(timeMarkers).where(eq(timeMarkers.id, id));
+}
+
+// ============================================
+// SESSION ALERTS
+// ============================================
+
+export async function createSessionAlert(alert: InsertSessionAlert): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(sessionAlerts).values(alert);
+}
+
+export async function getSessionAlerts(sessionId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(sessionAlerts).where(eq(sessionAlerts.sessionId, sessionId));
+}
+
+export async function getUserAlerts(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Join con sessions para filtrar por userId
+  const userSessions = await getUserSessions(userId);
+  const sessionIds = userSessions.map(s => s.id);
+  
+  if (sessionIds.length === 0) return [];
+  
+  const alerts = await db.select().from(sessionAlerts);
+  return alerts.filter(alert => sessionIds.includes(alert.sessionId));
+}
+
+export async function dismissAlert(alertId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(sessionAlerts)
+    .set({ dismissed: true })
+    .where(eq(sessionAlerts.id, alertId));
+}
+
+/**
+ * Detecta anomalías en una sesión y crea alertas automáticamente
+ */
+export async function detectAnomalies(sessionId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  
+  const sessionMetrics = await getSessionMetrics(sessionId);
+  const markers = await getTimeMarkersBySession(sessionId);
+  
+  if (sessionMetrics.length === 0) return;
+  
+  const alerts: InsertSessionAlert[] = [];
+  
+  // Calcular TPR
+  const stableSteps = sessionMetrics.filter(m => m.coherenciaObservable > 0.7).length;
+  const tprPercent = (stableSteps / sessionMetrics.length) * 100;
+  
+  // Alerta: TPR bajo (< 30%)
+  if (tprPercent < 30) {
+    alerts.push({
+      sessionId,
+      alertType: "low_tpr",
+      severity: "critical",
+      title: "TPR Críticamente Bajo",
+      description: `El Tiempo de Permanencia en Régimen es de solo ${tprPercent.toFixed(1)}%, indicando inestabilidad severa en la coherencia observable.`,
+      metricValue: tprPercent,
+      dismissed: false,
+    });
+  }
+  
+  // Calcular promedio de V(e)
+  const avgLyapunov = sessionMetrics.reduce((sum, m) => sum + m.funcionLyapunov, 0) / sessionMetrics.length;
+  
+  // Alerta: V(e) alto (> 0.5)
+  if (avgLyapunov > 0.5) {
+    alerts.push({
+      sessionId,
+      alertType: "high_lyapunov",
+      severity: "warning",
+      title: "Función de Lyapunov Elevada",
+      description: `El promedio de V(e) es ${avgLyapunov.toFixed(4)}, superando el umbral de estabilidad (0.5). Indica divergencia semántica significativa.`,
+      metricValue: avgLyapunov,
+      dismissed: false,
+    });
+  }
+  
+  // Contar colapsos semánticos
+  const collapseCount = markers.filter(m => m.markerType === "colapso_semantico").length;
+  
+  // Alerta: Colapsos frecuentes (>= 3)
+  if (collapseCount >= 3) {
+    alerts.push({
+      sessionId,
+      alertType: "frequent_collapses",
+      severity: "critical",
+      title: "Colapsos Semánticos Frecuentes",
+      description: `Se detectaron ${collapseCount} colapsos semánticos durante la sesión, indicando pérdida recurrente de coherencia interna.`,
+      metricValue: collapseCount,
+      dismissed: false,
+    });
+  }
+  
+  // Calcular variabilidad de Ω(t)
+  const omegaValues = sessionMetrics.map(m => m.coherenciaObservable);
+  const avgOmega = omegaValues.reduce((a, b) => a + b, 0) / omegaValues.length;
+  const variance = omegaValues.reduce((sum, val) => sum + Math.pow(val - avgOmega, 2), 0) / omegaValues.length;
+  const stdDev = Math.sqrt(variance);
+  
+  // Alerta: Ω(t) inestable (desviación estándar > 0.3)
+  if (stdDev > 0.3) {
+    alerts.push({
+      sessionId,
+      alertType: "unstable_omega",
+      severity: "warning",
+      title: "Coherencia Observable Inestable",
+      description: `La desviación estándar de Ω(t) es ${stdDev.toFixed(4)}, indicando fluctuaciones significativas en la coherencia observable.`,
+      metricValue: stdDev,
+      dismissed: false,
+    });
+  }
+  
+  // Insertar todas las alertas
+  for (const alert of alerts) {
+    await createSessionAlert(alert);
+  }
 }

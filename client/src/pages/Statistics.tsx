@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import AlertPanel from "@/components/AlertPanel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -228,6 +229,9 @@ export default function Statistics() {
           </div>
         </div>
       )}
+      
+      {/* Panel de Alertas */}
+      <AlertPanel />
 
       {/* TPR por Perfil */}
       <div className="grid gap-6 md:grid-cols-2">
