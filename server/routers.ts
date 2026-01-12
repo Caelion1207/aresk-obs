@@ -26,6 +26,9 @@ import {
 } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { calculateMetricsSimplified } from "./semantic_bridge";
+import { analyzeSemanticPolarity, calculateEffectiveField } from "./semanticPolarity";
+import { calculateModifiedLyapunov, normalizeModifiedLyapunov } from "./lyapunovModified";
+import { applyLicurgoControl, validateMetrics } from "./licurgoControl";
 
 export const appRouter = router({
   system: systemRouter,
@@ -597,12 +600,88 @@ export const appRouter = router({
           content: userPrompt,
         });
         
-        // Invocar el LLM
+        // Invocar el LLM (respuesta sin control)
         const response = await invokeLLM({ messages });
         const messageContent = response.choices[0]?.message?.content;
-        const assistantContent = typeof messageContent === 'string' ? messageContent : "Error al generar respuesta";
+        let assistantContent = typeof messageContent === 'string' ? messageContent : "Error al generar respuesta";
         
-        // Guardar respuesta del asistente con el perfil actual
+        // Calcular métricas preliminares usando el puente semántico
+        const referenceText = `Propósito: ${session.purpose}\nLímites: ${session.limits}\nÉtica: ${session.ethics}`;
+        const applyControl = session.plantProfile === "acoplada";
+        let metrics = calculateMetricsSimplified(
+          referenceText,
+          assistantContent,
+          "uncontrolled" // Siempre calcular sin control primero
+        );
+        
+        // Calcular polaridad semántica σ_sem
+        const sigmaSem = await analyzeSemanticPolarity(assistantContent, {
+          purpose: session.purpose,
+          limits: session.limits,
+          ethics: session.ethics,
+        });
+        
+        // Calcular campo efectivo ε_eff = Ω(t) × σ_sem(t)
+        const epsilonEff = calculateEffectiveField(metrics.coherenciaObservable, sigmaSem);
+        
+        // Calcular V_modificada = V_base - α × ε_eff
+        const alpha = session.alphaPenalty || 0.3;
+        const vModified = calculateModifiedLyapunov(
+          metrics.funcionLyapunov,
+          epsilonEff,
+          alpha
+        );
+        const vModifiedNormalized = normalizeModifiedLyapunov(vModified);
+        
+        // Validar rangos de métricas
+        const validation = validateMetrics({
+          vBase: metrics.funcionLyapunov,
+          vModified: vModifiedNormalized,
+          omega: metrics.coherenciaObservable,
+          sigmaSem,
+          epsilonEff,
+        });
+        
+        if (!validation.valid) {
+          console.warn("[Métricas fuera de rango]", validation.warnings);
+        }
+        
+        // Aplicar control LICURGO v2.0 si el perfil es "acoplada"
+        let controlAction: { type: "none" | "position" | "structure" | "combined"; magnitude: number } = { type: "none", magnitude: 0 };
+        if (applyControl) {
+          const controlResult = await applyLicurgoControl({
+            errorMagnitude: metrics.errorCognitivoMagnitud,
+            stabilityRadius: session.stabilityRadius,
+            epsilonEff,
+            sigmaSem,
+            omega: metrics.coherenciaObservable,
+            ontology: {
+              purpose: session.purpose,
+              limits: session.limits,
+              ethics: session.ethics,
+            },
+            userMessage: input.content,
+            plantResponse: assistantContent,
+          });
+          
+          if (controlResult.type !== "none") {
+            assistantContent = controlResult.controlledMessage;
+            controlAction = {
+              type: controlResult.type,
+              magnitude: controlResult.magnitude,
+            };
+            console.log(`[LICURGO v2.0] ${controlResult.reasoning}`);
+            
+            // Recalcular métricas con respuesta controlada
+            metrics = calculateMetricsSimplified(
+              referenceText,
+              assistantContent,
+              "controlled"
+            );
+          }
+        }
+        
+        // Guardar respuesta del asistente (controlada si aplica)
         const assistantMessageId = await createMessage({
           sessionId: input.sessionId,
           role: "assistant",
@@ -610,21 +689,14 @@ export const appRouter = router({
           plantProfile: session.plantProfile,
         });
         
-        // Calcular métricas usando el puente semántico
-        const referenceText = `Propósito: ${session.purpose}\nLímites: ${session.limits}\nÉtica: ${session.ethics}`;
-        // Determinar si aplicar control basado en el perfil de planta
-        const applyControl = session.plantProfile === "acoplada";
-        const metrics = calculateMetricsSimplified(
-          referenceText,
-          assistantContent,
-          applyControl ? "controlled" : "uncontrolled"
-        );
-        
         // Guardar métricas en la base de datos
         await createMetric({
           sessionId: input.sessionId,
           messageId: assistantMessageId,
           ...metrics,
+          signoSemantico: sigmaSem,
+          campoEfectivo: epsilonEff,
+          funcionLyapunovModificada: vModifiedNormalized,
         });
         
         // Actualizar TPR (Tiempo de Permanencia en Régimen)
@@ -640,7 +712,12 @@ export const appRouter = router({
         return {
           messageId: assistantMessageId,
           content: assistantContent,
-          metrics,
+          metrics: {
+            ...metrics,
+            signoSemantico: sigmaSem,
+            campoEfectivo: epsilonEff,
+            funcionLyapunovModificada: vModifiedNormalized,
+          },
           tpr: {
             current: updatedSession?.tprCurrent || 0,
             max: updatedSession?.tprMax || 0,

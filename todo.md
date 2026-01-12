@@ -405,3 +405,46 @@
 - [x] Agregar sección de análisis de correlación en `/comparar-sesiones`
 - [x] Implementar colores en mapa de calor (rojo negativo, verde positivo, intensidad por magnitud)
 - [x] Agregar guía de interpretación de coeficientes
+
+
+## Sistema de Polaridad Semántica (σ_sem) - En Progreso
+
+- [ ] Actualizar esquema de base de datos para almacenar σ_sem en métricas
+- [ ] Implementar función de análisis LLM para calcular σ_sem de cada mensaje
+- [ ] Calcular campo efectivo ε_eff = Ω(t) × σ_sem(t)
+- [ ] Actualizar función de Lyapunov V(e) para considerar polaridad semántica
+- [ ] Crear componente TensionVectors para visualizar vectores de acreción/drenaje
+- [ ] Implementar vectores cian/verde para acreción (σ_sem > 0)
+- [ ] Implementar vectores naranja/rojo para drenaje (σ_sem < 0)
+- [ ] Agregar erosión visual del atractor cuando σ_sem < -0.3
+- [ ] Implementar "Polarímetro Semántico" en HUD del Simulator
+- [ ] Actualizar control LICURGO para detectar drenaje semántico
+- [ ] Implementar inyección de proposiciones afirmativas cuando ε_eff < 0
+- [ ] Agregar gráfico de ε_eff(t) en visualizaciones
+- [ ] Incluir σ_sem y ε_eff en PDFs exportados
+- [ ] Actualizar alertas para detectar "coherencia tóxica" (Ω alto, σ_sem negativo)
+
+
+## Sistema de Polaridad Semántica (σ_sem) y Control LICURGO v2.0 (Completado)
+
+- [x] Actualizar esquema de base de datos para almacenar σ_sem, ε_eff y V_modificada
+- [x] Agregar campo alphaPenalty (α) configurable en tabla de sesiones (default 0.3)
+- [x] Crear módulo semanticPolarity.ts para análisis LLM de polaridad
+- [x] Implementar función analyzeSemanticPolarity que devuelve σ_sem en [-1, 1]
+- [x] Implementar función calculateEffectiveField para ε_eff = Ω(t) × σ_sem(t)
+- [x] Crear módulo lyapunovModified.ts para V_modificada
+- [x] Implementar calculateModifiedLyapunov: V_modificada = V_base - α × ε_eff
+- [x] Implementar normalizeModifiedLyapunov para rango [0,1] con soft clipping
+- [x] Implementar detectToxicCoherence para detectar coherencia tóxica
+- [x] Implementar calculateErosionIndex para medir erosión estructural
+- [x] Integrar cálculo de σ_sem en endpoint sendMessage
+- [x] Integrar cálculo de V_modificada en endpoint sendMessage
+- [x] Crear módulo licurgoControl.ts para control v2.0
+- [x] Implementar requiresControl para decidir tipo de control (posición/estructura)
+- [x] Implementar applyLicurgoControl con inyección de estructura anti-drenaje
+- [x] Implementar validateMetrics para verificar rangos [0,1] y coherencia
+- [x] Integrar control LICURGO en endpoint sendMessage (solo perfil acoplada)
+- [x] Crear componente TensionVectors para visualización de vectores de tensión
+- [x] Validar que V_base permanece en [0,1]
+- [x] Validar que V_modificada normalizada permanece en [0,1]
+- [x] Validar que σ_sem detecta semántica negativa correctamente

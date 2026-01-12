@@ -38,6 +38,7 @@ export const sessions = mysqlTable("sessions", {
   plantProfile: mysqlEnum("plantProfile", ["tipo_a", "tipo_b", "acoplada"]).notNull(),
   controlGain: float("controlGain").default(0.5).notNull(),
   stabilityRadius: float("stabilityRadius").default(0.3).notNull(), // Radio ε del conjunto de estabilidad admisible
+  alphaPenalty: float("alphaPenalty").default(0.3).notNull(), // α: factor de penalización semántica para V_modificada
   tprCurrent: int("tprCurrent").default(0).notNull(), // Tiempo de Permanencia en Régimen actual (en turnos)
   tprMax: int("tprMax").default(0).notNull(), // TPR máximo alcanzado en la sesión
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -79,11 +80,14 @@ export const metrics = mysqlTable("metrics", {
   sessionId: int("sessionId").notNull(),
   messageId: int("messageId").notNull(),
   coherenciaObservable: float("coherenciaObservable").notNull(),
-  funcionLyapunov: float("funcionLyapunov").notNull(),
+  funcionLyapunov: float("funcionLyapunov").notNull(), // V_base(e): métrica canónica normalizada [0,1]
+  funcionLyapunovModificada: float("funcionLyapunovModificada").default(0).notNull(), // V_modificada = V_base - α×ε_eff
   errorCognitivoMagnitud: float("errorCognitivoMagnitud").notNull(),
   controlActionMagnitud: float("controlActionMagnitud").notNull(),
   entropiaH: float("entropiaH").notNull(),
   coherenciaInternaC: float("coherenciaInternaC").notNull(),
+  signoSemantico: float("signoSemantico").default(0).notNull(), // σ_sem: +1 (acrección), 0 (neutro), -1 (drenaje)
+  campoEfectivo: float("campoEfectivo").default(0).notNull(), // ε_eff = Ω(t) × σ_sem(t)
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
