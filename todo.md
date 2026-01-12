@@ -376,3 +376,18 @@
 - [x] Aplicar Brush y tooltips mejorados en gráficos de Simulator
 - [x] Aplicar Brush y tooltips mejorados en gráficos de SessionReplay
 - [x] Aumentar altura de gráficos para acomodar Brush (300-450px)
+
+
+## Comparación de Sesiones Históricas Específicas (Completado)
+
+- [x] Crear endpoint `session.getMultipleSessions` para obtener datos de varias sesiones
+- [x] Crear página `/comparar-sesiones` con selector múltiple de sesiones
+- [x] Implementar filtro por perfil de planta en selector de sesiones
+- [x] Mostrar lista de sesiones disponibles con metadatos (ID, fecha, perfil, TPR)
+- [x] Permitir selección de 2-5 sesiones para comparación con checkboxes
+- [x] Generar gráficos superpuestos de V(t) y Ω(t) con colores distintivos
+- [x] Crear tabla comparativa de métricas (TPR, promedios, duración, marcadores, alertas)
+- [x] Agregar botón "Exportar PDF Comparativo" para 2-3 sesiones seleccionadas
+- [x] Implementar estado de carga y manejo de errores
+- [x] Agregar enlace a `/comparar-sesiones` en navegación principal
+- [x] Agregar Brush para zoom en gráficos comparativos

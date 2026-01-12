@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
 import { calculateCosineSimilarity } from "./semantic_bridge";
 import { z } from "zod";
 import { 
@@ -493,6 +494,60 @@ export const appRouter = router({
           ],
           pairwiseComparisons,
         };
+      }),
+    
+    /**
+     * Obtener datos completos de múltiples sesiones para comparación
+     */
+    getMultipleSessions: protectedProcedure
+      .input(z.object({
+        sessionIds: z.array(z.number()).min(2).max(5),
+      }))
+      .query(async ({ ctx, input }) => {
+        const sessionsData = [];
+        
+        for (const sessionId of input.sessionIds) {
+          const session = await getSession(sessionId);
+          if (!session || session.userId !== ctx.user.id) {
+            throw new TRPCError({
+              code: 'NOT_FOUND',
+              message: `Sesión ${sessionId} no encontrada o no autorizada`,
+            });
+          }
+          
+          const metrics = await getSessionMetrics(sessionId);
+          const messages = await getSessionMessages(sessionId);
+          const markers = await getTimeMarkersBySession(sessionId);
+          const alerts = await getSessionAlerts(sessionId);
+          
+          // Calcular estadísticas
+          if (metrics.length > 0) {
+            const avgV = metrics.reduce((sum, m) => sum + m.funcionLyapunov, 0) / metrics.length;
+            const avgOmega = metrics.reduce((sum, m) => sum + m.coherenciaObservable, 0) / metrics.length;
+            const avgError = metrics.reduce((sum, m) => sum + m.errorCognitivoMagnitud, 0) / metrics.length;
+            const stableSteps = metrics.filter(m => m.coherenciaObservable > 0.7).length;
+            const tpr = (stableSteps / metrics.length) * 100;
+            
+            sessionsData.push({
+              session,
+              metrics,
+              messages,
+              markers,
+              alerts,
+              stats: {
+                avgV: Number(avgV.toFixed(4)),
+                avgOmega: Number(avgOmega.toFixed(4)),
+                avgError: Number(avgError.toFixed(4)),
+                tpr: Number(tpr.toFixed(2)),
+                duration: metrics.length,
+                markerCount: markers.length,
+                alertCount: alerts.length,
+              },
+            });
+          }
+        }
+        
+        return sessionsData;
       }),
   }),
   

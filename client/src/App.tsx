@@ -14,6 +14,7 @@ import Modules from "./pages/Modules";
 import Protocols from "./pages/Protocols";
 import Proposals from "./pages/Proposals";
 import Statistics from "./pages/Statistics";
+import CompareHistorical from "./pages/CompareHistorical";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function Router() {
       <Route path={"/protocols"} component={Protocols} />
       <Route path={"/proposals"} component={Proposals} />
       <Route path={"/estadisticas"} component={Statistics} />
+      <Route path={"/comparar-sesiones"} component={CompareHistorical} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -41,6 +41,11 @@ export default function Home() {
                   Estadísticas
                 </Button>
               </Link>
+              <Link href="/comparar-sesiones">
+                <Button variant="outline" size="lg">
+                  Comparar Sesiones
+                </Button>
+              </Link>
               <Link href="/simulator">
                 <Button size="lg">
                   Acceder al Instrumento
