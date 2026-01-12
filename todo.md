@@ -526,3 +526,21 @@
 - [x] Agregar ruta `/erosion` en App.tsx
 - [x] Agregar enlace en header de Home.tsx
 - [x] Agregar acceso rápido desde Simulator y SessionReplay
+
+
+## Comparación Visual Multi-Sesión en Dashboard de Erosión (Completado)
+
+### Backend
+- [x] Extender endpoint `erosion.getComparativeErosion` para incluir series temporales de ε_eff
+- [x] Calcular correlación de Pearson entre índices de erosión de sesiones
+- [x] Calcular correlación entre series temporales de ε_eff
+- [x] Generar matriz de correlación completa
+
+### Frontend
+- [x] Agregar selector múltiple de sesiones (2-5) en ErosionDashboard
+- [x] Crear gráfico overlay de curvas ε_eff(t) con colores diferenciados
+- [x] Implementar leyenda dinámica con identificación de sesiones
+- [x] Crear componente de matriz de correlación visual con mapa de calor
+- [x] Implementar tabla comparativa con ranking de severidad de erosión
+- [x] Agregar estadísticas agregadas (erosión promedio, máxima, mínima)
+- [x] Mostrar interpretación de coeficientes de correlación

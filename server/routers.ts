@@ -1808,10 +1808,37 @@ export const appRouter = router({
     getComparativeErosion: protectedProcedure
       .input(z.object({ sessionIds: z.array(z.number()) }))
       .query(async ({ input, ctx }) => {
+        // Función auxiliar para calcular correlación de Pearson
+        const calculateCorrelation = (x: number[], y: number[]): number => {
+          const n = Math.min(x.length, y.length);
+          if (n === 0) return 0;
+          
+          const meanX = x.slice(0, n).reduce((a, b) => a + b, 0) / n;
+          const meanY = y.slice(0, n).reduce((a, b) => a + b, 0) / n;
+          
+          let numerator = 0;
+          let sumSqX = 0;
+          let sumSqY = 0;
+          
+          for (let i = 0; i < n; i++) {
+            const dx = x[i] - meanX;
+            const dy = y[i] - meanY;
+            numerator += dx * dy;
+            sumSqX += dx * dx;
+            sumSqY += dy * dy;
+          }
+          
+          const denominator = Math.sqrt(sumSqX * sumSqY);
+          return denominator === 0 ? 0 : numerator / denominator;
+        };
+        
         const comparisons = await Promise.all(
           input.sessionIds.map(async (sessionId) => {
             const session = await getSession(sessionId);
             const metrics = await getSessionMetrics(sessionId);
+            
+            // Extraer serie temporal de ε_eff
+            const epsilonEffTimeSeries = metrics.map(m => (m as any).epsilonEff || 0);
             
             // Calcular índice de erosión acumulado
             let erosionIndex = 0;
@@ -1849,11 +1876,37 @@ export const appRouter = router({
               drainageCount,
               avgEpsilonEff,
               totalSteps: metrics.length,
+              epsilonEffTimeSeries,
             };
           })
         );
         
-        return comparisons;
+        // Calcular matriz de correlación entre series temporales de ε_eff
+        const correlationMatrix: Record<string, Record<string, number>> = {};
+        
+        for (let i = 0; i < comparisons.length; i++) {
+          const sessionA = comparisons[i];
+          correlationMatrix[sessionA.sessionId] = {};
+          
+          for (let j = 0; j < comparisons.length; j++) {
+            const sessionB = comparisons[j];
+            
+            if (i === j) {
+              correlationMatrix[sessionA.sessionId][sessionB.sessionId] = 1.0;
+            } else {
+              const correlation = calculateCorrelation(
+                sessionA.epsilonEffTimeSeries,
+                sessionB.epsilonEffTimeSeries
+              );
+              correlationMatrix[sessionA.sessionId][sessionB.sessionId] = correlation;
+            }
+          }
+        }
+        
+        return {
+          comparisons,
+          correlationMatrix,
+        };
       }),
   }),
 });

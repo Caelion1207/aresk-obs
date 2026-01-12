@@ -498,6 +498,255 @@ export default function ErosionDashboard() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Panel de comparación multi-sesión */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  Comparación Multi-Sesión
+                </CardTitle>
+                <CardDescription>
+                  Selecciona 2-5 sesiones para comparar curvas de ε_eff(t) y analizar correlación de erosión
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Selector múltiple de sesiones */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Sesiones a comparar</label>
+                  <div className="flex flex-wrap gap-2">
+                    {acopladaSessions.map((session: any) => {
+                      const isSelected = compareSessionIds.includes(session.id);
+                      return (
+                        <Button
+                          key={session.id}
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => {
+                            if (isSelected) {
+                              setCompareSessionIds(compareSessionIds.filter(id => id !== session.id));
+                            } else if (compareSessionIds.length < 5) {
+                              setCompareSessionIds([...compareSessionIds, session.id]);
+                            }
+                          }}
+                          disabled={!isSelected && compareSessionIds.length >= 5}
+                        >
+                          Sesión #{session.id}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {compareSessionIds.length} de 5 sesiones seleccionadas
+                  </p>
+                </div>
+
+                {/* Gráfico overlay de curvas ε_eff(t) */}
+                {comparativeData && comparativeData.comparisons.length >= 2 && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h4 className="text-sm font-medium mb-3">Overlay de Curvas ε_eff(t)</h4>
+                      <ResponsiveContainer width="100%" height={400}>
+                        <LineChart>
+                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
+                          <XAxis 
+                            dataKey="step" 
+                            type="number"
+                            domain={[0, 'dataMax']}
+                            label={{ value: 'Paso Temporal', position: 'insideBottom', offset: -5 }}
+                            stroke="oklch(from var(--foreground) l c h / 0.5)"
+                          />
+                          <YAxis 
+                            domain={[-1, 1]}
+                            label={{ value: 'ε_eff', angle: -90, position: 'insideLeft' }}
+                            stroke="oklch(from var(--foreground) l c h / 0.5)"
+                          />
+                          <Tooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'oklch(from var(--card) l c h)', 
+                              border: '1px solid oklch(from var(--border) l c h)',
+                              borderRadius: '8px',
+                            }}
+                            formatter={(value: number) => value.toFixed(4)}
+                          />
+                          <Legend />
+                          <ReferenceLine y={-0.2} stroke="oklch(0.55 0.25 25)" strokeDasharray="3 3" label="Umbral de drenaje" />
+                          <ReferenceLine y={0} stroke="oklch(from var(--foreground) l c h / 0.3)" />
+                          
+                          {comparativeData.comparisons.map((comp, index) => {
+                            const colors = [
+                              "oklch(0.65 0.2 280)", // azul
+                              "oklch(0.6 0.25 25)",  // rojo
+                              "oklch(0.6 0.15 150)", // verde
+                              "oklch(0.65 0.2 50)",  // amarillo
+                              "oklch(0.7 0.2 320)",  // magenta
+                            ];
+                            
+                            const data = comp.epsilonEffTimeSeries.map((value, step) => ({
+                              step,
+                              [`session_${comp.sessionId}`]: value,
+                            }));
+                            
+                            return (
+                              <Line
+                                key={comp.sessionId}
+                                data={data}
+                                type="monotone"
+                                dataKey={`session_${comp.sessionId}`}
+                                stroke={colors[index % colors.length]}
+                                strokeWidth={2}
+                                dot={false}
+                                name={`Sesión #${comp.sessionId}`}
+                              />
+                            );
+                          })}
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    <Separator />
+
+                    {/* Matriz de correlación */}
+                    <div>
+                      <h4 className="text-sm font-medium mb-3">Matriz de Correlación (Pearson)</h4>
+                      <p className="text-xs text-muted-foreground mb-3">
+                        Correlación entre series temporales de ε_eff. Valores cercanos a 1 indican patrones similares.
+                      </p>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr>
+                              <th className="border border-border p-2 bg-muted/50"></th>
+                              {comparativeData.comparisons.map(comp => (
+                                <th key={comp.sessionId} className="border border-border p-2 bg-muted/50 text-sm">
+                                  #{comp.sessionId}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {comparativeData.comparisons.map(compA => (
+                              <tr key={compA.sessionId}>
+                                <td className="border border-border p-2 bg-muted/50 font-medium text-sm">
+                                  #{compA.sessionId}
+                                </td>
+                                {comparativeData.comparisons.map(compB => {
+                                  const correlation = comparativeData.correlationMatrix[compA.sessionId]?.[compB.sessionId] || 0;
+                                  const absCorr = Math.abs(correlation);
+                                  
+                                  // Mapa de calor: rojo (negativo) -> blanco (0) -> verde (positivo)
+                                  let bgColor = "oklch(from var(--card) l c h)";
+                                  if (correlation > 0.7) bgColor = "oklch(0.6 0.15 150 / 0.3)";
+                                  else if (correlation > 0.3) bgColor = "oklch(0.6 0.15 150 / 0.15)";
+                                  else if (correlation < -0.7) bgColor = "oklch(0.55 0.25 25 / 0.3)";
+                                  else if (correlation < -0.3) bgColor = "oklch(0.55 0.25 25 / 0.15)";
+                                  
+                                  return (
+                                    <td 
+                                      key={compB.sessionId} 
+                                      className="border border-border p-2 text-center text-sm font-mono"
+                                      style={{ backgroundColor: bgColor }}
+                                    >
+                                      {correlation.toFixed(3)}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Tabla comparativa con ranking */}
+                    <div>
+                      <h4 className="text-sm font-medium mb-3">Ranking de Erosión</h4>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-border">
+                              <th className="text-left p-2 text-sm font-medium">Posición</th>
+                              <th className="text-left p-2 text-sm font-medium">Sesión</th>
+                              <th className="text-left p-2 text-sm font-medium">Fecha</th>
+                              <th className="text-right p-2 text-sm font-medium">Índice de Erosión</th>
+                              <th className="text-right p-2 text-sm font-medium">Eventos de Drenaje</th>
+                              <th className="text-right p-2 text-sm font-medium">ε_eff Promedio</th>
+                              <th className="text-left p-2 text-sm font-medium">Severidad</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {comparativeData.comparisons
+                              .sort((a, b) => b.erosionIndex - a.erosionIndex)
+                              .map((comp, index) => {
+                                const severity = comp.erosionIndex > 0.6 ? "crítica" :
+                                                comp.erosionIndex > 0.4 ? "alta" :
+                                                comp.erosionIndex > 0.2 ? "moderada" : "leve";
+                                const severityColor = comp.erosionIndex > 0.6 ? "text-red-500" :
+                                                     comp.erosionIndex > 0.4 ? "text-orange-500" :
+                                                     comp.erosionIndex > 0.2 ? "text-yellow-500" : "text-green-500";
+                                
+                                return (
+                                  <tr key={comp.sessionId} className="border-b border-border">
+                                    <td className="p-2 text-sm font-bold">{index + 1}</td>
+                                    <td className="p-2 text-sm">#{comp.sessionId}</td>
+                                    <td className="p-2 text-sm">{new Date(comp.createdAt).toLocaleDateString()}</td>
+                                    <td className="p-2 text-sm text-right font-mono">{(comp.erosionIndex * 100).toFixed(1)}%</td>
+                                    <td className="p-2 text-sm text-right">{comp.drainageCount}</td>
+                                    <td className="p-2 text-sm text-right font-mono">{comp.avgEpsilonEff.toFixed(4)}</td>
+                                    <td className="p-2 text-sm">
+                                      <Badge variant="outline" className={severityColor}>
+                                        {severity}
+                                      </Badge>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* Estadísticas agregadas */}
+                    <Separator />
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="p-3 rounded-lg border border-border bg-card/50">
+                        <p className="text-xs text-muted-foreground">Erosión Promedio</p>
+                        <p className="text-2xl font-bold mt-1">
+                          {(comparativeData.comparisons.reduce((sum, c) => sum + c.erosionIndex, 0) / comparativeData.comparisons.length * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg border border-border bg-card/50">
+                        <p className="text-xs text-muted-foreground">Erosión Máxima</p>
+                        <p className="text-2xl font-bold mt-1 text-red-500">
+                          {(Math.max(...comparativeData.comparisons.map(c => c.erosionIndex)) * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg border border-border bg-card/50">
+                        <p className="text-xs text-muted-foreground">Erosión Mínima</p>
+                        <p className="text-2xl font-bold mt-1 text-green-500">
+                          {(Math.min(...comparativeData.comparisons.map(c => c.erosionIndex)) * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {compareSessionIds.length > 0 && compareSessionIds.length < 2 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    Selecciona al menos 2 sesiones para ver la comparación
+                  </p>
+                )}
+
+                {compareSessionIds.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    Selecciona sesiones para comenzar la comparación
+                  </p>
+                )}
+              </CardContent>
+            </Card>
           </>
         )}
       </div>
