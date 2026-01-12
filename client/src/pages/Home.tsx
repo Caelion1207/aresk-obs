@@ -46,6 +46,11 @@ export default function Home() {
                   Comparar Sesiones
                 </Button>
               </Link>
+              <Link href="/erosion">
+                <Button variant="outline" size="lg">
+                  Erosión Estructural
+                </Button>
+              </Link>
               <Link href="/simulator">
                 <Button size="lg">
                   Acceder al Instrumento

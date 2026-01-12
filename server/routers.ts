@@ -1674,6 +1674,189 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ============================================
+  // EROSION: Dashboard de erosión estructural
+  // ============================================
+  
+  erosion: router({
+    /**
+     * Obtener historial de ε_eff por sesión
+     */
+    getSessionErosionHistory: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .query(async ({ input, ctx }) => {
+        const metrics = await getSessionMetrics(input.sessionId);
+        
+        // Extraer datos de polaridad y calcular erosión
+        const history = metrics.map((m, index) => {
+          const sigmaSem = (m as any).sigmaSem || 0;
+          const epsilonEff = (m as any).epsilonEff || 0;
+          const vModified = (m as any).vModified || m.funcionLyapunov;
+          
+          return {
+            step: index + 1,
+            timestamp: m.timestamp,
+            sigmaSem,
+            epsilonEff,
+            vBase: m.funcionLyapunov,
+            vModified,
+            omega: m.coherenciaObservable,
+            errorNorm: m.errorCognitivoMagnitud,
+          };
+        });
+        
+        return history;
+      }),
+    
+    /**
+     * Obtener eventos de drenaje (ε_eff < -0.2)
+     */
+    getDrainageEvents: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .query(async ({ input, ctx }) => {
+        const metrics = await getSessionMetrics(input.sessionId);
+        
+        const drainageEvents = metrics
+          .map((m, index) => {
+            const epsilonEff = (m as any).epsilonEff || 0;
+            const sigmaSem = (m as any).sigmaSem || 0;
+            
+            if (epsilonEff < -0.2) {
+              // Clasificar severidad
+              let severity: "moderate" | "high" | "critical";
+              if (epsilonEff < -0.5) severity = "critical";
+              else if (epsilonEff < -0.35) severity = "high";
+              else severity = "moderate";
+              
+              return {
+                step: index + 1,
+                timestamp: m.timestamp,
+                epsilonEff,
+                sigmaSem,
+                severity,
+                vModified: (m as any).vModified || m.funcionLyapunov,
+              };
+            }
+            return null;
+          })
+          .filter((e): e is NonNullable<typeof e> => e !== null);
+        
+        return drainageEvents;
+      }),
+    
+    /**
+     * Obtener estadísticas de efectividad de control LICURGO
+     */
+    getLicurgoEffectiveness: protectedProcedure
+      .input(z.object({ sessionId: z.number() }))
+      .query(async ({ input, ctx }) => {
+        const metrics = await getSessionMetrics(input.sessionId);
+        
+        // Identificar eventos de control (cuando hay cambio significativo en métricas)
+        const controlEvents: Array<{
+          step: number;
+          timestamp: Date;
+          epsilonEffBefore: number;
+          epsilonEffAfter: number;
+          improvement: number;
+          vModifiedBefore: number;
+          vModifiedAfter: number;
+        }> = [];
+        
+        for (let i = 1; i < metrics.length; i++) {
+          const prev = metrics[i - 1];
+          const curr = metrics[i];
+          
+          const epsilonEffBefore = (prev as any).epsilonEff || 0;
+          const epsilonEffAfter = (curr as any).epsilonEff || 0;
+          
+          // Detectar intervención: mejora significativa en ε_eff
+          if (epsilonEffBefore < -0.2 && epsilonEffAfter > epsilonEffBefore + 0.15) {
+            controlEvents.push({
+              step: i + 1,
+              timestamp: curr.timestamp,
+              epsilonEffBefore,
+              epsilonEffAfter,
+              improvement: epsilonEffAfter - epsilonEffBefore,
+              vModifiedBefore: (prev as any).vModified || prev.funcionLyapunov,
+              vModifiedAfter: (curr as any).vModified || curr.funcionLyapunov,
+            });
+          }
+        }
+        
+        // Calcular estadísticas agregadas
+        const totalEvents = controlEvents.length;
+        const avgImprovement = totalEvents > 0
+          ? controlEvents.reduce((sum, e) => sum + e.improvement, 0) / totalEvents
+          : 0;
+        const maxImprovement = totalEvents > 0
+          ? Math.max(...controlEvents.map(e => e.improvement))
+          : 0;
+        
+        return {
+          totalEvents,
+          avgImprovement,
+          maxImprovement,
+          events: controlEvents,
+        };
+      }),
+    
+    /**
+     * Comparar erosión entre múltiples sesiones
+     */
+    getComparativeErosion: protectedProcedure
+      .input(z.object({ sessionIds: z.array(z.number()) }))
+      .query(async ({ input, ctx }) => {
+        const comparisons = await Promise.all(
+          input.sessionIds.map(async (sessionId) => {
+            const session = await getSession(sessionId);
+            const metrics = await getSessionMetrics(sessionId);
+            
+            // Calcular índice de erosión acumulado
+            let erosionIndex = 0;
+            const decayFactor = 0.95;
+            
+            for (const m of metrics) {
+              const epsilonEff = (m as any).epsilonEff || 0;
+              erosionIndex *= decayFactor;
+              
+              if (epsilonEff < 0) {
+                erosionIndex += Math.abs(epsilonEff);
+              } else {
+                erosionIndex -= epsilonEff * 0.8;
+              }
+              
+              erosionIndex = Math.max(0, erosionIndex);
+            }
+            
+            // Normalizar
+            const normalizedErosion = erosionIndex / (erosionIndex + 3.0);
+            
+            // Contar eventos de drenaje
+            const drainageCount = metrics.filter(m => (m as any).epsilonEff < -0.2).length;
+            
+            // Calcular promedio de ε_eff
+            const avgEpsilonEff = metrics.length > 0
+              ? metrics.reduce((sum, m) => sum + ((m as any).epsilonEff || 0), 0) / metrics.length
+              : 0;
+            
+            return {
+              sessionId,
+              plantProfile: session?.plantProfile || "unknown",
+              createdAt: session?.createdAt || new Date(),
+              erosionIndex: normalizedErosion,
+              drainageCount,
+              avgEpsilonEff,
+              totalSteps: metrics.length,
+            };
+          })
+        );
+        
+        return comparisons;
+      }),
+  }),
 });
+
 
 export type AppRouter = typeof appRouter;

@@ -496,3 +496,33 @@
 - [x] Actualizar PhaseSpaceMap para recibir índice de erosión
 - [x] Mantener normalización en [0,1] para todas las métricas
 - [x] Priorizar fidelidad dinámica sobre refinamiento estético
+
+
+## Dashboard de Erosión Estructural (Completado)
+
+### Backend - Endpoints de Datos
+- [x] Crear endpoint `erosion.getSessionErosionHistory` para historial de ε_eff por sesión
+- [x] Crear endpoint `erosion.getComparativeErosion` para comparar erosión entre sesiones
+- [x] Crear endpoint `erosion.getDrainageEvents` para eventos de drenaje (ε_eff < -0.2)
+- [x] Crear endpoint `erosion.getLicurgoEffectiveness` para estadísticas de control
+- [x] Calcular índice de erosión acumulado por sesión
+- [x] Identificar eventos de drenaje con timestamps y severidad
+
+### Frontend - Página /erosion
+- [x] Crear página ErosionDashboard.tsx con layout de dashboard
+- [x] Implementar selector de sesión con filtros por perfil y fecha
+- [x] Crear gráfico de historial temporal de ε_eff(t) con línea de umbral -0.2
+- [x] Crear gráfico de historial temporal de σ_sem(t) con zona de polaridad
+- [x] Crear gráfico de V_modificada(t) vs V_base(t) comparativo
+- [x] Implementar timeline de eventos de drenaje con marcadores visuales
+- [x] Crear panel de estadísticas de erosión acumulada por sesión
+- [x] Implementar tabla de intervenciones LICURGO con timestamps
+- [x] Crear gráfico de efectividad del control (reducción de ε_eff post-intervención)
+- [x] Agregar panel de comparación multi-sesión con overlay de métricas
+- [x] Implementar indicadores de severidad de erosión (leve/moderada/crítica)
+- [x] Mantener normalización [0,1] para todas las métricas
+
+### Navegación
+- [x] Agregar ruta `/erosion` en App.tsx
+- [x] Agregar enlace en header de Home.tsx
+- [x] Agregar acceso rápido desde Simulator y SessionReplay
