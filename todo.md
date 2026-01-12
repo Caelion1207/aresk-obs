@@ -448,3 +448,19 @@
 - [x] Validar que V_base permanece en [0,1]
 - [x] Validar que V_modificada normalizada permanece en [0,1]
 - [x] Validar que σ_sem detecta semántica negativa correctamente
+
+
+## Polarímetro Semántico en Tiempo Real (Completado)
+
+- [x] Crear componente SemanticPolarimeter.tsx
+- [x] Implementar gauge visual de polaridad σ_sem con rango [-1, 1]
+- [x] Agregar gráfico de línea de σ_sem(t) con Recharts y Brush
+- [x] Mostrar indicador de campo efectivo ε_eff con código de colores
+- [x] Implementar sistema de alertas cuando ε_eff < -0.3 (DrainageAlert)
+- [x] Agregar contador de eventos de control LICURGO aplicados
+- [x] Mostrar tipo de control aplicado (posición/estructura/combinado)
+- [x] Integrar Polarímetro en Simulator junto a métricas existentes
+- [x] Actualizar estado de métricas para incluir σ_sem y ε_eff
+- [x] Agregar animación de transición en cambios de polaridad (gauge con transition)
+- [x] Mostrar solo en perfil "acoplada" (control LICURGO activo)
+- [x] Incluir guía de interpretación de valores (acrección/neutro/drenaje)

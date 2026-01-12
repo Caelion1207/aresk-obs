@@ -29,6 +29,8 @@ import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import PhaseSpaceMap from "@/components/PhaseSpaceMap";
 import LyapunovChart from "@/components/LyapunovChart";
 import FieldIntensityMonitor from "@/components/FieldIntensityMonitor";
+import SemanticPolarimeter from "@/components/SemanticPolarimeter";
+import DrainageAlert from "@/components/DrainageAlert";
 
 type PlantProfile = "tipo_a" | "tipo_b" | "acoplada";
 
@@ -48,6 +50,10 @@ export default function Simulator() {
   // TPR state
   const [tprCurrent, setTprCurrent] = useState(0);
   const [tprMax, setTprMax] = useState(0);
+  
+  // Control LICURGO state
+  const [controlEventsCount, setControlEventsCount] = useState(0);
+  const [lastControlType, setLastControlType] = useState<"none" | "position" | "structure" | "combined">("none");
   
   // Mutations
   const createSessionMutation = trpc.session.create.useMutation();
@@ -113,6 +119,12 @@ export default function Simulator() {
         setTprMax(result.tpr.max);
       }
       
+      // Actualizar contador de control LICURGO
+      if ((result as any).controlAction && (result as any).controlAction.type !== "none") {
+        setControlEventsCount(prev => prev + 1);
+        setLastControlType((result as any).controlAction.type);
+      }
+      
       setUserInput("");
       await refetchMessages();
       await refetchMetrics();
@@ -173,6 +185,8 @@ export default function Simulator() {
     setLimits("");
     setEthics("");
     setUserInput("");
+    setControlEventsCount(0);
+    setLastControlType("none");
     setTprCurrent(0);
     setTprMax(0);
   };
@@ -218,6 +232,16 @@ export default function Simulator() {
     })) : [];
   
   const latestMetrics = metrics && metrics.length > 0 ? metrics[metrics.length - 1] : null;
+  
+  // Preparar datos de polaridad semántica
+  const polarityData = metrics?.map((m, i) => ({
+    step: i + 1,
+    sigmaSem: (m as any).sigmaSem || 0,
+    epsilonEff: (m as any).epsilonEff || 0,
+  })) || [];
+  
+  const currentSigmaSem = (latestMetrics as any)?.sigmaSem || 0;
+  const currentEpsilonEff = (latestMetrics as any)?.epsilonEff || 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -633,6 +657,29 @@ export default function Simulator() {
                     <PhaseSpaceMap data={phaseSpaceData} plantProfile={plantProfile} />
                   </TabsContent>
                 </Tabs>
+                
+                {/* Alerta de Drenaje Semántico */}
+                {plantProfile === "acoplada" && currentEpsilonEff < -0.3 && (
+                  <div className="mt-4">
+                    <DrainageAlert
+                      epsilonEff={currentEpsilonEff}
+                      sigmaSem={currentSigmaSem}
+                    />
+                  </div>
+                )}
+                
+                {/* Polarímetro Semántico */}
+                {plantProfile === "acoplada" && polarityData.length > 0 && (
+                  <div className="mt-6">
+                    <SemanticPolarimeter
+                      data={polarityData}
+                      currentSigmaSem={currentSigmaSem}
+                      currentEpsilonEff={currentEpsilonEff}
+                      controlEventsCount={controlEventsCount}
+                      lastControlType={lastControlType}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
