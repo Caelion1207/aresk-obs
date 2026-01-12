@@ -391,3 +391,17 @@
 - [x] Implementar estado de carga y manejo de errores
 - [x] Agregar enlace a `/comparar-sesiones` en navegación principal
 - [x] Agregar Brush para zoom en gráficos comparativos
+
+
+## Análisis de Correlación de Pearson (Completado)
+
+- [x] Crear función `calculatePearsonCorrelation` para calcular coeficiente de Pearson
+- [x] Crear función `calculateCorrelationMatrix` para matrices completas
+- [x] Calcular correlaciones entre V(t) de diferentes sesiones
+- [x] Calcular correlaciones entre Ω(t) de diferentes sesiones
+- [x] Crear matriz de correlación visual con mapa de calor
+- [x] Implementar tabla de coeficientes de Pearson con valores numéricos (3 decimales)
+- [x] Agregar interpretación estadística (muy fuerte/fuerte/moderada/débil/muy débil)
+- [x] Agregar sección de análisis de correlación en `/comparar-sesiones`
+- [x] Implementar colores en mapa de calor (rojo negativo, verde positivo, intensidad por magnitud)
+- [x] Agregar guía de interpretación de coeficientes

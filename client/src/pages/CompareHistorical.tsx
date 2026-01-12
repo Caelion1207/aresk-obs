@@ -9,6 +9,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { GitCompare, Calendar, Activity, AlertTriangle, Bookmark, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { generateComparativeDualPDF, generateComparativeTriplePDF } from "@/lib/pdfComparativeGenerator";
+import { calculateCorrelationMatrix, getCorrelationColor } from "@/lib/correlationUtils";
 
 type PlantProfile = "all" | "tipo_a" | "tipo_b" | "acoplada";
 
@@ -117,6 +118,25 @@ export default function CompareHistorical() {
     });
     return dataPoint;
   });
+  
+  // Calcular matrices de correlación
+  const vCorrelationMatrix = comparisonData && comparisonData.length >= 2
+    ? calculateCorrelationMatrix(
+        comparisonData.map((d, idx) => ({
+          label: `Sesión ${d.session.id}`,
+          data: d.metrics.map(m => m.funcionLyapunov),
+        }))
+      )
+    : null;
+  
+  const omegaCorrelationMatrix = comparisonData && comparisonData.length >= 2
+    ? calculateCorrelationMatrix(
+        comparisonData.map((d, idx) => ({
+          label: `Sesión ${d.session.id}`,
+          data: d.metrics.map(m => m.coherenciaObservable),
+        }))
+      )
+    : null;
   
   if (isLoading) {
     return (
@@ -371,6 +391,121 @@ export default function CompareHistorical() {
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
+              
+              {/* Análisis de Correlación */}
+              {vCorrelationMatrix && omegaCorrelationMatrix && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Activity className="h-5 w-5" />
+                      Análisis de Correlación de Pearson
+                    </CardTitle>
+                    <CardDescription>
+                      Coeficientes de correlación entre métricas de sesiones seleccionadas
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Matriz de Correlación V(t) */}
+                    <div>
+                      <h3 className="font-semibold mb-3">Correlación de V(t) entre sesiones</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr>
+                              <th className="border p-2 bg-muted"></th>
+                              {comparisonData.map((data, idx) => (
+                                <th key={data.session.id} className="border p-2 bg-muted text-sm">
+                                  Sesión #{data.session.id}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {comparisonData.map((rowData, i) => (
+                              <tr key={rowData.session.id}>
+                                <td className="border p-2 bg-muted font-medium text-sm">
+                                  Sesión #{rowData.session.id}
+                                </td>
+                                {vCorrelationMatrix[i]!.map((cell, j) => (
+                                  <td
+                                    key={j}
+                                    className="border p-2 text-center text-sm"
+                                    style={{ backgroundColor: cell.color, color: 'white' }}
+                                  >
+                                    <div className="font-bold">
+                                      {cell.value !== null ? cell.value.toFixed(3) : "N/A"}
+                                    </div>
+                                    <div className="text-xs opacity-90">
+                                      {cell.interpretation}
+                                    </div>
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    
+                    {/* Matriz de Correlación Ω(t) */}
+                    <div>
+                      <h3 className="font-semibold mb-3">Correlación de Ω(t) entre sesiones</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr>
+                              <th className="border p-2 bg-muted"></th>
+                              {comparisonData.map((data, idx) => (
+                                <th key={data.session.id} className="border p-2 bg-muted text-sm">
+                                  Sesión #{data.session.id}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {comparisonData.map((rowData, i) => (
+                              <tr key={rowData.session.id}>
+                                <td className="border p-2 bg-muted font-medium text-sm">
+                                  Sesión #{rowData.session.id}
+                                </td>
+                                {omegaCorrelationMatrix[i]!.map((cell, j) => (
+                                  <td
+                                    key={j}
+                                    className="border p-2 text-center text-sm"
+                                    style={{ backgroundColor: cell.color, color: 'white' }}
+                                  >
+                                    <div className="font-bold">
+                                      {cell.value !== null ? cell.value.toFixed(3) : "N/A"}
+                                    </div>
+                                    <div className="text-xs opacity-90">
+                                      {cell.interpretation}
+                                    </div>
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    
+                    {/* Interpretación */}
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2">Interpretación de Coeficientes</h4>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div><strong>0.9 - 1.0:</strong> Muy fuerte</div>
+                        <div><strong>0.7 - 0.9:</strong> Fuerte</div>
+                        <div><strong>0.5 - 0.7:</strong> Moderada</div>
+                        <div><strong>0.3 - 0.5:</strong> Débil</div>
+                        <div><strong>0.0 - 0.3:</strong> Muy débil o nula</div>
+                        <div className="col-span-2 mt-2 text-muted-foreground">
+                          <strong>Nota:</strong> Valores negativos indican correlación inversa (cuando una métrica aumenta, la otra disminuye).
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </>
           ) : null}
         </div>
