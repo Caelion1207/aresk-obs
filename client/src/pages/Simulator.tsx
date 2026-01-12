@@ -25,7 +25,7 @@ import {
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from "recharts";
 import PhaseSpaceMap from "@/components/PhaseSpaceMap";
 import LyapunovChart from "@/components/LyapunovChart";
 import FieldIntensityMonitor from "@/components/FieldIntensityMonitor";
@@ -589,7 +589,7 @@ export default function Simulator() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <ResponsiveContainer width="100%" height={300}>
+                        <ResponsiveContainer width="100%" height={350}>
                           <RechartsLineChart data={coherenceData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
                             <XAxis 
@@ -607,6 +607,8 @@ export default function Simulator() {
                                 backgroundColor: 'oklch(from var(--card) l c h)', 
                                 border: '1px solid oklch(from var(--border) l c h)'
                               }}
+                              formatter={(value: number) => value.toFixed(4)}
+                              labelFormatter={(step) => `Paso ${step}`}
                             />
                             <Line 
                               type="monotone" 
@@ -614,6 +616,12 @@ export default function Simulator() {
                               stroke="oklch(from var(--primary) l c h)" 
                               strokeWidth={2}
                               dot={{ fill: 'oklch(from var(--primary) l c h)' }}
+                              name="Ω(t)"
+                            />
+                            <Brush 
+                              dataKey="step" 
+                              height={30} 
+                              stroke="oklch(from var(--foreground) l c h / 0.5)"
                             />
                           </RechartsLineChart>
                         </ResponsiveContainer>

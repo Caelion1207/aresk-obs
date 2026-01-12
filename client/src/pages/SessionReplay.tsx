@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { trpc } from "@/lib/trpc";
 import { Play, Pause, StopCircle, Rewind, FastForward, Activity, FileDown, Bookmark, Edit2, Trash2 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, Brush } from "recharts";
 import { MarkerDialog } from "@/components/MarkerDialog";
 import { toast } from "sonner";
 
@@ -326,15 +326,20 @@ export default function SessionReplay() {
             <CardTitle className="text-base">Evolución de V(t)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart data={visibleData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                 <XAxis dataKey="step" stroke="#888" />
                 <YAxis stroke="#888" />
-                <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
+                  formatter={(value: number) => value.toFixed(4)}
+                  labelFormatter={(step) => `Paso ${step}`}
+                />
                 <Legend />
                 <Line type="monotone" dataKey="funcionLyapunov" stroke="#3b82f6" strokeWidth={2} dot={false} name="V(t)" />
                 <ReferenceLine x={currentStep + 1} stroke="#ef4444" strokeWidth={2} strokeDasharray="3 3" />
+                <Brush dataKey="step" height={30} stroke="#888" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -345,15 +350,20 @@ export default function SessionReplay() {
             <CardTitle className="text-base">Evolución de Ω(t)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart data={visibleData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                 <XAxis dataKey="step" stroke="#888" />
                 <YAxis stroke="#888" />
-                <Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
+                  formatter={(value: number) => value.toFixed(4)}
+                  labelFormatter={(step) => `Paso ${step}`}
+                />
                 <Legend />
                 <Line type="monotone" dataKey="coherenciaObservable" stroke="#10b981" strokeWidth={2} dot={false} name="Ω(t)" />
                 <ReferenceLine x={currentStep + 1} stroke="#ef4444" strokeWidth={2} strokeDasharray="3 3" />
+                <Brush dataKey="step" height={30} stroke="#888" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

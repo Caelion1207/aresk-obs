@@ -363,3 +363,16 @@
 - [x] Agregar botón "Exportar CSV" en página /estadisticas
 - [x] Implementar descarga automática del archivo CSV generado
 - [x] Usar nombre descriptivo para archivo (aresk-obs-metricas-YYYY-MM-DD.csv)
+
+
+## Gráficos Interactivos con Zoom y Panorámica (Completado)
+
+- [x] Agregar componente Brush de Recharts en gráficos de evolución temporal
+- [x] Implementar estado para controlar series visibles en gráficos
+- [x] Crear leyenda interactiva con toggle de series (clic para ocultar/mostrar) en /estadisticas
+- [x] Mejorar tooltips con formato de valores exactos (4 decimales para métricas)
+- [x] Agregar labelFormatter en tooltips para mejor contexto
+- [x] Aplicar Brush en gráfico de evolución de métricas en /estadisticas
+- [x] Aplicar Brush y tooltips mejorados en gráficos de Simulator
+- [x] Aplicar Brush y tooltips mejorados en gráficos de SessionReplay
+- [x] Aumentar altura de gráficos para acomodar Brush (300-450px)

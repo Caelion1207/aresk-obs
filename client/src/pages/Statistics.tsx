@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import AlertPanel from "@/components/AlertPanel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
-import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Brush } from "recharts";
 import { TrendingUp, Bookmark, Activity, ArrowUp, ArrowDown, Minus, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -12,6 +12,19 @@ type Period = "week" | "month" | "quarter";
 
 export default function Statistics() {
   const [selectedPeriod, setSelectedPeriod] = useState<Period>("week");
+  const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set());
+  
+  const toggleSeries = (dataKey: string) => {
+    setHiddenSeries(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(dataKey)) {
+        newSet.delete(dataKey);
+      } else {
+        newSet.add(dataKey);
+      }
+      return newSet;
+    });
+  };
   
   const { data: tprTrends, isLoading: loadingTpr } = trpc.stats.getTprTrends.useQuery();
   const { data: markerDist, isLoading: loadingMarkers } = trpc.stats.getMarkerDistribution.useQuery();
@@ -424,7 +437,7 @@ export default function Statistics() {
         </CardHeader>
         <CardContent>
           {metricsEvolution && metricsEvolution.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
+            <ResponsiveContainer width="100%" height={450}>
               <LineChart data={metricsEvolution}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                 <XAxis 
@@ -436,11 +449,27 @@ export default function Statistics() {
                 <Tooltip 
                   contentStyle={{ backgroundColor: "#1a1a1a", border: "1px solid #333" }}
                   labelFormatter={(date) => new Date(date).toLocaleDateString('es-ES')}
+                  formatter={(value: number) => value.toFixed(4)}
                 />
-                <Legend />
-                <Line type="monotone" dataKey="avgLyapunov" stroke="#ef4444" strokeWidth={2} dot={false} name="V(e) promedio" />
-                <Line type="monotone" dataKey="avgOmega" stroke="#10b981" strokeWidth={2} dot={false} name="Ω(t) promedio" />
-                <Line type="monotone" dataKey="avgError" stroke="#3b82f6" strokeWidth={2} dot={false} name="||e(t)|| promedio" />
+                <Legend 
+                  onClick={(e) => toggleSeries(e.dataKey as string)}
+                  wrapperStyle={{ cursor: 'pointer' }}
+                />
+                {!hiddenSeries.has('avgLyapunov') && (
+                  <Line type="monotone" dataKey="avgLyapunov" stroke="#ef4444" strokeWidth={2} dot={false} name="V(e) promedio" />
+                )}
+                {!hiddenSeries.has('avgOmega') && (
+                  <Line type="monotone" dataKey="avgOmega" stroke="#10b981" strokeWidth={2} dot={false} name="Ω(t) promedio" />
+                )}
+                {!hiddenSeries.has('avgError') && (
+                  <Line type="monotone" dataKey="avgError" stroke="#3b82f6" strokeWidth={2} dot={false} name="||e(t)|| promedio" />
+                )}
+                <Brush 
+                  dataKey="date" 
+                  height={30} 
+                  stroke="#888"
+                  tickFormatter={(date) => new Date(date).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })}
+                />
               </LineChart>
             </ResponsiveContainer>
           ) : (
