@@ -8,9 +8,16 @@ interface PhaseSpacePoint {
   step: number;
 }
 
+interface PolarityData {
+  sigmaSem: number;
+  epsilonEff: number;
+}
+
 interface PhaseSpaceMapProps {
   data: PhaseSpacePoint[];
   plantProfile: "tipo_a" | "tipo_b" | "acoplada";
+  polarityData?: PolarityData[]; // Datos de polaridad semántica por paso
+  showTensionVectors?: boolean; // Toggle para mostrar/ocultar vectores
 }
 
 /**
@@ -57,7 +64,54 @@ function generateStabilityGradient(): string {
   `;
 }
 
-export default function PhaseSpaceMap({ data, plantProfile }: PhaseSpaceMapProps) {
+/**
+ * Calcula el color del vector de tensión basado en σ_sem
+ */
+function getTensionVectorColor(sigmaSem: number, epsilonEff: number): string {
+  const intensity = Math.abs(epsilonEff);
+  
+  if (sigmaSem > 0.3) {
+    // Acrección fuerte: Cian brillante
+    return `oklch(0.7 ${0.15 + intensity * 0.15} 200)`;
+  } else if (sigmaSem > 0) {
+    // Acrección moderada: Verde
+    return `oklch(0.65 ${0.12 + intensity * 0.12} 150)`;
+  } else if (sigmaSem > -0.3) {
+    // Drenaje moderado: Naranja
+    return `oklch(0.6 ${0.15 + intensity * 0.15} 50)`;
+  } else {
+    // Drenaje fuerte: Rojo
+    return `oklch(0.55 ${0.18 + intensity * 0.18} 25)`;
+  }
+}
+
+/**
+ * Calcula la dirección del vector de tensión
+ * Dirección radial desde/hacia el atractor Bucéfalo (H=0, C=1)
+ */
+function calculateTensionDirection(H: number, C: number, sigmaSem: number): { dx: number; dy: number } {
+  // Vector desde punto actual hacia Bucéfalo
+  const toAttractorX = 0 - H;
+  const toAttractorY = 1 - C;
+  const magnitude = Math.sqrt(toAttractorX * toAttractorX + toAttractorY * toAttractorY);
+  
+  if (magnitude === 0) return { dx: 0, dy: 0 };
+  
+  // Normalizar
+  const normalizedX = toAttractorX / magnitude;
+  const normalizedY = toAttractorY / magnitude;
+  
+  // Si σ_sem > 0 (acrección), vector apunta hacia atractor
+  // Si σ_sem < 0 (drenaje), vector apunta alejándose del atractor
+  const direction = sigmaSem > 0 ? 1 : -1;
+  
+  return {
+    dx: normalizedX * direction,
+    dy: normalizedY * direction,
+  };
+}
+
+export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], showTensionVectors = true }: PhaseSpaceMapProps) {
   // Preparar datos con colores y tamaños basados en el paso temporal
   const enhancedData = useMemo(() => {
     return data.map((point, index) => ({
@@ -234,6 +288,65 @@ export default function PhaseSpaceMap({ data, plantProfile }: PhaseSpaceMapProps
                 );
               }}
             />
+            
+            {/* Vectores de Tensión Semántica */}
+            {showTensionVectors && polarityData.length > 0 && plantProfile === "acoplada" && (
+              <Scatter
+                data={enhancedData.slice(-5)} // Solo últimos 5 puntos para claridad
+                fill="transparent"
+                shape={(props: any): React.ReactElement => {
+                  const { cx, cy, payload } = props;
+                  const index = payload.step - 1;
+                  const polarity = polarityData[index];
+                  
+                  if (!polarity || Math.abs(polarity.epsilonEff) < 0.1) return <g />;
+                  
+                  const { dx, dy } = calculateTensionDirection(
+                    payload.H,
+                    payload.C,
+                    polarity.sigmaSem
+                  );
+                  
+                  const vectorLength = 30 * Math.abs(polarity.epsilonEff);
+                  const endX = cx + dx * vectorLength;
+                  const endY = cy - dy * vectorLength; // Invertir Y para coordenadas SVG
+                  
+                  const color = getTensionVectorColor(polarity.sigmaSem, polarity.epsilonEff);
+                  const opacity = 0.4 + Math.abs(polarity.epsilonEff) * 0.4;
+                  
+                  // Calcular punta de flecha
+                  const arrowSize = 8;
+                  const angle = Math.atan2(-(dy), dx);
+                  const arrowAngle1 = angle + Math.PI * 0.85;
+                  const arrowAngle2 = angle - Math.PI * 0.85;
+                  
+                  const arrowX1 = endX + Math.cos(arrowAngle1) * arrowSize;
+                  const arrowY1 = endY + Math.sin(arrowAngle1) * arrowSize;
+                  const arrowX2 = endX + Math.cos(arrowAngle2) * arrowSize;
+                  const arrowY2 = endY + Math.sin(arrowAngle2) * arrowSize;
+                  
+                  return (
+                    <g opacity={opacity}>
+                      {/* Línea del vector */}
+                      <line
+                        x1={cx}
+                        y1={cy}
+                        x2={endX}
+                        y2={endY}
+                        stroke={color}
+                        strokeWidth={2.5}
+                        strokeLinecap="round"
+                      />
+                      {/* Punta de flecha */}
+                      <polygon
+                        points={`${endX},${endY} ${arrowX1},${arrowY1} ${arrowX2},${arrowY2}`}
+                        fill={color}
+                      />
+                    </g>
+                  );
+                }}
+              />
+            )}
           </ScatterChart>
         </ResponsiveContainer>
         
@@ -260,6 +373,62 @@ export default function PhaseSpaceMap({ data, plantProfile }: PhaseSpaceMapProps
             <span>Rojo: Colapso Crítico</span>
           </div>
         </div>
+        
+        {/* Leyenda de Vectores de Tensión (solo perfil acoplada) */}
+        {showTensionVectors && plantProfile === "acoplada" && polarityData.length > 0 && (
+          <div className="mt-4 p-3 bg-muted/30 rounded-lg border border-border">
+            <h4 className="text-sm font-semibold mb-2">Vectores de Tensión Semántica</h4>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <svg width="20" height="12" className="shrink-0">
+                  <defs>
+                    <marker id="arrow-cyan" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0,0 0,6 6,3" fill="oklch(0.7 0.2 200)" />
+                    </marker>
+                  </defs>
+                  <line x1="2" y1="6" x2="18" y2="6" stroke="oklch(0.7 0.2 200)" strokeWidth="2" markerEnd="url(#arrow-cyan)" />
+                </svg>
+                <span>Cian: Acrección Fuerte (σ &gt; 0.3)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="20" height="12" className="shrink-0">
+                  <defs>
+                    <marker id="arrow-green" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0,0 0,6 6,3" fill="oklch(0.65 0.15 150)" />
+                    </marker>
+                  </defs>
+                  <line x1="2" y1="6" x2="18" y2="6" stroke="oklch(0.65 0.15 150)" strokeWidth="2" markerEnd="url(#arrow-green)" />
+                </svg>
+                <span>Verde: Acrección Moderada</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="20" height="12" className="shrink-0">
+                  <defs>
+                    <marker id="arrow-orange" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0,0 0,6 6,3" fill="oklch(0.6 0.2 50)" />
+                    </marker>
+                  </defs>
+                  <line x1="2" y1="6" x2="18" y2="6" stroke="oklch(0.6 0.2 50)" strokeWidth="2" markerEnd="url(#arrow-orange)" />
+                </svg>
+                <span>Naranja: Drenaje Moderado</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="20" height="12" className="shrink-0">
+                  <defs>
+                    <marker id="arrow-red" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <polygon points="0,0 0,6 6,3" fill="oklch(0.55 0.25 25)" />
+                    </marker>
+                  </defs>
+                  <line x1="2" y1="6" x2="18" y2="6" stroke="oklch(0.55 0.25 25)" strokeWidth="2" markerEnd="url(#arrow-red)" />
+                </svg>
+                <span>Rojo: Drenaje Fuerte (σ &lt; -0.3)</span>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Vectores apuntan hacia el atractor (acrección) o alejándose (drenaje). Longitud proporcional a |ε_eff|.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

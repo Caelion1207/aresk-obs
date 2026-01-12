@@ -464,3 +464,19 @@
 - [x] Agregar animación de transición en cambios de polaridad (gauge con transition)
 - [x] Mostrar solo en perfil "acoplada" (control LICURGO activo)
 - [x] Incluir guía de interpretación de valores (acrección/neutro/drenaje)
+
+
+## Vectores de Tensión Semántica en Mapa de Fase (Completado)
+
+- [x] Modificar PhaseSpaceMap para recibir datos de σ_sem y ε_eff
+- [x] Calcular dirección de vectores basada en gradiente hacia/desde atractor Bucéfalo
+- [x] Implementar renderizado de flechas SVG superpuestas en mapa de fase
+- [x] Aplicar código de colores: cian/verde (acrección σ_sem > 0), naranja/rojo (drenaje σ_sem < 0)
+- [x] Escalar magnitud de flechas proporcionalmente a |ε_eff|
+- [x] Agregar opacidad variable según intensidad de campo efectivo (0.4 + |ε_eff| * 0.4)
+- [x] Integrar vectores en Simulator con datos en tiempo real
+- [x] Mostrar solo últimos 5 puntos para claridad visual
+- [x] Agregar leyenda explicativa de vectores de tensión con ejemplos visuales
+- [x] Implementar toggle showTensionVectors (default true)
+- [x] Renderizar solo en perfil "acoplada" donde control LICURGO está activo
+- [x] Filtrar vectores con |ε_eff| < 0.1 para evitar ruido visual

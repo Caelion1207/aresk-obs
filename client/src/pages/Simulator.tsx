@@ -654,7 +654,12 @@ export default function Simulator() {
                   </TabsContent>
                   
                   <TabsContent value="phase" className="mt-4">
-                    <PhaseSpaceMap data={phaseSpaceData} plantProfile={plantProfile} />
+                    <PhaseSpaceMap 
+                      data={phaseSpaceData} 
+                      plantProfile={plantProfile}
+                      polarityData={polarityData}
+                      showTensionVectors={true}
+                    />
                   </TabsContent>
                 </Tabs>
                 
