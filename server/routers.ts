@@ -1417,6 +1417,80 @@ export const appRouter = router({
           },
         };
       }),
+    
+    /**
+     * Exportar métricas agregadas a CSV
+     */
+    exportCSV: protectedProcedure
+      .query(async ({ ctx }) => {
+        const sessions = await getUserSessions(ctx.user.id);
+        
+        // Preparar datos para CSV
+        const csvData = [];
+        
+        for (const session of sessions) {
+          const metrics = await getSessionMetrics(session.id);
+          const markers = await getTimeMarkersBySession(session.id);
+          const alerts = await getSessionAlerts(session.id);
+          
+          if (metrics.length === 0) continue;
+          
+          // Calcular promedios
+          const avgV = metrics.reduce((sum, m) => sum + m.funcionLyapunov, 0) / metrics.length;
+          const avgOmega = metrics.reduce((sum, m) => sum + m.coherenciaObservable, 0) / metrics.length;
+          const avgError = metrics.reduce((sum, m) => sum + m.errorCognitivoMagnitud, 0) / metrics.length;
+          
+          // Calcular TPR
+          const stableSteps = metrics.filter(m => m.coherenciaObservable > 0.7).length;
+          const tpr = (stableSteps / metrics.length) * 100;
+          
+          csvData.push({
+            id: session.id,
+            fecha: session.createdAt.toISOString(),
+            perfil: session.plantProfile,
+            tpr: tpr.toFixed(2),
+            duracion_pasos: metrics.length,
+            avg_lyapunov: avgV.toFixed(4),
+            avg_omega: avgOmega.toFixed(4),
+            avg_error: avgError.toFixed(4),
+            marcadores: markers.length,
+            alertas: alerts.length,
+          });
+        }
+        
+        // Generar CSV
+        const headers = [
+          "ID",
+          "Fecha",
+          "Perfil",
+          "TPR (%)",
+          "Duración (pasos)",
+          "V(e) Promedio",
+          "Ω(t) Promedio",
+          "||e(t)|| Promedio",
+          "Marcadores",
+          "Alertas"
+        ];
+        
+        const rows = csvData.map(row => [
+          row.id,
+          row.fecha,
+          row.perfil,
+          row.tpr,
+          row.duracion_pasos,
+          row.avg_lyapunov,
+          row.avg_omega,
+          row.avg_error,
+          row.marcadores,
+          row.alertas,
+        ]);
+        
+        const csv = [headers, ...rows]
+          .map(row => row.join(","))
+          .join("\n");
+        
+        return { csv };
+      }),
   }),
 
   // ============================================

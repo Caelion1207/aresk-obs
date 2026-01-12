@@ -4,7 +4,9 @@ import AlertPanel from "@/components/AlertPanel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { TrendingUp, Bookmark, Activity, ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { TrendingUp, Bookmark, Activity, ArrowUp, ArrowDown, Minus, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type Period = "week" | "month" | "quarter";
 
@@ -17,6 +19,39 @@ export default function Statistics() {
   const { data: comparison, isLoading: loadingComparison } = trpc.stats.getTemporalComparison.useQuery(
     { period: selectedPeriod }
   );
+  
+  const exportCSVMutation = trpc.stats.exportCSV.useQuery(undefined, {
+    enabled: false,
+  });
+  
+  const handleExportCSV = async () => {
+    try {
+      const result = await exportCSVMutation.refetch();
+      if (!result.data) {
+        toast.error("No hay datos para exportar");
+        return;
+      }
+      
+      // Crear blob y descargar
+      const blob = new Blob([result.data.csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      
+      const today = new Date().toISOString().split("T")[0];
+      link.download = `aresk-obs-metricas-${today}.csv`;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success("CSV exportado exitosamente");
+    } catch (error) {
+      console.error("Error al exportar CSV:", error);
+      toast.error("Error al exportar CSV");
+    }
+  };
 
   const getProfileLabel = (profile: string): string => {
     switch (profile) {
@@ -105,18 +140,28 @@ export default function Statistics() {
             Análisis agregado de todas las sesiones del sistema
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Período:</span>
-          <Select value={selectedPeriod} onValueChange={(v) => setSelectedPeriod(v as Period)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="week">Última Semana</SelectItem>
-              <SelectItem value="month">Último Mes</SelectItem>
-              <SelectItem value="quarter">Últimos 3 Meses</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            onClick={handleExportCSV}
+            disabled={exportCSVMutation.isFetching}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Exportar CSV
+          </Button>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Período:</span>
+            <Select value={selectedPeriod} onValueChange={(v) => setSelectedPeriod(v as Period)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="week">Última Semana</SelectItem>
+                <SelectItem value="month">Último Mes</SelectItem>
+                <SelectItem value="quarter">Últimos 3 Meses</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
       

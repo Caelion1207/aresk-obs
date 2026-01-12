@@ -350,3 +350,16 @@
 - [x] Agregar AlertPanel en página de estadísticas
 - [x] Agregar indicadores visuales de severidad (crítico, advertencia, info)
 - [x] Implementar botón de descartar alerta y enlace a sesión
+
+
+## Exportación CSV de Métricas Agregadas (Completado)
+
+- [x] Crear endpoint `stats.exportCSV` para generar CSV de métricas agregadas
+- [x] Incluir columnas: ID, fecha, perfil, TPR, duración, avg(V), avg(Ω), avg(||e||), marcadores, alertas
+- [x] Formatear fechas en formato ISO 8601
+- [x] Calcular promedios de métricas por sesión
+- [x] Contar número de marcadores por sesión
+- [x] Contar número de alertas por sesión
+- [x] Agregar botón "Exportar CSV" en página /estadisticas
+- [x] Implementar descarga automática del archivo CSV generado
+- [x] Usar nombre descriptivo para archivo (aresk-obs-metricas-YYYY-MM-DD.csv)
