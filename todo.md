@@ -480,3 +480,19 @@
 - [x] Implementar toggle showTensionVectors (default true)
 - [x] Renderizar solo en perfil "acoplada" donde control LICURGO está activo
 - [x] Filtrar vectores con |ε_eff| < 0.1 para evitar ruido visual
+
+
+## Erosión Dinámica del Atractor Bucéfalo (Completado)
+
+- [x] Calcular índice de erosión acumulado basado en historial de ε_eff
+- [x] Implementar función de regeneración cuando ε_eff > 0
+- [x] Crear renderizado SVG dinámico del atractor con borde irregular
+- [x] Implementar fragmentación progresiva del círculo proporcional a erosión
+- [x] Sincronizar opacidad del atractor con V_modificada normalizada
+- [x] Agregar efecto de "perforación" cuando erosión > 0.6
+- [x] Implementar animación de pulsación cuando ε_eff < -0.5 (crítico)
+- [x] Crear gradiente radial que refleje intensidad de drenaje
+- [x] Integrar cálculo de erosión en Simulator con estado persistente
+- [x] Actualizar PhaseSpaceMap para recibir índice de erosión
+- [x] Mantener normalización en [0,1] para todas las métricas
+- [x] Priorizar fidelidad dinámica sobre refinamiento estético

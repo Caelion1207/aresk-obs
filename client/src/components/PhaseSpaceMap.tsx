@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ZAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -18,6 +18,7 @@ interface PhaseSpaceMapProps {
   plantProfile: "tipo_a" | "tipo_b" | "acoplada";
   polarityData?: PolarityData[]; // Datos de polaridad semántica por paso
   showTensionVectors?: boolean; // Toggle para mostrar/ocultar vectores
+  erosionIndex?: number; // Índice de erosión del atractor [0, 1]
 }
 
 /**
@@ -111,7 +112,19 @@ function calculateTensionDirection(H: number, C: number, sigmaSem: number): { dx
   };
 }
 
-export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], showTensionVectors = true }: PhaseSpaceMapProps) {
+export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], showTensionVectors = true, erosionIndex = 0 }: PhaseSpaceMapProps) {
+  // Estado para animación de pulsación
+  const [pulsePhase, setPulsePhase] = useState(0);
+  
+  // Animación de pulsación cuando hay erosión crítica
+  useEffect(() => {
+    if (erosionIndex > 0.5) {
+      const interval = setInterval(() => {
+        setPulsePhase((prev) => (prev + 0.1) % (Math.PI * 2));
+      }, 50);
+      return () => clearInterval(interval);
+    }
+  }, [erosionIndex]);
   // Preparar datos con colores y tamaños basados en el paso temporal
   const enhancedData = useMemo(() => {
     return data.map((point, index) => ({
@@ -250,41 +263,133 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
               />
             )}
             
-            {/* Marcador del Atractor Bucéfalo */}
+            {/* Marcador del Atractor Bucéfalo con Erosión Dinámica */}
             <Scatter
               data={[{ H: 0, C: 1, name: "Bucéfalo" }]}
               fill="oklch(0.5 0.2 240)"
               shape={(props: any) => {
                 const { cx, cy } = props;
+                
+                // Parámetros de erosión
+                const baseRadius = 25;
+                const opacity = 1.0 - erosionIndex * 0.7; // 1.0 → 0.3
+                const radiusScale = 1.0 - erosionIndex * 0.3; // 1.0 → 0.7
+                const irregularityAmplitude = erosionIndex * 15; // 0 → 15px
+                const pulseAmplitude = erosionIndex > 0.5 ? Math.sin(pulsePhase) * 3 : 0;
+                
+                // Color del atractor: azul → rojo según erosión
+                const hue = 240 - erosionIndex * 215; // 240 (azul) → 25 (rojo)
+                const chroma = 0.2 + erosionIndex * 0.1; // Aumenta saturación con erosión
+                const attractorColor = `oklch(0.5 ${chroma} ${hue})`;
+                
+                // Generar puntos del círculo irregular
+                const numPoints = 32;
+                const points: string[] = [];
+                
+                for (let i = 0; i < numPoints; i++) {
+                  const angle = (i / numPoints) * Math.PI * 2;
+                  
+                  // Irregularidad del borde: más caótico con mayor erosión
+                  const noise = Math.sin(angle * 3 + erosionIndex * 10) * irregularityAmplitude;
+                  const fragmentationNoise = erosionIndex > 0.6 
+                    ? Math.random() * irregularityAmplitude * 0.5 
+                    : 0;
+                  
+                  const r = baseRadius * radiusScale + noise + fragmentationNoise + pulseAmplitude;
+                  const x = cx + r * Math.cos(angle);
+                  const y = cy + r * Math.sin(angle);
+                  
+                  points.push(`${x},${y}`);
+                }
+                
+                // Crear "perforaciones" cuando erosión > 0.6
+                const holes: React.ReactElement[] = [];
+                if (erosionIndex > 0.6) {
+                  const numHoles = Math.floor((erosionIndex - 0.6) * 10); // 0-4 agujeros
+                  for (let i = 0; i < numHoles; i++) {
+                    const holeAngle = (i / numHoles) * Math.PI * 2 + Math.PI / 4;
+                    const holeDistance = baseRadius * radiusScale * 0.5;
+                    const holeX = cx + holeDistance * Math.cos(holeAngle);
+                    const holeY = cy + holeDistance * Math.sin(holeAngle);
+                    const holeRadius = 3 + erosionIndex * 5;
+                    
+                    holes.push(
+                      <circle
+                        key={`hole-${i}`}
+                        cx={holeX}
+                        cy={holeY}
+                        r={holeRadius}
+                        fill="oklch(from var(--background) l c h)"
+                        opacity={0.8}
+                      />
+                    );
+                  }
+                }
+                
                 return (
-                  <>
-                    {/* Cruz del atractor */}
+                  <g>
+                    {/* Gradiente radial de fondo */}
+                    <defs>
+                      <radialGradient id="attractorGradient" cx="50%" cy="50%">
+                        <stop offset="0%" stopColor={attractorColor} stopOpacity={opacity * 0.8} />
+                        <stop offset="70%" stopColor={attractorColor} stopOpacity={opacity * 0.4} />
+                        <stop offset="100%" stopColor={attractorColor} stopOpacity={0} />
+                      </radialGradient>
+                    </defs>
+                    
+                    {/* Halo exterior */}
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={baseRadius * radiusScale * 1.5}
+                      fill="url(#attractorGradient)"
+                      opacity={opacity * 0.3}
+                    />
+                    
+                    {/* Círculo irregular principal */}
+                    <polygon
+                      points={points.join(' ')}
+                      fill={attractorColor}
+                      opacity={opacity}
+                      stroke={attractorColor}
+                      strokeWidth={2}
+                      strokeOpacity={opacity * 0.8}
+                    />
+                    
+                    {/* Perforaciones (erosión crítica) */}
+                    {holes}
+                    
+                    {/* Cruz del atractor (se desvanece con erosión) */}
                     <line
                       x1={cx - 10}
                       y1={cy}
                       x2={cx + 10}
                       y2={cy}
-                      stroke="oklch(0.5 0.2 240)"
+                      stroke={attractorColor}
                       strokeWidth={2}
+                      opacity={opacity * 0.7}
                     />
                     <line
                       x1={cx}
                       y1={cy - 10}
                       x2={cx}
                       y2={cy + 10}
-                      stroke="oklch(0.5 0.2 240)"
+                      stroke={attractorColor}
                       strokeWidth={2}
+                      opacity={opacity * 0.7}
                     />
-                    {/* Círculo central */}
+                    
+                    {/* Punto central */}
                     <circle
                       cx={cx}
                       cy={cy}
                       r={4}
-                      fill="oklch(0.5 0.2 240)"
+                      fill={attractorColor}
                       stroke="oklch(from var(--background) l c h)"
                       strokeWidth={1}
+                      opacity={opacity}
                     />
-                  </>
+                  </g>
                 );
               }}
             />

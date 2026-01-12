@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,7 @@ import LyapunovChart from "@/components/LyapunovChart";
 import FieldIntensityMonitor from "@/components/FieldIntensityMonitor";
 import SemanticPolarimeter from "@/components/SemanticPolarimeter";
 import DrainageAlert from "@/components/DrainageAlert";
+import { calculateErosionIndex } from "@/lib/erosionCalculator";
 
 type PlantProfile = "tipo_a" | "tipo_b" | "acoplada";
 
@@ -54,6 +55,9 @@ export default function Simulator() {
   // Control LICURGO state
   const [controlEventsCount, setControlEventsCount] = useState(0);
   const [lastControlType, setLastControlType] = useState<"none" | "position" | "structure" | "combined">("none");
+  
+  // Erosion state
+  const [erosionIndex, setErosionIndex] = useState(0);
   
   // Mutations
   const createSessionMutation = trpc.session.create.useMutation();
@@ -242,6 +246,16 @@ export default function Simulator() {
   
   const currentSigmaSem = (latestMetrics as any)?.sigmaSem || 0;
   const currentEpsilonEff = (latestMetrics as any)?.epsilonEff || 0;
+  
+  // Calcular índice de erosión del atractor
+  useEffect(() => {
+    if (polarityData.length > 0 && plantProfile === "acoplada") {
+      const erosion = calculateErosionIndex(polarityData, 0.95);
+      setErosionIndex(erosion);
+    } else {
+      setErosionIndex(0);
+    }
+  }, [polarityData, plantProfile]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -659,6 +673,7 @@ export default function Simulator() {
                       plantProfile={plantProfile}
                       polarityData={polarityData}
                       showTensionVectors={true}
+                      erosionIndex={erosionIndex}
                     />
                   </TabsContent>
                 </Tabs>
