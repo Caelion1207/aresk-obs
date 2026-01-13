@@ -634,3 +634,18 @@
 - [x] Descargar PDF generado automáticamente
 - [x] Mostrar estado de loading durante generación
 - [x] Manejar errores de exportación con toast
+
+
+## Mejora de PDF con Gráficos Visuales (Completado)
+
+### Backend
+- [x] Instalar chart.js, chartjs-node-canvas para generación de gráficos
+- [x] Crear función helper generateChartImage para convertir datos a PNG base64
+- [x] Generar gráfico de ε_eff(t) con línea de umbral -0.2
+- [x] Generar gráfico de σ_sem(t) con zonas de polaridad
+- [x] Generar gráfico de V_modificada(t) vs V_base(t)
+- [x] Embeder imágenes PNG en PDF usando doc.image()
+- [ ] Agregar logo del proyecto en header del PDF
+- [ ] Mejorar tipografía con fuentes más legibles
+- [x] Mantener tablas de eventos con mejor formato visual
+- [x] Ajustar layout para que gráficos y tablas no se superpongan

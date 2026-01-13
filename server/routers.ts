@@ -2203,6 +2203,47 @@ export const appRouter = router({
         const epsilonEffValues = erosionHistory.map((m: any) => m.epsilonEff);
         const erosionIndex = calculateErosionIndex(epsilonEffValues);
         
+        // Generar gráficos
+        const { generateLineChart } = await import("./chartGenerator");
+        
+        // Gráfico de ε_eff(t)
+        const epsilonEffData = erosionHistory.map((m: any, index: number) => ({
+          x: index + 1,
+          y: m.epsilonEff,
+        }));
+        const epsilonEffChart = await generateLineChart(epsilonEffData, {
+          title: "Evolución de ε_eff(t)",
+          xLabel: "Paso",
+          yLabel: "ε_eff",
+          lineColor: "rgb(59, 130, 246)",
+          threshold: -0.2,
+          thresholdLabel: "Umbral de Drenaje",
+        });
+        
+        // Gráfico de σ_sem(t)
+        const sigmaSemData = erosionHistory.map((m: any, index: number) => ({
+          x: index + 1,
+          y: m.semanticPolarization,
+        }));
+        const sigmaSemChart = await generateLineChart(sigmaSemData, {
+          title: "Evolución de σ_sem(t)",
+          xLabel: "Paso",
+          yLabel: "σ_sem",
+          lineColor: "rgb(168, 85, 247)",
+        });
+        
+        // Gráfico de V_modificada(t)
+        const vModData = erosionHistory.map((m: any, index: number) => ({
+          x: index + 1,
+          y: m.modifiedLyapunov,
+        }));
+        const vModChart = await generateLineChart(vModData, {
+          title: "Evolución de V_modificada(t)",
+          xLabel: "Paso",
+          yLabel: "V_modificada",
+          lineColor: "rgb(34, 197, 94)",
+        });
+        
         // Crear PDF
         const doc = new PDFDocument({ margin: 50 });
         const chunks: Buffer[] = [];
@@ -2231,6 +2272,37 @@ export const appRouter = router({
           }
           doc.text(`Pasos Totales: ${erosionHistory.length}`);
           doc.moveDown(2);
+          
+          // Gráficos
+          doc.addPage();
+          doc.fontSize(16).text("Gráficos de Evolución Temporal", { underline: true });
+          doc.moveDown();
+          
+          // Gráfico de ε_eff(t)
+          doc.image(epsilonEffChart, {
+            fit: [500, 250],
+            align: 'center',
+          });
+          doc.moveDown();
+          
+          // Gráfico de σ_sem(t)
+          doc.addPage();
+          doc.image(sigmaSemChart, {
+            fit: [500, 250],
+            align: 'center',
+          });
+          doc.moveDown();
+          
+          // Gráfico de V_modificada(t)
+          doc.addPage();
+          doc.image(vModChart, {
+            fit: [500, 250],
+            align: 'center',
+          });
+          doc.moveDown(2);
+          
+          // Nueva página para tablas
+          doc.addPage();
           
           // Tabla de eventos de drenaje
           if (drainageEvents.length > 0) {
