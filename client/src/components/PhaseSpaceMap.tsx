@@ -135,6 +135,15 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
       return () => clearInterval(interval);
     }
   }, [erosionIndex]);
+  // Detectar eventos de drenaje (ε_eff < -0.2)
+  const drainageEvents = useMemo(() => {
+    if (!polarityData || polarityData.length === 0) return [];
+    return polarityData
+      .map((polarity, index) => ({ index, epsilonEff: polarity.epsilonEff }))
+      .filter(event => event.epsilonEff < -0.2)
+      .map(event => event.index);
+  }, [polarityData]);
+  
   // Filtrar datos por rango temporal
   const filteredData = useMemo(() => {
     return data.slice(timeRange[0], timeRange[1] + 1);
@@ -187,18 +196,49 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
                 </Badge>
               </div>
             </div>
-            <Slider
-              min={0}
-              max={Math.max(0, data.length - 1)}
-              step={1}
-              value={timeRange}
-              onValueChange={(value) => setTimeRange(value as [number, number])}
-              className="w-full"
-            />
+            <div className="relative">
+              <Slider
+                min={0}
+                max={Math.max(0, data.length - 1)}
+                step={1}
+                value={timeRange}
+                onValueChange={(value) => setTimeRange(value as [number, number])}
+                className="w-full"
+              />
+              {/* Marcadores de eventos de drenaje */}
+              {drainageEvents.length > 0 && (
+                <div className="absolute inset-0 pointer-events-none">
+                  {drainageEvents.map((eventIndex) => {
+                    const position = (eventIndex / Math.max(1, data.length - 1)) * 100;
+                    return (
+                      <div
+                        key={eventIndex}
+                        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2"
+                        style={{ left: `${position}%` }}
+                        title={`Drenaje en paso ${eventIndex + 1}`}
+                      >
+                        <div className="w-2 h-2 rounded-full bg-red-500 border border-red-700 shadow-lg shadow-red-500/50 animate-pulse" />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>Inicio: Paso {timeRange[0] + 1}</span>
               <span>Fin: Paso {timeRange[1] + 1}</span>
             </div>
+            {drainageEvents.length > 0 && (
+              <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-red-500 border border-red-700 shadow-sm shadow-red-500/50" />
+                  <span className="text-xs text-muted-foreground">Eventos de drenaje (ε_eff &lt; -0.2)</span>
+                </div>
+                <Badge variant="destructive" className="text-xs">
+                  {drainageEvents.length} detectados
+                </Badge>
+              </div>
+            )}
           </div>
         )}
         

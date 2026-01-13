@@ -681,3 +681,8 @@
 ## Control de Rango Temporal en Visualizaciones (Completado)
 
 - [x] Implementar slider de rango temporal en PhaseSpaceMap para filtrar trayectoria por segmento de pasos
+
+
+## Marcadores de Eventos Críticos en Timeline (Completado)
+
+- [x] Agregar marcadores visuales de eventos de drenaje (ε_eff < -0.2) en slider de rango temporal
