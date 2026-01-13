@@ -1,6 +1,8 @@
 import { useMemo, useEffect, useState } from "react";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ZAxis, Customized } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
+import { Badge } from "@/components/ui/badge";
 
 interface PhaseSpacePoint {
   H: number;
@@ -116,6 +118,14 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
   // Estado para animación de pulsación
   const [pulsePhase, setPulsePhase] = useState(0);
   
+  // Estado para rango temporal del slider
+  const [timeRange, setTimeRange] = useState<[number, number]>([0, data.length - 1]);
+  
+  // Actualizar rango cuando cambian los datos
+  useEffect(() => {
+    setTimeRange([0, Math.max(0, data.length - 1)]);
+  }, [data.length]);
+  
   // Animación de pulsación cuando hay erosión crítica
   useEffect(() => {
     if (erosionIndex > 0.5) {
@@ -125,18 +135,23 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
       return () => clearInterval(interval);
     }
   }, [erosionIndex]);
+  // Filtrar datos por rango temporal
+  const filteredData = useMemo(() => {
+    return data.slice(timeRange[0], timeRange[1] + 1);
+  }, [data, timeRange]);
+  
   // Preparar datos con colores y tamaños basados en el paso temporal
   const enhancedData = useMemo(() => {
-    return data.map((point, index) => ({
+    return filteredData.map((point, index) => ({
       ...point,
       // Color basado en posición y perfil
       fill: getPointColor(point.H, point.C, plantProfile),
       // Tamaño crece con el tiempo para mostrar dirección
-      size: 50 + (index / data.length) * 150,
+      size: 50 + (index / filteredData.length) * 150,
       // Opacidad aumenta con el tiempo (trail effect)
-      opacity: 0.3 + (index / data.length) * 0.7,
+      opacity: 0.3 + (index / filteredData.length) * 0.7,
     }));
-  }, [data, plantProfile]);
+  }, [filteredData, plantProfile]);
   
   // Calcular el punto más reciente para resaltarlo
   const latestPoint = enhancedData[enhancedData.length - 1];
@@ -157,7 +172,36 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
           Trayectoria del estado con histéresis visual. El atractor Bucéfalo está en (H=0, C=1).
         </CardDescription>
       </CardHeader>
-      <CardContent className="relative z-10">
+      <CardContent className="relative z-10 space-y-4">
+        {/* Control de rango temporal */}
+        {data.length > 1 && (
+          <div className="space-y-2 p-3 rounded-lg border border-border bg-card/50">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Rango Temporal</span>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs font-mono">
+                  Paso {timeRange[0] + 1} - {timeRange[1] + 1}
+                </Badge>
+                <Badge variant="secondary" className="text-xs">
+                  {timeRange[1] - timeRange[0] + 1} / {data.length} pasos
+                </Badge>
+              </div>
+            </div>
+            <Slider
+              min={0}
+              max={Math.max(0, data.length - 1)}
+              step={1}
+              value={timeRange}
+              onValueChange={(value) => setTimeRange(value as [number, number])}
+              className="w-full"
+            />
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Inicio: Paso {timeRange[0] + 1}</span>
+              <span>Fin: Paso {timeRange[1] + 1}</span>
+            </div>
+          </div>
+        )}
+        
         <ResponsiveContainer width="100%" height={400}>
           <ScatterChart margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
             <CartesianGrid 

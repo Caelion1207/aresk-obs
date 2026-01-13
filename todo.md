@@ -676,3 +676,8 @@
 
 - [x] Arreglar visualización de trayectorias en PhaseSpaceMap (líneas conectadas con gradiente de opacidad)
 - [x] Crear README.md como contrato semántico con prerrequisitos explícitos y criterios de rechazo
+
+
+## Control de Rango Temporal en Visualizaciones (Completado)
+
+- [x] Implementar slider de rango temporal en PhaseSpaceMap para filtrar trayectoria por segmento de pasos
