@@ -5,6 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { 
   AlertTriangle, 
   TrendingDown, 
@@ -25,6 +33,7 @@ export default function ErosionDashboard() {
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
   const [compareSessionIds, setCompareSessionIds] = useState<number[]>([]);
   const [trendsGranularity, setTrendsGranularity] = useState<"week" | "month">("week");
+  const [alertToDelete, setAlertToDelete] = useState<{ id: number; severity: string; trendChange: number } | null>(null);
 
   // Queries
   const { data: sessions } = trpc.session.list.useQuery();
@@ -51,8 +60,27 @@ export default function ErosionDashboard() {
   const dismissAlertMutation = trpc.erosion.dismissAlert.useMutation({
     onSuccess: () => {
       refetchAlerts();
+      setAlertToDelete(null);
     },
   });
+
+  const handleDismissAlert = (alert: any) => {
+    if (alert.severity === "critical") {
+      setAlertToDelete({
+        id: alert.id,
+        severity: alert.severity,
+        trendChange: alert.trendChange,
+      });
+    } else {
+      dismissAlertMutation.mutate({ alertId: alert.id });
+    }
+  };
+
+  const confirmDismissAlert = () => {
+    if (alertToDelete) {
+      dismissAlertMutation.mutate({ alertId: alertToDelete.id });
+    }
+  };
 
   // Filtrar sesiones acopladas (solo estas tienen polaridad semántica)
   const acopladaSessions = sessions?.filter((s: any) => s.plantProfile === "acoplada") || [];
@@ -563,7 +591,7 @@ export default function ErosionDashboard() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => dismissAlertMutation.mutate({ alertId: alert.id })}
+                          onClick={() => handleDismissAlert(alert)}
                           disabled={dismissAlertMutation.isPending}
                         >
                           Marcar como leída
@@ -808,6 +836,57 @@ export default function ErosionDashboard() {
           </>
         )}
       </div>
+
+      {/* Modal de confirmación para alertas críticas */}
+      <Dialog open={!!alertToDelete} onOpenChange={(open) => !open && setAlertToDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <AlertTriangle className="h-5 w-5" />
+              Confirmar Descarte de Alerta Crítica
+            </DialogTitle>
+            <DialogDescription>
+              Estás a punto de descartar una alerta de tendencia crítica. Esta acción no se puede deshacer.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {alertToDelete && (
+            <div className="space-y-3 py-4">
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                <p className="text-sm font-medium text-red-500">Detalles de la Alerta</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Cambio de tendencia: <span className="font-bold text-red-500">+{(alertToDelete.trendChange * 100).toFixed(1)}%</span>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Severidad: <span className="font-bold text-red-500">Crítica</span>
+                </p>
+              </div>
+              
+              <p className="text-sm text-muted-foreground">
+                Las alertas críticas indican un aumento significativo en la erosión estructural. 
+                Se recomienda revisar las sesiones afectadas antes de descartar esta alerta.
+              </p>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setAlertToDelete(null)}
+              disabled={dismissAlertMutation.isPending}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDismissAlert}
+              disabled={dismissAlertMutation.isPending}
+            >
+              {dismissAlertMutation.isPending ? "Descartando..." : "Confirmar Descarte"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

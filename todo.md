@@ -598,5 +598,5 @@
 - [ ] Deshabilitar botones de comparación cuando no hay suficientes sesiones
 - [ ] Agregar tooltips explicativos en métricas complejas (correlación, tendencia)
 - [ ] Mejorar responsive design en tablas y gráficos
-- [ ] Agregar confirmación antes de descartar alertas críticas
+- [x] Agregar confirmación antes de descartar alertas críticas
 - [ ] Optimizar re-renders innecesarios con useMemo en cálculos pesados
