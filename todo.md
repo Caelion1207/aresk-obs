@@ -608,7 +608,7 @@
 - [x] Implementar validación de 2-5 sesiones seleccionadas
 - [x] Agregar botón "Comparar" con estado disabled condicional (implícito: carga automática)
 - [x] Mostrar tooltip explicativo cuando botón está deshabilitado (mensaje de validación)
-- [ ] Crear gráfico overlay de curvas ε_eff(t) con colores diferenciados (requiere extender backend)
+- [x] Crear gráfico overlay de curvas ε_eff(t) con colores diferenciados
 - [x] Implementar matriz de correlación visual con mapa de calor
 - [x] Agregar tabla comparativa con ranking de erosión
 - [x] Mostrar estadísticas agregadas (promedio, máxima, mínima)

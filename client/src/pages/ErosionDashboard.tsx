@@ -970,9 +970,21 @@ export default function ErosionDashboard() {
                               "oklch(0.65 0.2 60)",  // Amarillo
                               "oklch(0.65 0.2 320)"  // Magenta
                             ];
-                            // Nota: timeSeries no está disponible en el tipo actual
-                            // Se necesita extender el endpoint backend para incluir series temporales
-                            return null;
+                            const seriesData = (comparativeData as any).timeSeries?.[comp.sessionId] || [];
+                            if (seriesData.length === 0) return null;
+                            
+                            return (
+                              <Line
+                                key={comp.sessionId}
+                                data={seriesData}
+                                dataKey="epsilonEff"
+                                stroke={colors[index % colors.length]}
+                                strokeWidth={2}
+                                dot={false}
+                                name={`Sesión #${comp.sessionId}`}
+                                connectNulls
+                              />
+                            );
                           })}
                         </LineChart>
                       </ResponsiveContainer>
