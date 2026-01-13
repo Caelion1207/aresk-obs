@@ -670,3 +670,9 @@
 - [x] Implementar wrap controlado con overflow: hidden, text-overflow: ellipsis (truncate)
 - [x] Alinear items con align-items: center
 - [x] Separar visualmente estado de acciones (estado pasivo, acciones activas)
+
+
+## Mejoras de Visualización y Documentación (Completado)
+
+- [x] Arreglar visualización de trayectorias en PhaseSpaceMap (líneas conectadas con gradiente de opacidad)
+- [x] Crear README.md como contrato semántico con prerrequisitos explícitos y criterios de rechazo

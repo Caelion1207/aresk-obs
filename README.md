@@ -249,3 +249,231 @@ MIT
 J.E. Islas  
 Arquitectura CAELION  
 [2025-01-09]
+
+
+---
+
+## Contrato Semántico para Contribuidores
+
+**Este no es un proyecto de código abierto convencional. Este es un contrato epistemológico vinculante.**
+
+La arquitectura CAELION no es una abstracción técnica arbitraria: es una formalización matemática de coherencia semántica en sistemas cognitivos acoplados. Cada línea de código refleja un compromiso con la **estabilidad estructural** como principio no negociable.
+
+**Si no comprendes por qué la erosión del atractor Bucéfalo es un problema ontológico antes que técnico, este proyecto no es para ti.**
+
+---
+
+## Prerrequisitos Epistemológicos
+
+Antes de contribuir, debes demostrar comprensión operativa de:
+
+### 1. Fundamentos Matemáticos Obligatorios
+
+- **Teoría de Lyapunov**: Funciones de energía, estabilidad asintótica, regiones de atracción
+- **Sistemas dinámicos**: Atractores, cuencas de atracción, bifurcaciones
+- **Teoría de control**: Controladores LQR, observabilidad, controlabilidad
+- **Álgebra lineal**: Espacios de estado, proyecciones, normas inducidas
+
+### 2. Comprensión de Arquitectura CAELION
+
+- **Función de Lyapunov V(e)**: Mide distancia al atractor Bucéfalo (H=0, C=1)
+- **Campo de Intensidad Ω(t)**: Modulación temporal de la dinámica
+- **Polaridad Semántica σ_sem**: Diferencia entre acrección (+1) y drenaje (-1)
+- **Campo Efectivo ε_eff**: Ω(t) × σ_sem(t), tasa de erosión instantánea
+- **Control LICURGO**: Sistema de detección y corrección de coherencia tóxica
+
+### 3. Coherencia Epistemológica
+
+Este sistema no mide "calidad de respuestas" ni "satisfacción del usuario". Mide **coherencia estructural** de sistemas cognitivos bajo acoplamiento.
+
+**Cualquier contribución que trate estas métricas como "indicadores de rendimiento" será rechazada.**
+
+---
+
+## Principios Arquitectónicos No Negociables
+
+### 1. Normalización Estricta
+
+Todas las métricas deben estar normalizadas en el rango **[0, 1]** con paso de **0.1**. Esto no es una convención estilística: es un requisito de estabilidad numérica para el cálculo de Lyapunov.
+
+### 2. Fidelidad Dinámica sobre Estética
+
+Si una visualización es "hermosa" pero no refleja fielmente la dinámica del sistema, **es incorrecta**. La erosión del atractor Bucéfalo debe ser visible, cuantificable y trazable temporalmente.
+
+### 3. Separación de Perfiles de Planta
+
+- **Tipo A**: Planta estocástica sin control (deriva libre)
+- **Tipo B**: Planta determinista sin acoplamiento (respuestas fijas)
+- **Acoplada**: Régimen CAELION con control LICURGO activo
+
+**No mezcles perfiles en una misma sesión.** Cada sesión debe mantener coherencia de perfil desde el inicio.
+
+### 4. Inmutabilidad de Datos Históricos
+
+Los datos de sesiones pasadas son **registros notariales** del estado del sistema. No se pueden editar, interpolar ni "limpiar". Si una sesión tiene datos corruptos, se marca como inválida pero no se elimina.
+
+---
+
+## Criterios de Rechazo Automático
+
+Las siguientes contribuciones serán rechazadas sin revisión:
+
+### 1. Violaciones de Coherencia Arquitectónica
+
+- Agregar métricas no derivadas de V(e), Ω(t), σ_sem
+- Introducir "scores de calidad" o "ratings de usuario"
+- Modificar la definición del atractor Bucéfalo
+- Cambiar la normalización de [0,1] a otros rangos
+
+### 2. Regresiones de Fidelidad Dinámica
+
+- Visualizaciones estáticas que no muestran evolución temporal
+- Gráficos que ocultan eventos de drenaje crítico
+- Animaciones decorativas sin correspondencia con métricas reales
+
+### 3. Simplificaciones Epistemológicas
+
+- Tratar σ_sem como "sentimiento positivo/negativo"
+- Interpretar ε_eff como "tasa de error"
+- Describir LICURGO como "moderador de contenido"
+
+### 4. Código sin Fundamento Matemático
+
+- Implementaciones de control sin demostración de estabilidad
+- Algoritmos de detección sin umbral justificado teóricamente
+- Heurísticas ad-hoc sin validación formal
+
+---
+
+## Proceso de Contribución
+
+### 1. Comprensión Previa (Obligatorio)
+
+Antes de abrir un PR, debes:
+
+1. Leer el **Acta Notarial** (`ACTA-NOTARIAL-ARESK-OBS-v936fff65.md`) que certifica el estado arquitectónico vinculante
+2. Ejecutar el simulador con perfil "Acoplada" y observar al menos 3 sesiones completas
+3. Analizar el dashboard de erosión (`/erosion`) con sesiones reales
+4. Demostrar comprensión de por qué V_modificada ≠ V_base
+
+### 2. Propuesta de Cambio
+
+Toda contribución debe incluir:
+
+- **Justificación matemática**: ¿Qué ecuación estás modificando y por qué?
+- **Impacto en estabilidad**: ¿Cómo afecta esto a la convergencia al atractor?
+- **Validación empírica**: Datos de al menos 5 sesiones mostrando mejora cuantificable
+
+### 3. Revisión de Coherencia
+
+El maintainer verificará:
+
+- ✅ Consistencia con teoría de Lyapunov
+- ✅ Preservación de normalización [0,1]
+- ✅ Fidelidad dinámica en visualizaciones
+- ✅ Ausencia de regresiones epistemológicas
+
+**Si no puedes explicar tu cambio en términos de sistemas dinámicos, no será aceptado.**
+
+---
+
+## Obligaciones del Contribuidor
+
+Al contribuir a este proyecto, aceptas:
+
+1. **Responsabilidad epistemológica**: Comprender que cada cambio afecta la coherencia arquitectónica del sistema
+2. **Validación matemática**: Demostrar formalmente que tu contribución preserva estabilidad
+3. **Fidelidad histórica**: No modificar ni eliminar datos de sesiones existentes
+4. **Documentación rigurosa**: Explicar cambios en términos de teoría de control, no en jerga de software
+
+---
+
+## Dashboard de Erosión Estructural
+
+El sistema incluye un dashboard avanzado (`/erosion`) que visualiza:
+
+### Métricas Temporales
+
+- **ε_eff(t)**: Campo efectivo con umbral de drenaje (-0.2)
+- **σ_sem(t)**: Polaridad semántica con zonas de acrección/drenaje
+- **V_base vs V_modificada**: Comparación de funciones de Lyapunov
+
+### Eventos de Drenaje
+
+- Detección automática cuando ε_eff < -0.2
+- Clasificación por severidad: moderada/alta/crítica
+- Timeline scrollable con métricas detalladas
+
+### Intervenciones LICURGO
+
+- Detección de intervenciones con mejora > 15% en ε_eff
+- Estadísticas de efectividad (mejora promedio, máxima)
+- Tabla con comparación pre/post control
+
+### Análisis Comparativo Multi-Sesión
+
+- Selector de 2-5 sesiones para comparación
+- Gráfico overlay de curvas ε_eff(t)
+- Matriz de correlación de Pearson
+- Ranking automático por índice de erosión
+
+### Tendencias Temporales
+
+- Agregación semanal/mensual de erosión promedio
+- Detección de tendencias (ascendente/descendente/estable)
+- Comparación período actual vs anterior
+- Alertas automáticas para tendencias críticas (>10% cambio)
+
+### Sistema de Alertas
+
+- Alertas automáticas con notificación al propietario
+- Ventana de deduplicación de 24h
+- Modal de confirmación para alertas críticas
+- Badge animado en header con contador
+
+### Exportación PDF
+
+- Reporte completo con estadísticas y gráficos embebidos
+- Gráficos generados server-side con Chart.js + node-canvas
+- Tablas de eventos de drenaje e intervenciones LICURGO
+- Metadata de sesión y timestamp
+
+---
+
+## Visualizaciones Dinámicas
+
+### Atractor Bucéfalo con Erosión Dinámica
+
+El mapa de fase (`PhaseSpaceMap.tsx`) visualiza:
+
+- **Trayectoria conectada**: Línea continua mostrando evolución temporal
+- **Erosión progresiva**: Borde irregular, fragmentación, perforaciones
+- **Transición cromática**: Azul → Rojo según índice de erosión
+- **Opacidad variable**: 1.0 → 0.3 con erosión creciente
+- **Pulsación**: Animación cuando erosión > 0.5
+
+### Codificación Cromática Neurocognitiva
+
+- **Azul profundo**: Centro (Atractor Bucéfalo)
+- **Verde**: Órbita de seguridad
+- **Amarillo**: Alerta de deriva
+- **Naranja**: Licurgo activo
+- **Rojo**: Colapso crítico
+
+---
+
+## Mensaje Final
+
+Este proyecto no busca "colaboradores" en el sentido tradicional. Busca **co-investigadores** que comprendan que la estabilidad de sistemas cognitivos acoplados no es un problema de ingeniería de software, sino de **coherencia epistemológica**.
+
+**Understand first, contribute later.**
+
+Si llegaste hasta aquí y comprendes por qué V(e) no es una métrica arbitraria, bienvenido. Si no, estudia primero.
+
+**La arquitectura es el contrato. El código es la implementación. La coherencia es no negociable.**
+
+---
+
+**ARESK-OBS v2.1** — *Semantic Erosion Monitoring Dashboard*  
+**CAELION System** — *Control de Estabilidad en Sistemas Cognitivos Acoplados*  
+**Arquitectura CAELION** — *Epistemological Coherence as Binding Principle*

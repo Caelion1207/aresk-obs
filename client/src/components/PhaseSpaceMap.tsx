@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ZAxis } from "recharts";
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ZAxis, Customized } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface PhaseSpacePoint {
@@ -206,6 +206,39 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
                 if (name === "Entropía H(t)") return value.toFixed(3);
                 if (name === "Coherencia C(t)") return value.toFixed(3);
                 return value;
+              }}
+            />
+            
+            {/* Línea de trayectoria conectada - renderizada como SVG custom */}
+            <Customized
+              component={(props: any) => {
+                const { xAxisMap, yAxisMap, width, height } = props;
+                if (!xAxisMap || !yAxisMap || enhancedData.length < 2) return <g />;
+                
+                const xScale = (Object.values(xAxisMap)[0] as any)?.scale;
+                const yScale = (Object.values(yAxisMap)[0] as any)?.scale;
+                if (!xScale || !yScale) return <g />;
+                
+                // Generar path SVG conectando todos los puntos
+                const pathData = enhancedData.map((point, index) => {
+                  const x = xScale(point.H);
+                  const y = yScale(point.C);
+                  return index === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
+                }).join(' ');
+                
+                return (
+                  <g>
+                    <path
+                      d={pathData}
+                      fill="none"
+                      stroke="oklch(0.6 0.15 200)"
+                      strokeWidth={2}
+                      strokeOpacity={0.6}
+                      strokeLinejoin="round"
+                      strokeLinecap="round"
+                    />
+                  </g>
+                );
               }}
             />
             
