@@ -211,7 +211,7 @@ export default function ErosionDashboard() {
         {selectedSessionId && (
           <>
             {/* Estadísticas de la sesión */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -277,11 +277,12 @@ export default function ErosionDashboard() {
               </CardHeader>
               <CardContent>
                 {loadingHistory ? (
-                  <div className="h-[300px] flex items-center justify-center">
+                  <div className="h-[200px] sm:h-[300px] flex items-center justify-center">
                     <p className="text-muted-foreground">Cargando datos...</p>
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height={300}>
+                  <div className="h-[200px] sm:h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
                       <XAxis 
@@ -316,6 +317,7 @@ export default function ErosionDashboard() {
                       <Brush dataKey="step" height={30} stroke="oklch(from var(--primary) l c h)" />
                     </LineChart>
                   </ResponsiveContainer>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -329,7 +331,8 @@ export default function ErosionDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <div className="h-[200px] sm:h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
                     <XAxis 
@@ -363,12 +366,13 @@ export default function ErosionDashboard() {
                       name="σ_sem"
                     />
                     <Brush dataKey="step" height={30} stroke="oklch(from var(--primary) l c h)" />
-                  </LineChart>
-                </ResponsiveContainer>
+                       </LineChart>
+                  </ResponsiveContainer>
+                  </div>
               </CardContent>
             </Card>
 
-            {/* Gráfico comparativo V_base vs V_modificada */}
+            {/* Gráfico de V_base vs V_modificada */}
             <Card>
               <CardHeader>
                 <CardTitle>Función de Lyapunov: V_base vs V_modificada</CardTitle>
@@ -377,7 +381,8 @@ export default function ErosionDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <div className="h-[200px] sm:h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
                     <XAxis 
@@ -416,8 +421,9 @@ export default function ErosionDashboard() {
                       name="V_modificada"
                     />
                     <Brush dataKey="step" height={30} stroke="oklch(from var(--primary) l c h)" />
-                  </LineChart>
-                </ResponsiveContainer>
+                    </LineChart>
+                  </ResponsiveContainer>
+                  </div>
               </CardContent>
             </Card>
 
@@ -719,7 +725,8 @@ export default function ErosionDashboard() {
                     {/* Gráfico de barras de erosión promedio */}
                     <div>
                       <h4 className="text-sm font-medium mb-3">Evolución de Erosión Promedio</h4>
-                      <ResponsiveContainer width="100%" height={350}>
+                      <div className="h-[250px] sm:h-[350px]">
+                      <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={trendsData.periods}>
                           <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
                           <XAxis 
@@ -755,6 +762,7 @@ export default function ErosionDashboard() {
                           />
                         </LineChart>
                       </ResponsiveContainer>
+                      </div>
                     </div>
 
                     {/* Períodos de alta erosión */}
@@ -787,9 +795,9 @@ export default function ErosionDashboard() {
                           <thead>
                             <tr className="border-b border-border">
                               <th className="text-left p-2 text-sm font-medium">Período</th>
-                              <th className="text-right p-2 text-sm font-medium">Sesiones</th>
-                              <th className="text-right p-2 text-sm font-medium">Erosión Promedio</th>
-                              <th className="text-right p-2 text-sm font-medium">Eventos de Drenaje</th>
+                              <th className="text-right p-2 text-sm font-medium hidden sm:table-cell">Sesiones</th>
+                              <th className="text-right p-2 text-sm font-medium">Erosión</th>
+                              <th className="text-right p-2 text-sm font-medium hidden md:table-cell">Eventos</th>
                               <th className="text-left p-2 text-sm font-medium">Estado</th>
                             </tr>
                           </thead>
@@ -799,11 +807,11 @@ export default function ErosionDashboard() {
                               return (
                                 <tr key={index} className="border-b border-border">
                                   <td className="p-2 text-sm">{period.label}</td>
-                                  <td className="p-2 text-sm text-right">{period.sessionCount}</td>
+                                  <td className="p-2 text-sm text-right hidden sm:table-cell">{period.sessionCount}</td>
                                   <td className="p-2 text-sm text-right font-mono">
                                     {(period.avgErosion * 100).toFixed(1)}%
                                   </td>
-                                  <td className="p-2 text-sm text-right">{period.totalDrainageEvents}</td>
+                                  <td className="p-2 text-sm text-right hidden md:table-cell">{period.totalDrainageEvents}</td>
                                   <td className="p-2 text-sm">
                                     {isHighErosion ? (
                                       <Badge variant="destructive">Alta</Badge>
