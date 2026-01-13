@@ -145,77 +145,89 @@ function ErosionDashboardContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Header con grid tripartito disciplinado */}
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="container mx-auto px-4 py-3">
+          <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 min-h-[56px]">
+            {/* Zona izquierda: Navegación */}
+            <div className="flex items-center gap-2">
               <Link href="/">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Inicio
                 </Button>
               </Link>
-              <div>
-                <h1 className="text-2xl font-bold">Dashboard de Erosión Estructural</h1>
-                <p className="text-sm text-muted-foreground">
-                  Análisis temporal de drenaje semántico y efectividad de control LICURGO
-                </p>
-              </div>
             </div>
             
-            {/* Indicador de erosión actual y alertas */}
-            <div className="flex items-center gap-4">
-              {/* Badge de alertas activas */}
-              {activeAlerts && activeAlerts.length > 0 && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-500/30 bg-red-500/10">
-                  <Bell className="h-5 w-5 text-red-500 animate-pulse" />
-                  <div>
-                    <p className="text-xs text-red-500 font-medium">{activeAlerts.length} Alerta{activeAlerts.length > 1 ? 's' : ''}</p>
-                    <p className="text-xs text-muted-foreground">Tendencia crítica</p>
+            {/* Zona centro: Estado del sistema */}
+            <div className="flex items-center gap-3 justify-center overflow-hidden">
+              <div className="text-center">
+                <h1 className="text-lg font-bold truncate">Dashboard de Erosión Estructural</h1>
+                <p className="text-xs text-muted-foreground truncate">
+                  Análisis temporal de drenaje semántico
+                </p>
+              </div>
+              
+              {/* Estados informativos (no interactivos) */}
+              {selectedSessionId && (
+                <div className="flex items-center gap-2">
+                  <Separator orientation="vertical" className="h-8" />
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="text-xs text-muted-foreground">Erosión</p>
+                    <Badge 
+                      variant={
+                        erosionSeverity.level === "critical" ? "destructive" :
+                        erosionSeverity.level === "high" ? "destructive" :
+                        erosionSeverity.level === "moderate" ? "default" :
+                        "secondary"
+                      }
+                      className="text-xs font-mono"
+                    >
+                      {(currentErosionIndex * 100).toFixed(1)}%
+                    </Badge>
                   </div>
                 </div>
               )}
               
-              {selectedSessionId && (
-                <div className="flex items-center gap-3">
-                  {/* Botón de exportación PDF */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => exportPDFMutation.mutate({ sessionId: selectedSessionId })}
-                    disabled={exportPDFMutation.isPending}
-                  >
-                    {exportPDFMutation.isPending ? (
-                      <>
-                        <Activity className="h-4 w-4 mr-2 animate-spin" />
-                        Generando...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                        Exportar PDF
-                      </>
-                    )}
-                  </Button>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground">Índice de Erosión</p>
-                    <p className="text-2xl font-bold">{(currentErosionIndex * 100).toFixed(1)}%</p>
+              {/* Badge de alertas activas */}
+              {activeAlerts && activeAlerts.length > 0 && (
+                <>
+                  <Separator orientation="vertical" className="h-8" />
+                  <div className="flex items-center gap-2 px-2 py-1 rounded-md border border-red-500/30 bg-red-500/10">
+                    <Bell className="h-4 w-4 text-red-500 animate-pulse" />
+                    <div className="text-center">
+                      <p className="text-xs text-red-500 font-medium leading-tight">
+                        {activeAlerts.length} Alerta{activeAlerts.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
                   </div>
-                  <Badge 
-                    variant={
-                      erosionSeverity.level === "critical" ? "destructive" :
-                      erosionSeverity.level === "high" ? "destructive" :
-                      erosionSeverity.level === "moderate" ? "default" :
-                      "secondary"
-                    }
-                    className="text-sm"
-                  >
-                    {erosionSeverity.label}
-                  </Badge>
-                </div>
+                </>
+              )}
+            </div>
+            
+            {/* Zona derecha: Acciones */}
+            <div className="flex items-center gap-2">
+              {selectedSessionId && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => exportPDFMutation.mutate({ sessionId: selectedSessionId })}
+                  disabled={exportPDFMutation.isPending}
+                >
+                  {exportPDFMutation.isPending ? (
+                    <>
+                      <Activity className="h-4 w-4 mr-2 animate-spin" />
+                      Generando...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                      </svg>
+                      Exportar PDF
+                    </>
+                  )}
+                </Button>
               )}
             </div>
           </div>

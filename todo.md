@@ -649,3 +649,24 @@
 - [ ] Mejorar tipografía con fuentes más legibles
 - [x] Mantener tablas de eventos con mejor formato visual
 - [x] Ajustar layout para que gráficos y tablas no se superpongan
+
+
+## Reestructuración de Header del Dashboard de Erosión (Completado)
+
+### Problema Detectado
+- Header sin grid/flex disciplinado: elementos se pisan cuando contenido crece
+- Altura fija causa clipping visual
+- Acciones primarias mezcladas con estado (semánticamente incorrecto)
+- Selector de perfil compite visualmente con botones de acción
+
+### Solución: Grid Tripartito
+- [x] Dividir header en 3 zonas explícitas con grid-template-columns: auto 1fr auto
+- [x] Zona izquierda: navegación/contexto (botón "Inicio")
+- [x] Zona centro: estado del sistema (perfil, régimen, índice de erosión)
+- [x] Zona derecha: acciones (Exportar PDF)
+- [x] Implementar altura automática con min-height: 56px
+- [x] Agregar gap: 12px y padding: 8px 16px (gap: 3, py: 3)
+- [x] Convertir estado a badges informativos (no interactivos)
+- [x] Implementar wrap controlado con overflow: hidden, text-overflow: ellipsis (truncate)
+- [x] Alinear items con align-items: center
+- [x] Separar visualmente estado de acciones (estado pasivo, acciones activas)
