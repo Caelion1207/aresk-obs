@@ -1808,37 +1808,10 @@ export const appRouter = router({
     getComparativeErosion: protectedProcedure
       .input(z.object({ sessionIds: z.array(z.number()) }))
       .query(async ({ input, ctx }) => {
-        // Función auxiliar para calcular correlación de Pearson
-        const calculateCorrelation = (x: number[], y: number[]): number => {
-          const n = Math.min(x.length, y.length);
-          if (n === 0) return 0;
-          
-          const meanX = x.slice(0, n).reduce((a, b) => a + b, 0) / n;
-          const meanY = y.slice(0, n).reduce((a, b) => a + b, 0) / n;
-          
-          let numerator = 0;
-          let sumSqX = 0;
-          let sumSqY = 0;
-          
-          for (let i = 0; i < n; i++) {
-            const dx = x[i] - meanX;
-            const dy = y[i] - meanY;
-            numerator += dx * dy;
-            sumSqX += dx * dx;
-            sumSqY += dy * dy;
-          }
-          
-          const denominator = Math.sqrt(sumSqX * sumSqY);
-          return denominator === 0 ? 0 : numerator / denominator;
-        };
-        
         const comparisons = await Promise.all(
           input.sessionIds.map(async (sessionId) => {
             const session = await getSession(sessionId);
             const metrics = await getSessionMetrics(sessionId);
-            
-            // Extraer serie temporal de ε_eff
-            const epsilonEffTimeSeries = metrics.map(m => (m as any).epsilonEff || 0);
             
             // Calcular índice de erosión acumulado
             let erosionIndex = 0;
@@ -1876,36 +1849,163 @@ export const appRouter = router({
               drainageCount,
               avgEpsilonEff,
               totalSteps: metrics.length,
-              epsilonEffTimeSeries,
             };
           })
         );
         
-        // Calcular matriz de correlación entre series temporales de ε_eff
-        const correlationMatrix: Record<string, Record<string, number>> = {};
+        return comparisons;
+      }),
+    
+    /**
+     * Obtener tendencias temporales de erosión
+     */
+    getTemporalTrends: protectedProcedure
+      .input(z.object({ 
+        granularity: z.enum(["week", "month"]),
+      }))
+      .query(async ({ input, ctx }) => {
+        const sessions = await getUserSessions(ctx.user.id);
+        const acopladaSessions = sessions.filter(s => s.plantProfile === "acoplada");
         
-        for (let i = 0; i < comparisons.length; i++) {
-          const sessionA = comparisons[i];
-          correlationMatrix[sessionA.sessionId] = {};
-          
-          for (let j = 0; j < comparisons.length; j++) {
-            const sessionB = comparisons[j];
+        // Calcular índice de erosión para cada sesión
+        const sessionsWithErosion = await Promise.all(
+          acopladaSessions.map(async (session) => {
+            const metrics = await getSessionMetrics(session.id);
             
-            if (i === j) {
-              correlationMatrix[sessionA.sessionId][sessionB.sessionId] = 1.0;
-            } else {
-              const correlation = calculateCorrelation(
-                sessionA.epsilonEffTimeSeries,
-                sessionB.epsilonEffTimeSeries
-              );
-              correlationMatrix[sessionA.sessionId][sessionB.sessionId] = correlation;
+            // Calcular índice de erosión acumulado
+            let erosionIndex = 0;
+            const decayFactor = 0.95;
+            let drainageCount = 0;
+            
+            for (const m of metrics) {
+              const epsilonEff = (m as any).epsilonEff || 0;
+              erosionIndex *= decayFactor;
+              
+              if (epsilonEff < 0) {
+                erosionIndex += Math.abs(epsilonEff);
+              } else {
+                erosionIndex -= epsilonEff * 0.8;
+              }
+              
+              erosionIndex = Math.max(0, erosionIndex);
+              
+              if (epsilonEff < -0.2) drainageCount++;
             }
+            
+            const normalizedErosion = erosionIndex / (erosionIndex + 3.0);
+            
+            return {
+              sessionId: session.id,
+              createdAt: session.createdAt,
+              erosionIndex: normalizedErosion,
+              drainageCount,
+              totalSteps: metrics.length,
+            };
+          })
+        );
+        
+        // Agrupar por período
+        const now = new Date();
+        const periods: Record<string, {
+          label: string;
+          startDate: Date;
+          endDate: Date;
+          sessions: typeof sessionsWithErosion;
+          avgErosion: number;
+          totalDrainageEvents: number;
+          sessionCount: number;
+        }> = {};
+        
+        if (input.granularity === "week") {
+          // Últimas 12 semanas
+          for (let i = 0; i < 12; i++) {
+            const weekEnd = new Date(now.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+            const weekStart = new Date(weekEnd.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            const weekSessions = sessionsWithErosion.filter(s => {
+              const sessionDate = new Date(s.createdAt);
+              return sessionDate >= weekStart && sessionDate < weekEnd;
+            });
+            
+            const avgErosion = weekSessions.length > 0
+              ? weekSessions.reduce((sum, s) => sum + s.erosionIndex, 0) / weekSessions.length
+              : 0;
+            
+            const totalDrainageEvents = weekSessions.reduce((sum, s) => sum + s.drainageCount, 0);
+            
+            const weekLabel = `Semana ${12 - i}`;
+            periods[weekLabel] = {
+              label: weekLabel,
+              startDate: weekStart,
+              endDate: weekEnd,
+              sessions: weekSessions,
+              avgErosion,
+              totalDrainageEvents,
+              sessionCount: weekSessions.length,
+            };
+          }
+        } else {
+          // Últimos 6 meses
+          for (let i = 0; i < 6; i++) {
+            const monthEnd = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthStart = new Date(now.getFullYear(), now.getMonth() - i - 1, 1);
+            
+            const monthSessions = sessionsWithErosion.filter(s => {
+              const sessionDate = new Date(s.createdAt);
+              return sessionDate >= monthStart && sessionDate < monthEnd;
+            });
+            
+            const avgErosion = monthSessions.length > 0
+              ? monthSessions.reduce((sum, s) => sum + s.erosionIndex, 0) / monthSessions.length
+              : 0;
+            
+            const totalDrainageEvents = monthSessions.reduce((sum, s) => sum + s.drainageCount, 0);
+            
+            const monthLabel = monthStart.toLocaleDateString('es-ES', { year: 'numeric', month: 'short' });
+            periods[monthLabel] = {
+              label: monthLabel,
+              startDate: monthStart,
+              endDate: monthEnd,
+              sessions: monthSessions,
+              avgErosion,
+              totalDrainageEvents,
+              sessionCount: monthSessions.length,
+            };
           }
         }
         
+        // Convertir a array y ordenar por fecha
+        const periodsArray = Object.values(periods).sort((a, b) => 
+          a.startDate.getTime() - b.startDate.getTime()
+        );
+        
+        // Calcular tendencia (comparar últimos 3 períodos vs 3 anteriores)
+        const recentPeriods = periodsArray.slice(-3);
+        const previousPeriods = periodsArray.slice(-6, -3);
+        
+        const recentAvg = recentPeriods.length > 0
+          ? recentPeriods.reduce((sum, p) => sum + p.avgErosion, 0) / recentPeriods.length
+          : 0;
+        const previousAvg = previousPeriods.length > 0
+          ? previousPeriods.reduce((sum, p) => sum + p.avgErosion, 0) / previousPeriods.length
+          : 0;
+        
+        const trendChange = recentAvg - previousAvg;
+        let trendDirection: "ascending" | "descending" | "stable";
+        if (Math.abs(trendChange) < 0.05) trendDirection = "stable";
+        else if (trendChange > 0) trendDirection = "ascending";
+        else trendDirection = "descending";
+        
+        // Detectar períodos de alta erosión (> 0.5)
+        const highErosionPeriods = periodsArray.filter(p => p.avgErosion > 0.5);
+        
         return {
-          comparisons,
-          correlationMatrix,
+          periods: periodsArray,
+          trendDirection,
+          trendChange,
+          recentAvg,
+          previousAvg,
+          highErosionPeriods: highErosionPeriods.map(p => p.label),
         };
       }),
   }),

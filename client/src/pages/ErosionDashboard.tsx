@@ -23,6 +23,7 @@ import { calculateErosionIndex, getErosionSeverity } from "@/lib/erosionCalculat
 export default function ErosionDashboard() {
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
   const [compareSessionIds, setCompareSessionIds] = useState<number[]>([]);
+  const [trendsGranularity, setTrendsGranularity] = useState<"week" | "month">("week");
 
   // Queries
   const { data: sessions } = trpc.session.list.useQuery();
@@ -41,6 +42,9 @@ export default function ErosionDashboard() {
   const { data: comparativeData } = trpc.erosion.getComparativeErosion.useQuery(
     { sessionIds: compareSessionIds },
     { enabled: compareSessionIds.length > 0 }
+  );
+  const { data: trendsData } = trpc.erosion.getTemporalTrends.useQuery(
+    { granularity: trendsGranularity }
   );
 
   // Filtrar sesiones acopladas (solo estas tienen polaridad semántica)
@@ -499,67 +503,125 @@ export default function ErosionDashboard() {
               </CardContent>
             </Card>
 
-            {/* Panel de comparación multi-sesión */}
+            {/* Sección de Tendencias Temporales */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
-                  Comparación Multi-Sesión
+                  <TrendingUp className="h-5 w-5" />
+                  Tendencias Temporales de Erosión
                 </CardTitle>
                 <CardDescription>
-                  Selecciona 2-5 sesiones para comparar curvas de ε_eff(t) y analizar correlación de erosión
+                  Evolución de la erosión promedio a lo largo del tiempo
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Selector múltiple de sesiones */}
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Sesiones a comparar</label>
-                  <div className="flex flex-wrap gap-2">
-                    {acopladaSessions.map((session: any) => {
-                      const isSelected = compareSessionIds.includes(session.id);
-                      return (
-                        <Button
-                          key={session.id}
-                          variant={isSelected ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => {
-                            if (isSelected) {
-                              setCompareSessionIds(compareSessionIds.filter(id => id !== session.id));
-                            } else if (compareSessionIds.length < 5) {
-                              setCompareSessionIds([...compareSessionIds, session.id]);
-                            }
-                          }}
-                          disabled={!isSelected && compareSessionIds.length >= 5}
-                        >
-                          Sesión #{session.id}
-                        </Button>
-                      );
-                    })}
+                {/* Selector de granularidad */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="text-sm font-medium">Granularidad</label>
+                    <div className="flex gap-2 mt-2">
+                      <Button
+                        variant={trendsGranularity === "week" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setTrendsGranularity("week")}
+                      >
+                        Semanal
+                      </Button>
+                      <Button
+                        variant={trendsGranularity === "month" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setTrendsGranularity("month")}
+                      >
+                        Mensual
+                      </Button>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {compareSessionIds.length} de 5 sesiones seleccionadas
-                  </p>
+
+                  {/* Indicador de tendencia */}
+                  {trendsData && (
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">Tendencia</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {trendsData.trendDirection === "ascending" && (
+                          <>
+                            <TrendingUp className="h-5 w-5 text-red-500" />
+                            <span className="text-sm font-medium text-red-500">Ascendente</span>
+                          </>
+                        )}
+                        {trendsData.trendDirection === "descending" && (
+                          <>
+                            <TrendingDown className="h-5 w-5 text-green-500" />
+                            <span className="text-sm font-medium text-green-500">Descendente</span>
+                          </>
+                        )}
+                        {trendsData.trendDirection === "stable" && (
+                          <>
+                            <Activity className="h-5 w-5 text-blue-500" />
+                            <span className="text-sm font-medium text-blue-500">Estable</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Gráfico overlay de curvas ε_eff(t) */}
-                {comparativeData && comparativeData.comparisons.length >= 2 && (
+                {trendsData && trendsData.periods.length > 0 && (
                   <>
                     <Separator />
+
+                    {/* Tarjetas de comparación */}
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="p-3 rounded-lg border border-border bg-card/50">
+                        <p className="text-xs text-muted-foreground">Período Actual</p>
+                        <p className="text-2xl font-bold mt-1">
+                          {(trendsData.recentAvg * 100).toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Últimos 3 períodos
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg border border-border bg-card/50">
+                        <p className="text-xs text-muted-foreground">Período Anterior</p>
+                        <p className="text-2xl font-bold mt-1">
+                          {(trendsData.previousAvg * 100).toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          3 períodos previos
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg border border-border bg-card/50">
+                        <p className="text-xs text-muted-foreground">Cambio</p>
+                        <p className={`text-2xl font-bold mt-1 ${
+                          trendsData.trendChange > 0 ? "text-red-500" :
+                          trendsData.trendChange < 0 ? "text-green-500" :
+                          ""
+                        }`}>
+                          {trendsData.trendChange > 0 ? "+" : ""}{(trendsData.trendChange * 100).toFixed(1)}%
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Variación relativa
+                        </p>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Gráfico de barras de erosión promedio */}
                     <div>
-                      <h4 className="text-sm font-medium mb-3">Overlay de Curvas ε_eff(t)</h4>
-                      <ResponsiveContainer width="100%" height={400}>
-                        <LineChart>
+                      <h4 className="text-sm font-medium mb-3">Evolución de Erosión Promedio</h4>
+                      <ResponsiveContainer width="100%" height={350}>
+                        <LineChart data={trendsData.periods}>
                           <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
                           <XAxis 
-                            dataKey="step" 
-                            type="number"
-                            domain={[0, 'dataMax']}
-                            label={{ value: 'Paso Temporal', position: 'insideBottom', offset: -5 }}
+                            dataKey="label" 
+                            angle={-45}
+                            textAnchor="end"
+                            height={80}
                             stroke="oklch(from var(--foreground) l c h / 0.5)"
                           />
                           <YAxis 
-                            domain={[-1, 1]}
-                            label={{ value: 'ε_eff', angle: -90, position: 'insideLeft' }}
+                            domain={[0, 1]}
+                            label={{ value: 'Erosión Promedio', angle: -90, position: 'insideLeft' }}
                             stroke="oklch(from var(--foreground) l c h / 0.5)"
                           />
                           <Tooltip 
@@ -568,181 +630,92 @@ export default function ErosionDashboard() {
                               border: '1px solid oklch(from var(--border) l c h)',
                               borderRadius: '8px',
                             }}
-                            formatter={(value: number) => value.toFixed(4)}
+                            formatter={(value: number) => (value * 100).toFixed(1) + "%"}
+                            labelFormatter={(label) => `Período: ${label}`}
                           />
                           <Legend />
-                          <ReferenceLine y={-0.2} stroke="oklch(0.55 0.25 25)" strokeDasharray="3 3" label="Umbral de drenaje" />
-                          <ReferenceLine y={0} stroke="oklch(from var(--foreground) l c h / 0.3)" />
-                          
-                          {comparativeData.comparisons.map((comp, index) => {
-                            const colors = [
-                              "oklch(0.65 0.2 280)", // azul
-                              "oklch(0.6 0.25 25)",  // rojo
-                              "oklch(0.6 0.15 150)", // verde
-                              "oklch(0.65 0.2 50)",  // amarillo
-                              "oklch(0.7 0.2 320)",  // magenta
-                            ];
-                            
-                            const data = comp.epsilonEffTimeSeries.map((value, step) => ({
-                              step,
-                              [`session_${comp.sessionId}`]: value,
-                            }));
-                            
-                            return (
-                              <Line
-                                key={comp.sessionId}
-                                data={data}
-                                type="monotone"
-                                dataKey={`session_${comp.sessionId}`}
-                                stroke={colors[index % colors.length]}
-                                strokeWidth={2}
-                                dot={false}
-                                name={`Sesión #${comp.sessionId}`}
-                              />
-                            );
-                          })}
+                          <ReferenceLine y={0.5} stroke="oklch(0.55 0.25 25)" strokeDasharray="3 3" label="Umbral crítico" />
+                          <Line 
+                            type="monotone" 
+                            dataKey="avgErosion" 
+                            stroke="oklch(0.65 0.2 280)" 
+                            strokeWidth={3}
+                            dot={{ r: 5 }}
+                            name="Erosión Promedio"
+                          />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
 
-                    <Separator />
-
-                    {/* Matriz de correlación */}
-                    <div>
-                      <h4 className="text-sm font-medium mb-3">Matriz de Correlación (Pearson)</h4>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        Correlación entre series temporales de ε_eff. Valores cercanos a 1 indican patrones similares.
-                      </p>
-                      <div className="overflow-x-auto">
-                        <table className="w-full border-collapse">
-                          <thead>
-                            <tr>
-                              <th className="border border-border p-2 bg-muted/50"></th>
-                              {comparativeData.comparisons.map(comp => (
-                                <th key={comp.sessionId} className="border border-border p-2 bg-muted/50 text-sm">
-                                  #{comp.sessionId}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {comparativeData.comparisons.map(compA => (
-                              <tr key={compA.sessionId}>
-                                <td className="border border-border p-2 bg-muted/50 font-medium text-sm">
-                                  #{compA.sessionId}
-                                </td>
-                                {comparativeData.comparisons.map(compB => {
-                                  const correlation = comparativeData.correlationMatrix[compA.sessionId]?.[compB.sessionId] || 0;
-                                  const absCorr = Math.abs(correlation);
-                                  
-                                  // Mapa de calor: rojo (negativo) -> blanco (0) -> verde (positivo)
-                                  let bgColor = "oklch(from var(--card) l c h)";
-                                  if (correlation > 0.7) bgColor = "oklch(0.6 0.15 150 / 0.3)";
-                                  else if (correlation > 0.3) bgColor = "oklch(0.6 0.15 150 / 0.15)";
-                                  else if (correlation < -0.7) bgColor = "oklch(0.55 0.25 25 / 0.3)";
-                                  else if (correlation < -0.3) bgColor = "oklch(0.55 0.25 25 / 0.15)";
-                                  
-                                  return (
-                                    <td 
-                                      key={compB.sessionId} 
-                                      className="border border-border p-2 text-center text-sm font-mono"
-                                      style={{ backgroundColor: bgColor }}
-                                    >
-                                      {correlation.toFixed(3)}
-                                    </td>
-                                  );
-                                })}
-                              </tr>
+                    {/* Períodos de alta erosión */}
+                    {trendsData.highErosionPeriods.length > 0 && (
+                      <>
+                        <Separator />
+                        <div>
+                          <h4 className="text-sm font-medium mb-3 flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                            Períodos de Alta Erosión (&gt; 50%)
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {trendsData.highErosionPeriods.map((periodLabel, index) => (
+                              <Badge key={index} variant="destructive">
+                                {periodLabel}
+                              </Badge>
                             ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
 
                     <Separator />
 
-                    {/* Tabla comparativa con ranking */}
+                    {/* Tabla de períodos */}
                     <div>
-                      <h4 className="text-sm font-medium mb-3">Ranking de Erosión</h4>
+                      <h4 className="text-sm font-medium mb-3">Detalle por Período</h4>
                       <div className="overflow-x-auto">
                         <table className="w-full">
                           <thead>
                             <tr className="border-b border-border">
-                              <th className="text-left p-2 text-sm font-medium">Posición</th>
-                              <th className="text-left p-2 text-sm font-medium">Sesión</th>
-                              <th className="text-left p-2 text-sm font-medium">Fecha</th>
-                              <th className="text-right p-2 text-sm font-medium">Índice de Erosión</th>
+                              <th className="text-left p-2 text-sm font-medium">Período</th>
+                              <th className="text-right p-2 text-sm font-medium">Sesiones</th>
+                              <th className="text-right p-2 text-sm font-medium">Erosión Promedio</th>
                               <th className="text-right p-2 text-sm font-medium">Eventos de Drenaje</th>
-                              <th className="text-right p-2 text-sm font-medium">ε_eff Promedio</th>
-                              <th className="text-left p-2 text-sm font-medium">Severidad</th>
+                              <th className="text-left p-2 text-sm font-medium">Estado</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {comparativeData.comparisons
-                              .sort((a, b) => b.erosionIndex - a.erosionIndex)
-                              .map((comp, index) => {
-                                const severity = comp.erosionIndex > 0.6 ? "crítica" :
-                                                comp.erosionIndex > 0.4 ? "alta" :
-                                                comp.erosionIndex > 0.2 ? "moderada" : "leve";
-                                const severityColor = comp.erosionIndex > 0.6 ? "text-red-500" :
-                                                     comp.erosionIndex > 0.4 ? "text-orange-500" :
-                                                     comp.erosionIndex > 0.2 ? "text-yellow-500" : "text-green-500";
-                                
-                                return (
-                                  <tr key={comp.sessionId} className="border-b border-border">
-                                    <td className="p-2 text-sm font-bold">{index + 1}</td>
-                                    <td className="p-2 text-sm">#{comp.sessionId}</td>
-                                    <td className="p-2 text-sm">{new Date(comp.createdAt).toLocaleDateString()}</td>
-                                    <td className="p-2 text-sm text-right font-mono">{(comp.erosionIndex * 100).toFixed(1)}%</td>
-                                    <td className="p-2 text-sm text-right">{comp.drainageCount}</td>
-                                    <td className="p-2 text-sm text-right font-mono">{comp.avgEpsilonEff.toFixed(4)}</td>
-                                    <td className="p-2 text-sm">
-                                      <Badge variant="outline" className={severityColor}>
-                                        {severity}
-                                      </Badge>
-                                    </td>
-                                  </tr>
-                                );
-                              })}
+                            {trendsData.periods.slice().reverse().map((period, index) => {
+                              const isHighErosion = period.avgErosion > 0.5;
+                              return (
+                                <tr key={index} className="border-b border-border">
+                                  <td className="p-2 text-sm">{period.label}</td>
+                                  <td className="p-2 text-sm text-right">{period.sessionCount}</td>
+                                  <td className="p-2 text-sm text-right font-mono">
+                                    {(period.avgErosion * 100).toFixed(1)}%
+                                  </td>
+                                  <td className="p-2 text-sm text-right">{period.totalDrainageEvents}</td>
+                                  <td className="p-2 text-sm">
+                                    {isHighErosion ? (
+                                      <Badge variant="destructive">Alta</Badge>
+                                    ) : period.avgErosion > 0.3 ? (
+                                      <Badge variant="default">Moderada</Badge>
+                                    ) : (
+                                      <Badge variant="secondary">Normal</Badge>
+                                    )}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
-                      </div>
-                    </div>
-
-                    {/* Estadísticas agregadas */}
-                    <Separator />
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="p-3 rounded-lg border border-border bg-card/50">
-                        <p className="text-xs text-muted-foreground">Erosión Promedio</p>
-                        <p className="text-2xl font-bold mt-1">
-                          {(comparativeData.comparisons.reduce((sum, c) => sum + c.erosionIndex, 0) / comparativeData.comparisons.length * 100).toFixed(1)}%
-                        </p>
-                      </div>
-                      <div className="p-3 rounded-lg border border-border bg-card/50">
-                        <p className="text-xs text-muted-foreground">Erosión Máxima</p>
-                        <p className="text-2xl font-bold mt-1 text-red-500">
-                          {(Math.max(...comparativeData.comparisons.map(c => c.erosionIndex)) * 100).toFixed(1)}%
-                        </p>
-                      </div>
-                      <div className="p-3 rounded-lg border border-border bg-card/50">
-                        <p className="text-xs text-muted-foreground">Erosión Mínima</p>
-                        <p className="text-2xl font-bold mt-1 text-green-500">
-                          {(Math.min(...comparativeData.comparisons.map(c => c.erosionIndex)) * 100).toFixed(1)}%
-                        </p>
                       </div>
                     </div>
                   </>
                 )}
 
-                {compareSessionIds.length > 0 && compareSessionIds.length < 2 && (
+                {(!trendsData || trendsData.periods.length === 0) && (
                   <p className="text-sm text-muted-foreground text-center py-8">
-                    Selecciona al menos 2 sesiones para ver la comparación
-                  </p>
-                )}
-
-                {compareSessionIds.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    Selecciona sesiones para comenzar la comparación
+                    No hay suficientes datos para mostrar tendencias temporales
                   </p>
                 )}
               </CardContent>

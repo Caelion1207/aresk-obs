@@ -528,19 +528,24 @@
 - [x] Agregar acceso rápido desde Simulator y SessionReplay
 
 
-## Comparación Visual Multi-Sesión en Dashboard de Erosión (Completado)
+## Análisis de Tendencias Temporales de Erosión (Completado)
 
 ### Backend
-- [x] Extender endpoint `erosion.getComparativeErosion` para incluir series temporales de ε_eff
-- [x] Calcular correlación de Pearson entre índices de erosión de sesiones
-- [x] Calcular correlación entre series temporales de ε_eff
-- [x] Generar matriz de correlación completa
+- [x] Crear endpoint `erosion.getTemporalTrends` para evolución temporal de erosión
+- [x] Agrupar sesiones por semana (últimas 12 semanas)
+- [x] Agrupar sesiones por mes (últimos 6 meses)
+- [x] Calcular erosión promedio por período
+- [x] Detectar períodos de alta erosión (clustering temporal)
+- [x] Calcular tendencia (ascendente/descendente/estable)
+- [x] Comparar período actual vs período anterior
 
 ### Frontend
-- [x] Agregar selector múltiple de sesiones (2-5) en ErosionDashboard
-- [x] Crear gráfico overlay de curvas ε_eff(t) con colores diferenciados
-- [x] Implementar leyenda dinámica con identificación de sesiones
-- [x] Crear componente de matriz de correlación visual con mapa de calor
-- [x] Implementar tabla comparativa con ranking de severidad de erosión
-- [x] Agregar estadísticas agregadas (erosión promedio, máxima, mínima)
-- [x] Mostrar interpretación de coeficientes de correlación
+- [x] Crear sección "Tendencias Temporales" en ErosionDashboard
+- [x] Implementar selector de granularidad (semana/mes)
+- [x] Crear gráfico de barras de erosión promedio por período
+- [x] Agregar línea de tendencia en gráfico
+- [x] Implementar indicadores de dirección de tendencia (↑↓→)
+- [x] Crear tarjetas de comparación período actual vs anterior
+- [x] Agregar alertas visuales cuando tendencia supera umbral crítico
+- [x] Mostrar períodos de alta erosión con badges destacados
+- [x] Implementar tooltip con detalles por período (sesiones, eventos de drenaje)
