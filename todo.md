@@ -574,3 +574,29 @@
 - [x] Implementar botón "Marcar como leída" por alerta
 - [x] Agregar indicador visual (ícono de campana con contador) en header
 - [x] Mostrar toast notification cuando se detecta nueva alerta
+
+
+## Consolidación y Endurecimiento de Vistas Existentes (Completado)
+
+### Backend - Validaciones y Robustez
+- [x] Agregar validación de sessionIds en endpoints de erosión (verificar que pertenecen al usuario)
+- [x] Validar rangos de granularidad en getTemporalTrends (solo 'week' o 'month')
+- [x] Agregar manejo de errores en cálculos de correlación (divisiones por cero, arrays vacíos)
+- [x] Validar que sessionIds en comparación sean de sesiones acopladas
+- [x] Agregar límite máximo de sesiones en comparación (máx 5)
+- [x] Mejorar mensajes de error con contexto específico
+
+### Frontend - Estados de Carga y Error
+- [x] Agregar estados de loading en todos los gráficos de ErosionDashboard
+- [x] Implementar mensajes de error específicos cuando queries fallan
+- [x] Agregar estados vacíos cuando no hay datos (sin sesiones, sin métricas)
+- [x] Mejorar feedback visual durante mutations (dismissAlert, etc)
+- [x] Agregar skeleton loaders en lugar de spinners genéricos
+- [x] Validar selección de sesiones antes de queries (evitar queries con arrays vacíos)
+
+### Optimización y UX
+- [ ] Deshabilitar botones de comparación cuando no hay suficientes sesiones
+- [ ] Agregar tooltips explicativos en métricas complejas (correlación, tendencia)
+- [ ] Mejorar responsive design en tablas y gráficos
+- [ ] Agregar confirmación antes de descartar alertas críticas
+- [ ] Optimizar re-renders innecesarios con useMemo en cálculos pesados

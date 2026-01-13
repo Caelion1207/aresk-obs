@@ -1806,11 +1806,37 @@ export const appRouter = router({
      * Comparar erosión entre múltiples sesiones
      */
     getComparativeErosion: protectedProcedure
-      .input(z.object({ sessionIds: z.array(z.number()) }))
+      .input(z.object({ sessionIds: z.array(z.number()).max(5) }))
       .query(async ({ input, ctx }) => {
+        // Validar que el array no esté vacío
+        if (input.sessionIds.length === 0) {
+          return {
+            comparisons: [],
+            timeSeries: {},
+            correlationMatrix: [],
+          };
+        }
+        
+        // Verificar que todas las sesiones pertenecen al usuario
+        const userSessions = await getUserSessions(ctx.user.id);
+        const userSessionIds = new Set(userSessions.map(s => s.id));
+        const validSessionIds = input.sessionIds.filter(id => userSessionIds.has(id));
+        
+        if (validSessionIds.length === 0) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "No tienes acceso a las sesiones solicitadas",
+          });
+        }
+        
         const comparisons = await Promise.all(
-          input.sessionIds.map(async (sessionId) => {
+          validSessionIds.map(async (sessionId) => {
             const session = await getSession(sessionId);
+            
+            // Validar que la sesión sea acoplada
+            if (session?.plantProfile !== "acoplada") {
+              return null;
+            }
             const metrics = await getSessionMetrics(sessionId);
             
             // Calcular índice de erosión acumulado
@@ -1853,7 +1879,75 @@ export const appRouter = router({
           })
         );
         
-        return comparisons;
+        // Filtrar sesiones no válidas (null)
+        const validComparisons = comparisons.filter(c => c !== null);
+        
+        if (validComparisons.length === 0) {
+          return {
+            comparisons: [],
+            timeSeries: {},
+            correlationMatrix: [],
+          };
+        }
+        
+        // Obtener series temporales para cada sesión
+        const timeSeries: Record<number, Array<{ step: number; epsilonEff: number }>> = {};
+        
+        for (const comp of validComparisons) {
+          const metrics = await getSessionMetrics(comp.sessionId);
+          timeSeries[comp.sessionId] = metrics.map((m, idx) => ({
+            step: idx,
+            epsilonEff: (m as any).epsilonEff || 0,
+          }));
+        }
+        
+        // Calcular matriz de correlación de Pearson
+        const correlationMatrix: Array<{ session1: number; session2: number; correlation: number }> = [];
+        
+        for (let i = 0; i < validComparisons.length; i++) {
+          for (let j = i + 1; j < validComparisons.length; j++) {
+            const series1 = timeSeries[validComparisons[i].sessionId];
+            const series2 = timeSeries[validComparisons[j].sessionId];
+            
+            // Calcular correlación solo si ambas series tienen datos
+            if (series1.length > 0 && series2.length > 0) {
+              const minLength = Math.min(series1.length, series2.length);
+              const values1 = series1.slice(0, minLength).map(s => s.epsilonEff);
+              const values2 = series2.slice(0, minLength).map(s => s.epsilonEff);
+              
+              // Calcular correlación de Pearson
+              const mean1 = values1.reduce((a, b) => a + b, 0) / values1.length;
+              const mean2 = values2.reduce((a, b) => a + b, 0) / values2.length;
+              
+              let numerator = 0;
+              let sum1Sq = 0;
+              let sum2Sq = 0;
+              
+              for (let k = 0; k < minLength; k++) {
+                const diff1 = values1[k] - mean1;
+                const diff2 = values2[k] - mean2;
+                numerator += diff1 * diff2;
+                sum1Sq += diff1 * diff1;
+                sum2Sq += diff2 * diff2;
+              }
+              
+              const denominator = Math.sqrt(sum1Sq * sum2Sq);
+              const correlation = denominator > 0 ? numerator / denominator : 0;
+              
+              correlationMatrix.push({
+                session1: validComparisons[i].sessionId,
+                session2: validComparisons[j].sessionId,
+                correlation,
+              });
+            }
+          }
+        }
+        
+        return {
+          comparisons: validComparisons,
+          timeSeries,
+          correlationMatrix,
+        };
       }),
     
     /**
@@ -1866,6 +1960,18 @@ export const appRouter = router({
       .query(async ({ input, ctx }) => {
         const sessions = await getUserSessions(ctx.user.id);
         const acopladaSessions = sessions.filter(s => s.plantProfile === "acoplada");
+        
+        // Si no hay sesiones acopladas, retornar estructura vacía
+        if (acopladaSessions.length === 0) {
+          return {
+            periods: [],
+            trendDirection: "stable" as const,
+            trendChange: 0,
+            recentAvg: 0,
+            previousAvg: 0,
+            highErosionPeriods: [],
+          };
+        }
         
         // Calcular índice de erosión para cada sesión
         const sessionsWithErosion = await Promise.all(

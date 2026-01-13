@@ -40,14 +40,14 @@ export default function ErosionDashboard() {
     { sessionId: selectedSessionId! },
     { enabled: !!selectedSessionId }
   );
-  const { data: comparativeData } = trpc.erosion.getComparativeErosion.useQuery(
+  const { data: comparativeData, isLoading: loadingComparative, isError: errorComparative } = trpc.erosion.getComparativeErosion.useQuery(
     { sessionIds: compareSessionIds },
-    { enabled: compareSessionIds.length > 0 }
+    { enabled: compareSessionIds.length > 0 && compareSessionIds.length <= 5 }
   );
-  const { data: trendsData } = trpc.erosion.getTemporalTrends.useQuery(
+  const { data: trendsData, isLoading: loadingTrends, isError: errorTrends } = trpc.erosion.getTemporalTrends.useQuery(
     { granularity: trendsGranularity }
   );
-  const { data: activeAlerts, refetch: refetchAlerts } = trpc.erosion.getActiveAlerts.useQuery();
+  const { data: activeAlerts, refetch: refetchAlerts, isLoading: loadingAlerts } = trpc.erosion.getActiveAlerts.useQuery();
   const dismissAlertMutation = trpc.erosion.dismissAlert.useMutation({
     onSuccess: () => {
       refetchAlerts();
@@ -587,30 +587,40 @@ export default function ErosionDashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Selector de granularidad */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="text-sm font-medium">Granularidad</label>
-                    <div className="flex gap-2 mt-2">
-                      <Button
-                        variant={trendsGranularity === "week" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setTrendsGranularity("week")}
-                      >
-                        Semanal
-                      </Button>
-                      <Button
-                        variant={trendsGranularity === "month" ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => setTrendsGranularity("month")}
-                      >
-                        Mensual
-                      </Button>
-                    </div>
+                {loadingTrends ? (
+                  <div className="h-[400px] flex items-center justify-center">
+                    <p className="text-muted-foreground">Cargando tendencias...</p>
                   </div>
+                ) : errorTrends ? (
+                  <div className="h-[400px] flex items-center justify-center">
+                    <p className="text-destructive">Error al cargar tendencias. Intenta nuevamente.</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Selector de granularidad */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="text-sm font-medium">Granularidad</label>
+                        <div className="flex gap-2 mt-2">
+                          <Button
+                            variant={trendsGranularity === "week" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTrendsGranularity("week")}
+                          >
+                            Semanal
+                          </Button>
+                          <Button
+                            variant={trendsGranularity === "month" ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTrendsGranularity("month")}
+                          >
+                            Mensual
+                          </Button>
+                        </div>
+                      </div>
 
-                  {/* Indicador de tendencia */}
-                  {trendsData && (
+                      {/* Indicador de tendencia */}
+                      {trendsData && (
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground">Tendencia</p>
                       <div className="flex items-center gap-2 mt-1">
@@ -782,13 +792,16 @@ export default function ErosionDashboard() {
                         </table>
                       </div>
                     </div>
-                  </>
-                )}
 
-                {(!trendsData || trendsData.periods.length === 0) && (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    No hay suficientes datos para mostrar tendencias temporales
-                  </p>
+                    </>
+                  )}
+
+                  {(!trendsData || trendsData.periods.length === 0) && !loadingTrends && !errorTrends && (
+                    <p className="text-sm text-muted-foreground text-center py-8">
+                      No hay suficientes datos para mostrar tendencias temporales
+                    </p>
+                  )}
+                </>
                 )}
               </CardContent>
             </Card>
