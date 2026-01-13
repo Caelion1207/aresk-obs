@@ -596,7 +596,7 @@
 
 ### Optimización y UX
 - [x] Deshabilitar botones de comparación cuando no hay suficientes sesiones
-- [ ] Agregar tooltips explicativos en métricas complejas (correlación, tendencia)
+- [x] Agregar tooltips explicativos en métricas complejas (correlación, tendencia)
 - [x] Mejorar responsive design en tablas y gráficos
 - [x] Agregar confirmación antes de descartar alertas críticas
 - [ ] Optimizar re-renders innecesarios con useMemo en cálculos pesados

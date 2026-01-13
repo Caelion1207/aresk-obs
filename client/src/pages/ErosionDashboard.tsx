@@ -6,6 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Tooltip as UITooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -30,6 +36,14 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { calculateErosionIndex, getErosionSeverity } from "@/lib/erosionCalculator";
 
 export default function ErosionDashboard() {
+  return (
+    <TooltipProvider>
+      <ErosionDashboardContent />
+    </TooltipProvider>
+  );
+}
+
+function ErosionDashboardContent() {
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
   const [compareSessionIds, setCompareSessionIds] = useState<number[]>([]);
   const [trendsGranularity, setTrendsGranularity] = useState<"week" | "month">("week");
@@ -216,7 +230,14 @@ export default function ErosionDashboard() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4 text-orange-500" />
-                    Eventos de Drenaje
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help">Eventos de Drenaje</span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">Momentos donde ε_eff cae bajo -0.2, indicando drenaje semántico activo que erosiona el atractor Bucéfalo.</p>
+                      </TooltipContent>
+                    </UITooltip>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -229,7 +250,14 @@ export default function ErosionDashboard() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Shield className="h-4 w-4 text-blue-500" />
-                    Intervenciones LICURGO
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help">Intervenciones LICURGO</span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">Número de veces que el sistema de control LICURGO detectó coherencia tóxica y aplicó intervención correctiva.</p>
+                      </TooltipContent>
+                    </UITooltip>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -242,7 +270,14 @@ export default function ErosionDashboard() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <TrendingUp className="h-4 w-4 text-green-500" />
-                    Mejora Promedio
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help">Mejora Promedio</span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">Cambio porcentual promedio en ε_eff después de cada intervención LICURGO. Valores positivos indican reducción de drenaje.</p>
+                      </TooltipContent>
+                    </UITooltip>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -656,7 +691,14 @@ export default function ErosionDashboard() {
                       {/* Indicador de tendencia */}
                       {trendsData && (
                     <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Tendencia</p>
+                      <UITooltip>
+                        <TooltipTrigger asChild>
+                          <p className="text-xs text-muted-foreground cursor-help">Tendencia</p>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs">Dirección del cambio en erosión: Ascendente (empeorando), Descendente (mejorando), Estable (sin cambios significativos).</p>
+                        </TooltipContent>
+                      </UITooltip>
                       <div className="flex items-center gap-2 mt-1">
                         {trendsData.trendDirection === "ascending" && (
                           <>
@@ -1067,14 +1109,32 @@ export default function ErosionDashboard() {
                                   const bgColor = corr > 0 
                                     ? `rgba(34, 197, 94, ${intensity})` // Verde
                                     : `rgba(239, 68, 68, ${intensity})`; // Rojo
+                                  const getCorrelationLabel = (val: number) => {
+                                    if (val > 0.7) return "Muy similar";
+                                    if (val > 0.4) return "Moderadamente similar";
+                                    if (val > 0) return "Levemente similar";
+                                    if (val > -0.4) return "Levemente diferente";
+                                    if (val > -0.7) return "Moderadamente diferente";
+                                    return "Muy diferente";
+                                  };
                                   return (
-                                    <td 
-                                      key={j} 
-                                      className="p-2 text-center text-sm font-mono"
-                                      style={{ backgroundColor: bgColor }}
-                                    >
-                                      {corr.toFixed(2)}
-                                    </td>
+                                    <UITooltip key={j}>
+                                      <TooltipTrigger asChild>
+                                        <td 
+                                          className="p-2 text-center text-sm font-mono cursor-help"
+                                          style={{ backgroundColor: bgColor }}
+                                        >
+                                          {corr.toFixed(2)}
+                                        </td>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p className="max-w-xs">
+                                          Correlación de Pearson: {corr.toFixed(3)}<br />
+                                          Interpretación: {getCorrelationLabel(corr)}<br />
+                                          Sesiones #{comparativeData.comparisons[i].sessionId} y #{comparativeData.comparisons[j].sessionId}
+                                        </p>
+                                      </TooltipContent>
+                                    </UITooltip>
                                   );
                                 })}
                               </tr>
