@@ -3,6 +3,7 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PhaseSpacePoint {
   H: number;
@@ -121,6 +122,9 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
   // Estado para rango temporal del slider
   const [timeRange, setTimeRange] = useState<[number, number]>([0, data.length - 1]);
   
+  // Estado para tamaño de ventana de contexto al clickear eventos
+  const [windowSize, setWindowSize] = useState<number>(5);
+  
   // Actualizar rango cuando cambian los datos
   useEffect(() => {
     setTimeRange([0, Math.max(0, data.length - 1)]);
@@ -212,8 +216,7 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
                     const position = (eventIndex / Math.max(1, data.length - 1)) * 100;
                     
                     const handleMarkerClick = () => {
-                      // Centrar rango en el evento (±5 pasos)
-                      const windowSize = 5;
+                      // Centrar rango en el evento usando windowSize configurado
                       const newStart = Math.max(0, eventIndex - windowSize);
                       const newEnd = Math.min(data.length - 1, eventIndex + windowSize);
                       setTimeRange([newStart, newEnd]);
@@ -239,16 +242,34 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
               <span>Fin: Paso {timeRange[1] + 1}</span>
             </div>
             {drainageEvents.length > 0 && (
-              <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-red-500 border border-red-700 shadow-sm shadow-red-500/50" />
-                  <span className="text-xs text-muted-foreground">
-                    Eventos de drenaje (ε_eff &lt; -0.2) — <span className="text-foreground font-medium">Click para centrar</span>
-                  </span>
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-red-500 border border-red-700 shadow-sm shadow-red-500/50" />
+                    <span className="text-xs text-muted-foreground">
+                      Eventos de drenaje (ε_eff &lt; -0.2) — <span className="text-foreground font-medium">Click para centrar</span>
+                    </span>
+                  </div>
+                  <Badge variant="destructive" className="text-xs">
+                    {drainageEvents.length} detectados
+                  </Badge>
                 </div>
-                <Badge variant="destructive" className="text-xs">
-                  {drainageEvents.length} detectados
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Ventana de contexto:</span>
+                  <Select value={windowSize.toString()} onValueChange={(value) => setWindowSize(Number(value))}>
+                    <SelectTrigger className="h-7 w-24 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3">± 3 pasos</SelectItem>
+                      <SelectItem value="5">± 5 pasos</SelectItem>
+                      <SelectItem value="10">± 10 pasos</SelectItem>
+                      <SelectItem value="20">± 20 pasos</SelectItem>
+                      <SelectItem value="50">± 50 pasos</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <span className="text-xs text-muted-foreground">({windowSize * 2 + 1} pasos totales)</span>
+                </div>
               </div>
             )}
           </div>

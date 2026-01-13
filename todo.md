@@ -691,3 +691,8 @@
 ## Interacción con Marcadores de Eventos (Completado)
 
 - [x] Implementar click en marcadores de drenaje para centrar automáticamente el rango del slider en el evento seleccionado
+
+
+## Personalización de Ventana de Contexto (Completado)
+
+- [x] Agregar selector de tamaño de ventana de contexto ajustable (±N pasos) para eventos de drenaje
