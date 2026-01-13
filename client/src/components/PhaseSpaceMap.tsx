@@ -210,14 +210,24 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
                 <div className="absolute inset-0 pointer-events-none">
                   {drainageEvents.map((eventIndex) => {
                     const position = (eventIndex / Math.max(1, data.length - 1)) * 100;
+                    
+                    const handleMarkerClick = () => {
+                      // Centrar rango en el evento (±5 pasos)
+                      const windowSize = 5;
+                      const newStart = Math.max(0, eventIndex - windowSize);
+                      const newEnd = Math.min(data.length - 1, eventIndex + windowSize);
+                      setTimeRange([newStart, newEnd]);
+                    };
+                    
                     return (
                       <div
                         key={eventIndex}
-                        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2"
+                        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-auto cursor-pointer"
                         style={{ left: `${position}%` }}
-                        title={`Drenaje en paso ${eventIndex + 1}`}
+                        title={`Click para centrar en paso ${eventIndex + 1}`}
+                        onClick={handleMarkerClick}
                       >
-                        <div className="w-2 h-2 rounded-full bg-red-500 border border-red-700 shadow-lg shadow-red-500/50 animate-pulse" />
+                        <div className="w-2 h-2 rounded-full bg-red-500 border border-red-700 shadow-lg shadow-red-500/50 animate-pulse hover:scale-150 hover:shadow-red-500/80 transition-transform" />
                       </div>
                     );
                   })}
@@ -229,10 +239,12 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
               <span>Fin: Paso {timeRange[1] + 1}</span>
             </div>
             {drainageEvents.length > 0 && (
-              <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+              <div className="flex items-center justify-between pt-2 border-t border-border/50">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-red-500 border border-red-700 shadow-sm shadow-red-500/50" />
-                  <span className="text-xs text-muted-foreground">Eventos de drenaje (ε_eff &lt; -0.2)</span>
+                  <span className="text-xs text-muted-foreground">
+                    Eventos de drenaje (ε_eff &lt; -0.2) — <span className="text-foreground font-medium">Click para centrar</span>
+                  </span>
                 </div>
                 <Badge variant="destructive" className="text-xs">
                   {drainageEvents.length} detectados

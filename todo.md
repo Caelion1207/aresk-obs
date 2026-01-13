@@ -686,3 +686,8 @@
 ## Marcadores de Eventos Críticos en Timeline (Completado)
 
 - [x] Agregar marcadores visuales de eventos de drenaje (ε_eff < -0.2) en slider de rango temporal
+
+
+## Interacción con Marcadores de Eventos (Completado)
+
+- [x] Implementar click en marcadores de drenaje para centrar automáticamente el rango del slider en el evento seleccionado
