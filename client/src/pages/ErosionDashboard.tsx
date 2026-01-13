@@ -845,6 +845,247 @@ export default function ErosionDashboard() {
         )}
       </div>
 
+      {/* Panel de Comparación Multi-Sesión */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Comparación Multi-Sesión</CardTitle>
+          <CardDescription>
+            Compara patrones de erosión entre 2-5 sesiones acopladas
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Selector múltiple de sesiones */}
+          <div>
+            <label className="text-sm font-medium mb-2 block">
+              Seleccionar Sesiones (2-5)
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[200px] overflow-y-auto p-2 border border-border rounded-lg">
+              {acopladaSessions.map((session: any) => (
+                <label
+                  key={session.id}
+                  className="flex items-center gap-2 p-2 rounded hover:bg-accent cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    checked={compareSessionIds.includes(session.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        if (compareSessionIds.length < 5) {
+                          setCompareSessionIds([...compareSessionIds, session.id]);
+                        }
+                      } else {
+                        setCompareSessionIds(compareSessionIds.filter(id => id !== session.id));
+                      }
+                    }}
+                    className="rounded"
+                  />
+                  <span className="text-sm">
+                    Sesión #{session.id} - {new Date(session.createdAt).toLocaleDateString()}
+                  </span>
+                </label>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              {compareSessionIds.length} de 5 sesiones seleccionadas
+            </p>
+          </div>
+
+          {/* Mensaje de validación */}
+          {compareSessionIds.length > 0 && compareSessionIds.length < 2 && (
+            <p className="text-sm text-orange-500">
+              Selecciona al menos 2 sesiones para comparar
+            </p>
+          )}
+
+          {/* Resultados de comparación */}
+          {compareSessionIds.length >= 2 && (
+            <>
+              {loadingComparative ? (
+                <div className="h-[200px] flex items-center justify-center">
+                  <p className="text-muted-foreground">Cargando comparación...</p>
+                </div>
+              ) : errorComparative ? (
+                <p className="text-sm text-destructive">Error al cargar comparación. Intenta nuevamente.</p>
+              ) : comparativeData && comparativeData.comparisons.length > 0 ? (
+                <>
+                  {/* Estadísticas agregadas */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium">Erosión Promedio</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-2xl font-bold">
+                          {(comparativeData.comparisons.reduce((sum, c) => sum + c.erosionIndex, 0) / comparativeData.comparisons.length * 100).toFixed(1)}%
+                        </p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium">Erosión Máxima</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-2xl font-bold text-red-500">
+                          {(Math.max(...comparativeData.comparisons.map(c => c.erosionIndex)) * 100).toFixed(1)}%
+                        </p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-medium">Erosión Mínima</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-2xl font-bold text-green-500">
+                          {(Math.min(...comparativeData.comparisons.map(c => c.erosionIndex)) * 100).toFixed(1)}%
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Gráfico overlay de curvas ε_eff(t) */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Overlay de Curvas ε_eff(t)</h4>
+                    <div className="h-[250px] sm:h-[350px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart>
+                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
+                          <XAxis 
+                            dataKey="step" 
+                            type="number"
+                            label={{ value: 'Paso Temporal', position: 'insideBottom', offset: -5 }}
+                            stroke="oklch(from var(--foreground) l c h / 0.5)"
+                          />
+                          <YAxis 
+                            label={{ value: 'ε_eff', angle: -90, position: 'insideLeft' }}
+                            stroke="oklch(from var(--foreground) l c h / 0.5)"
+                          />
+                          <Tooltip />
+                          <Legend />
+                          <ReferenceLine y={-0.2} stroke="oklch(0.65 0.2 10)" strokeDasharray="3 3" label="Umbral" />
+                          {comparativeData.comparisons.map((comp, index) => {
+                            const colors = [
+                              "oklch(0.65 0.2 280)", // Azul
+                              "oklch(0.65 0.2 10)",  // Rojo
+                              "oklch(0.65 0.2 140)", // Verde
+                              "oklch(0.65 0.2 60)",  // Amarillo
+                              "oklch(0.65 0.2 320)"  // Magenta
+                            ];
+                            // Nota: timeSeries no está disponible en el tipo actual
+                            // Se necesita extender el endpoint backend para incluir series temporales
+                            return null;
+                          })}
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Tabla comparativa */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Ranking de Erosión</h4>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border">
+                            <th className="text-left p-2 text-sm font-medium">Ranking</th>
+                            <th className="text-left p-2 text-sm font-medium">Sesión</th>
+                            <th className="text-right p-2 text-sm font-medium">Fecha</th>
+                            <th className="text-right p-2 text-sm font-medium">Índice Erosión</th>
+                            <th className="text-right p-2 text-sm font-medium hidden md:table-cell">Drenaje</th>
+                            <th className="text-right p-2 text-sm font-medium hidden md:table-cell">ε_eff Prom</th>
+                            <th className="text-left p-2 text-sm font-medium">Severidad</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {comparativeData.comparisons
+                            .sort((a, b) => b.erosionIndex - a.erosionIndex)
+                            .map((comp, index) => (
+                              <tr key={comp.sessionId} className="border-b border-border">
+                                <td className="p-2 text-sm font-bold">{index + 1}</td>
+                                <td className="p-2 text-sm">#{comp.sessionId}</td>
+                                <td className="p-2 text-sm text-right">
+                                  {new Date(comp.createdAt).toLocaleDateString()}
+                                </td>
+                                <td className="p-2 text-sm text-right font-mono">
+                                  {(comp.erosionIndex * 100).toFixed(1)}%
+                                </td>
+                                <td className="p-2 text-sm text-right hidden md:table-cell">
+                                  {comp.drainageCount}
+                                </td>
+                                <td className="p-2 text-sm text-right font-mono hidden md:table-cell">
+                                  {comp.avgEpsilonEff.toFixed(4)}
+                                </td>
+                                <td className="p-2 text-sm">
+                                  {comp.erosionIndex > 0.6 ? (
+                                    <Badge variant="destructive">Crítica</Badge>
+                                  ) : comp.erosionIndex > 0.3 ? (
+                                    <Badge variant="default">Moderada</Badge>
+                                  ) : (
+                                    <Badge variant="secondary">Leve</Badge>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Matriz de correlación */}
+                  {comparativeData.correlationMatrix && comparativeData.correlationMatrix.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium mb-3">Matriz de Correlación de Erosión</h4>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr>
+                              <th className="p-2 text-sm font-medium"></th>
+                              {comparativeData.comparisons.map(comp => (
+                                <th key={comp.sessionId} className="p-2 text-sm font-medium text-center">
+                                  #{comp.sessionId}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {comparativeData.correlationMatrix.map((row: any, i: number) => (
+                              <tr key={i}>
+                                <td className="p-2 text-sm font-medium">#{comparativeData.comparisons[i].sessionId}</td>
+                                {row.map((corr: number, j: number) => {
+                                  const intensity = Math.abs(corr);
+                                  const bgColor = corr > 0 
+                                    ? `rgba(34, 197, 94, ${intensity})` // Verde
+                                    : `rgba(239, 68, 68, ${intensity})`; // Rojo
+                                  return (
+                                    <td 
+                                      key={j} 
+                                      className="p-2 text-center text-sm font-mono"
+                                      style={{ backgroundColor: bgColor }}
+                                    >
+                                      {corr.toFixed(2)}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Verde: correlación positiva | Rojo: correlación negativa | Intensidad: magnitud
+                      </p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No hay datos disponibles para las sesiones seleccionadas
+                </p>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Modal de confirmación para alertas críticas */}
       <Dialog open={!!alertToDelete} onOpenChange={(open) => !open && setAlertToDelete(null)}>
         <DialogContent>

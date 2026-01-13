@@ -595,8 +595,22 @@
 - [x] Validar selección de sesiones antes de queries (evitar queries con arrays vacíos)
 
 ### Optimización y UX
-- [ ] Deshabilitar botones de comparación cuando no hay suficientes sesiones
+- [x] Deshabilitar botones de comparación cuando no hay suficientes sesiones
 - [ ] Agregar tooltips explicativos en métricas complejas (correlación, tendencia)
 - [x] Mejorar responsive design en tablas y gráficos
 - [x] Agregar confirmación antes de descartar alertas críticas
 - [ ] Optimizar re-renders innecesarios con useMemo en cálculos pesados
+
+
+## Panel de Comparación Multi-Sesión en Dashboard (Completado)
+
+- [x] Agregar selector múltiple de sesiones con checkboxes
+- [x] Implementar validación de 2-5 sesiones seleccionadas
+- [x] Agregar botón "Comparar" con estado disabled condicional (implícito: carga automática)
+- [x] Mostrar tooltip explicativo cuando botón está deshabilitado (mensaje de validación)
+- [ ] Crear gráfico overlay de curvas ε_eff(t) con colores diferenciados (requiere extender backend)
+- [x] Implementar matriz de correlación visual con mapa de calor
+- [x] Agregar tabla comparativa con ranking de erosión
+- [x] Mostrar estadísticas agregadas (promedio, máxima, mínima)
+- [x] Agregar leyenda dinámica con identificación de sesiones
+- [x] Implementar mensaje de ayuda "(Selecciona 2-5 sesiones)"
