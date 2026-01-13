@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, sessions, messages, metrics, timeMarkers, sessionAlerts, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker, InsertSessionAlert } from "../drizzle/schema";
+import { InsertUser, users, sessions, messages, metrics, timeMarkers, sessionAlerts, erosionAlerts, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker, InsertSessionAlert, InsertErosionAlert } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -341,4 +341,55 @@ export async function detectAnomalies(sessionId: number): Promise<void> {
   for (const alert of alerts) {
     await createSessionAlert(alert);
   }
+}
+
+
+// EROSION ALERTS
+// ============================================
+
+export async function createErosionAlert(alert: InsertErosionAlert): Promise<number> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(erosionAlerts).values(alert);
+  return result[0].insertId;
+}
+
+export async function getActiveErosionAlerts(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select()
+    .from(erosionAlerts)
+    .where(eq(erosionAlerts.userId, userId))
+    .orderBy(erosionAlerts.detectedAt);
+}
+
+export async function dismissErosionAlert(alertId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(erosionAlerts).set({ dismissed: true }).where(eq(erosionAlerts.id, alertId));
+}
+
+export async function markErosionAlertNotified(alertId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(erosionAlerts).set({ notified: true }).where(eq(erosionAlerts.id, alertId));
+}
+
+/**
+ * Verifica si ya existe una alerta similar en las últimas 24 horas
+ * para evitar alertas duplicadas
+ */
+export async function hasRecentErosionAlert(userId: number, alertType: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  
+  const recentAlerts = await db.select()
+    .from(erosionAlerts)
+    .where(eq(erosionAlerts.userId, userId));
+  
+  return recentAlerts.some(alert => 
+    alert.alertType === alertType && 
+    new Date(alert.detectedAt) > oneDayAgo
+  );
 }

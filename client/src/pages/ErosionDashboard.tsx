@@ -13,7 +13,8 @@ import {
   Activity,
   ArrowLeft,
   Calendar,
-  Zap
+  Zap,
+  Bell
 } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -46,6 +47,12 @@ export default function ErosionDashboard() {
   const { data: trendsData } = trpc.erosion.getTemporalTrends.useQuery(
     { granularity: trendsGranularity }
   );
+  const { data: activeAlerts, refetch: refetchAlerts } = trpc.erosion.getActiveAlerts.useQuery();
+  const dismissAlertMutation = trpc.erosion.dismissAlert.useMutation({
+    onSuccess: () => {
+      refetchAlerts();
+    },
+  });
 
   // Filtrar sesiones acopladas (solo estas tienen polaridad semántica)
   const acopladaSessions = sessions?.filter((s: any) => s.plantProfile === "acoplada") || [];
@@ -98,26 +105,39 @@ export default function ErosionDashboard() {
               </div>
             </div>
             
-            {/* Indicador de erosión actual */}
-            {selectedSessionId && (
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground">Índice de Erosión</p>
-                  <p className="text-2xl font-bold">{(currentErosionIndex * 100).toFixed(1)}%</p>
+            {/* Indicador de erosión actual y alertas */}
+            <div className="flex items-center gap-4">
+              {/* Badge de alertas activas */}
+              {activeAlerts && activeAlerts.length > 0 && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-red-500/30 bg-red-500/10">
+                  <Bell className="h-5 w-5 text-red-500 animate-pulse" />
+                  <div>
+                    <p className="text-xs text-red-500 font-medium">{activeAlerts.length} Alerta{activeAlerts.length > 1 ? 's' : ''}</p>
+                    <p className="text-xs text-muted-foreground">Tendencia crítica</p>
+                  </div>
                 </div>
-                <Badge 
-                  variant={
-                    erosionSeverity.level === "critical" ? "destructive" :
-                    erosionSeverity.level === "high" ? "destructive" :
-                    erosionSeverity.level === "moderate" ? "default" :
-                    "secondary"
-                  }
-                  className="text-sm"
-                >
-                  {erosionSeverity.label}
-                </Badge>
-              </div>
-            )}
+              )}
+              
+              {selectedSessionId && (
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground">Índice de Erosión</p>
+                    <p className="text-2xl font-bold">{(currentErosionIndex * 100).toFixed(1)}%</p>
+                  </div>
+                  <Badge 
+                    variant={
+                      erosionSeverity.level === "critical" ? "destructive" :
+                      erosionSeverity.level === "high" ? "destructive" :
+                      erosionSeverity.level === "moderate" ? "default" :
+                      "secondary"
+                    }
+                    className="text-sm"
+                  >
+                    {erosionSeverity.label}
+                  </Badge>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -502,6 +522,58 @@ export default function ErosionDashboard() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Panel de Alertas Activas */}
+            {activeAlerts && activeAlerts.length > 0 && (
+              <Card className="border-red-500/50 bg-red-500/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-red-500">
+                    <Bell className="h-5 w-5" />
+                    Alertas Activas de Tendencia Crítica
+                  </CardTitle>
+                  <CardDescription>
+                    Se han detectado tendencias de erosión que requieren atención
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {activeAlerts.map((alert: any) => (
+                      <div 
+                        key={alert.id}
+                        className="flex items-start justify-between gap-3 p-4 rounded-lg border border-red-500/30 bg-card"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge 
+                              variant="destructive"
+                              className={alert.severity === "critical" ? "bg-red-600" : "bg-orange-500"}
+                            >
+                              {alert.severity === "critical" ? "Crítico" : "Alto"}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(alert.detectedAt).toLocaleString()}
+                            </span>
+                          </div>
+                          <p className="text-sm font-medium mb-1">{alert.message}</p>
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <span>📈 Cambio: +{(alert.trendChange * 100).toFixed(1)}%</span>
+                            {alert.notified && <span>✔️ Notificado</span>}
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => dismissAlertMutation.mutate({ alertId: alert.id })}
+                          disabled={dismissAlertMutation.isPending}
+                        >
+                          Marcar como leída
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Sección de Tendencias Temporales */}
             <Card>

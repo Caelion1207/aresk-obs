@@ -1999,6 +1999,44 @@ export const appRouter = router({
         // Detectar períodos de alta erosión (> 0.5)
         const highErosionPeriods = periodsArray.filter(p => p.avgErosion > 0.5);
         
+        // Detección automática de tendencia crítica
+        const { hasRecentErosionAlert, createErosionAlert, markErosionAlertNotified } = await import("./db");
+        const { notifyOwner } = await import("./_core/notification");
+        
+        // Umbral crítico: cambio ascendente > 10%
+        if (trendDirection === "ascending" && trendChange > 0.1) {
+          // Verificar si ya existe una alerta reciente
+          const hasRecent = await hasRecentErosionAlert(ctx.user.id, "critical_trend");
+          
+          if (!hasRecent) {
+            // Crear alerta
+            const alertId = await createErosionAlert({
+              userId: ctx.user.id,
+              alertType: "critical_trend",
+              severity: trendChange > 0.2 ? "critical" : "high",
+              trendChange,
+              message: `Tendencia de erosión ascendente crítica detectada: +${(trendChange * 100).toFixed(1)}% en los últimos períodos. Erosión promedio actual: ${(recentAvg * 100).toFixed(1)}%.`,
+              notified: false,
+              dismissed: false,
+            });
+            
+            // Enviar notificación al propietario
+            const notificationSent = await notifyOwner({
+              title: "⚠️ Alerta de Erosión Crítica - ARESK-OBS",
+              content: `Se ha detectado una tendencia de erosión ascendente crítica en tus sesiones acopladas.\n\n` +
+                      `📈 Cambio de tendencia: +${(trendChange * 100).toFixed(1)}%\n` +
+                      `🔴 Erosión promedio actual: ${(recentAvg * 100).toFixed(1)}%\n` +
+                      `🔵 Erosión promedio anterior: ${(previousAvg * 100).toFixed(1)}%\n\n` +
+                      `Revisa el dashboard de erosión para más detalles: /erosion`,
+            });
+            
+            // Marcar como notificada si se envió correctamente
+            if (notificationSent) {
+              await markErosionAlertNotified(alertId);
+            }
+          }
+        }
+        
         return {
           periods: periodsArray,
           trendDirection,
@@ -2007,6 +2045,27 @@ export const appRouter = router({
           previousAvg,
           highErosionPeriods: highErosionPeriods.map(p => p.label),
         };
+      }),
+    
+    /**
+     * Obtener alertas activas de erosión
+     */
+    getActiveAlerts: protectedProcedure
+      .query(async ({ ctx }) => {
+        const { getActiveErosionAlerts } = await import("./db");
+        const alerts = await getActiveErosionAlerts(ctx.user.id);
+        return alerts.filter(alert => !alert.dismissed);
+      }),
+    
+    /**
+     * Marcar alerta como leída
+     */
+    dismissAlert: protectedProcedure
+      .input(z.object({ alertId: z.number() }))
+      .mutation(async ({ input }) => {
+        const { dismissErosionAlert } = await import("./db");
+        await dismissErosionAlert(input.alertId);
+        return { success: true };
       }),
   }),
 });

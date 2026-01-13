@@ -130,3 +130,22 @@ export const sessionAlerts = mysqlTable("sessionAlerts", {
 
 export type SessionAlert = typeof sessionAlerts.$inferSelect;
 export type InsertSessionAlert = typeof sessionAlerts.$inferInsert;
+
+/**
+ * Tabla de alertas de tendencia de erosión
+ * Detecta automáticamente cuando la tendencia de erosión supera umbrales críticos
+ */
+export const erosionAlerts = mysqlTable("erosionAlerts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  alertType: mysqlEnum("alertType", ["critical_trend", "high_erosion_period", "sustained_drainage"]).notNull(),
+  severity: mysqlEnum("severity", ["critical", "high", "moderate"]).notNull(),
+  trendChange: float("trendChange").notNull(), // Cambio porcentual de tendencia (0.0 - 1.0)
+  message: text("message").notNull(),
+  notified: boolean("notified").default(false).notNull(), // Si se envió notificación al propietario
+  dismissed: boolean("dismissed").default(false).notNull(),
+  detectedAt: timestamp("detectedAt").defaultNow().notNull(),
+});
+
+export type ErosionAlert = typeof erosionAlerts.$inferSelect;
+export type InsertErosionAlert = typeof erosionAlerts.$inferInsert;

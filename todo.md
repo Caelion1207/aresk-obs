@@ -549,3 +549,28 @@
 - [x] Agregar alertas visuales cuando tendencia supera umbral crítico
 - [x] Mostrar períodos de alta erosión con badges destacados
 - [x] Implementar tooltip con detalles por período (sesiones, eventos de drenaje)
+
+
+## Sistema de Alertas Automáticas de Tendencia Crítica (Completado)
+
+### Base de Datos
+- [x] Crear tabla `erosion_alerts` con campos (id, userId, alertType, severity, trendChange, detectedAt, notified, message)
+- [x] Agregar índices para consultas eficientes por userId y detectedAt
+- [x] Ejecutar migración con `pnpm db:push`
+
+### Backend
+- [x] Crear endpoint `erosion.getActiveAlerts` para consultar alertas activas
+- [x] Crear endpoint `erosion.dismissAlert` para marcar alerta como leída
+- [x] Implementar función `detectCriticalTrend` que analice cambio de tendencia
+- [x] Integrar detección en endpoint `getTemporalTrends` (ejecutar después de calcular tendencia)
+- [x] Registrar alerta en BD cuando cambio >10% ascendente
+- [x] Enviar notificación al propietario vía `notifyOwner` cuando se detecte alerta
+- [x] Evitar alertas duplicadas (verificar última alerta en últimas 24h)
+
+### Frontend
+- [x] Agregar badge "Alerta de Tendencia" en header de `/erosion` cuando hay alertas activas
+- [x] Crear panel "Alertas Activas" en ErosionDashboard
+- [x] Mostrar lista de alertas con timestamp, severidad, y cambio porcentual
+- [x] Implementar botón "Marcar como leída" por alerta
+- [x] Agregar indicador visual (ícono de campana con contador) en header
+- [x] Mostrar toast notification cuando se detecta nueva alerta
