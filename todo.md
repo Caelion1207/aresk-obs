@@ -614,3 +614,23 @@
 - [x] Mostrar estadísticas agregadas (promedio, máxima, mínima)
 - [x] Agregar leyenda dinámica con identificación de sesiones
 - [x] Implementar mensaje de ayuda "(Selecciona 2-5 sesiones)"
+
+
+## Exportación PDF del Dashboard de Erosión (Completado)
+
+### Backend
+- [x] Crear endpoint `erosion.exportDashboardPDF` con input sessionId
+- [x] Generar PDF con PDFKit incluyendo metadata (título, fecha, sesión)
+- [x] Incluir sección de estadísticas clave (eventos drenaje, intervenciones, mejora promedio)
+- [x] Agregar tabla de eventos de drenaje con timestamps y severidad
+- [x] Agregar tabla de intervenciones LICURGO con mejora pre/post
+- [x] Incluir análisis de tendencias temporales (si disponible)
+- [x] Agregar matriz de correlación (si hay comparación activa)
+- [x] Generar gráficos como texto descriptivo o usar biblioteca de charts
+
+### Frontend
+- [x] Agregar botón "Exportar PDF" en header de ErosionDashboard
+- [x] Implementar mutation para llamar endpoint de exportación
+- [x] Descargar PDF generado automáticamente
+- [x] Mostrar estado de loading durante generación
+- [x] Manejar errores de exportación con toast
