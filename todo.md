@@ -725,3 +725,24 @@
 
 - [x] Crear componente HelpDialog con contenido de USER_GUIDE.md
 - [x] Agregar botón Ayuda en header del dashboard que abra HelpDialog
+
+
+## Release Notes v1.0 (Completado)
+
+- [x] Generar RELEASE_NOTES_v1.0.md para publicación en GitHub
+
+
+## Consolidación como Instrumento de Medición de Coste (En Progreso)
+
+- [ ] Simplificar README.md eliminando capas filosóficas (Axioma, Ilusión del Agente, Contrato Semántico)
+- [ ] Endurecer USER_GUIDE.md enfocándose en costes operacionales
+- [ ] Limpiar Home.tsx eliminando referencias ontológicas
+- [ ] Reescribir RELEASE_NOTES desde perspectiva de medición de coste
+
+
+## Consolidación como Instrumento de Medición de Coste (Completado)
+
+- [x] Simplificar README.md eliminando capas filosóficas
+- [x] Endurecer USER_GUIDE.md enfocándose en costes operacionales
+- [x] Limpiar Home.tsx eliminando referencias ontológicas
+- [x] Reescribir RELEASE_NOTES desde perspectiva de medición de coste

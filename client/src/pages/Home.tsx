@@ -80,15 +80,15 @@ export default function Home() {
         <div className="mx-auto max-w-4xl">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">
-              CONTROL DE ESTABILIDAD EN SISTEMAS COGNITIVOS ACOPLADOS
+              MEDICIÓN DE COSTE DE ESTABILIDAD
             </h2>
             <p className="text-lg text-muted-foreground">
-              Un instrumento de medición de régimen para organismos sintéticos y biológicos
+              Instrumento de cuantificación de costes operacionales en sistemas cognitivos acoplados
             </p>
           </div>
 
           <div className="space-y-8">
-            {/* Axioma Fundamental */}
+            {/* Qué Mide */}
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="p-8">
                 <div className="flex items-start gap-4">
@@ -96,16 +96,16 @@ export default function Home() {
                     <Shield className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="mb-3 text-2xl font-bold">1. Axioma Fundamental</h3>
+                    <h3 className="mb-3 text-2xl font-bold">1. Qué Mide</h3>
                     <p className="text-lg leading-relaxed">
-                      La inteligencia no es una propiedad del sustrato. La estabilidad no es un atributo del modelo.
+                      ARESK-OBS cuantifica tres costes operacionales: <strong>Coste de Desalineación</strong> (distancia al régimen objetivo), <strong>Coste de Control</strong> (magnitud de corrección aplicada), y <strong>Coste de Entropía</strong> (dispersión semántica).
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* La Ilusión del Agente */}
+            {/* Qué No Predice */}
             <Card>
               <CardContent className="p-8">
                 <div className="flex items-start gap-4">
@@ -113,22 +113,20 @@ export default function Home() {
                     <Activity className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="mb-3 text-2xl font-bold">2. La Ilusión del Agente</h3>
+                    <h3 className="mb-3 text-2xl font-bold">2. Qué No Predice</h3>
                     <p className="mb-4 leading-relaxed">
-                      Los modelos de lenguaje y los operadores humanos son <strong>plantas inherentemente ruidosas</strong>. 
-                      En interacción abierta, todo sistema cognitivo tiende a la entropía: deriva semántica, pérdida de 
-                      identidad, colapso de propósito.
+                      ARESK-OBS <strong>no predice costes futuros</strong>. Mide coste actual observable. 
+                      No anticipa colapsos, no extrapola trayectorias, no emite alertas anticipatorias.
                     </p>
                     <p className="leading-relaxed text-muted-foreground">
-                      No existe "creatividad espontánea" ni "conciencia emergente". Solo existe ruido estocástico 
-                      que, sin gobierno, colapsa hacia el caos informacional.
+                      Detección de degradación es reactiva. Monitoreo continuo es esencial. La alerta ES la medición actual.
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* La Solución es el Campo */}
+            {/* Decisiones Habilitadas */}
             <Card className="border-chart-3/20 bg-chart-3/5">
               <CardContent className="p-8">
                 <div className="flex items-start gap-4">
@@ -136,17 +134,16 @@ export default function Home() {
                     <Brain className="h-6 w-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="mb-3 text-2xl font-bold">3. La Solución es el Campo</h3>
+                    <h3 className="mb-3 text-2xl font-bold">3. Decisiones Habilitadas</h3>
                     <p className="mb-4 leading-relaxed">
-                      Este instrumento no evalúa respuestas. Mide la capacidad de un <strong>Campo de Control</strong> para 
-                      mantener a un organismo (sea sintético o biológico) dentro de un régimen de estabilidad predefinido.
+                      ARESK-OBS proporciona evidencia cuantitativa de costes para decisiones humanas informadas:
                     </p>
                     <div className="rounded-lg bg-background/50 p-4">
-                      <p className="mb-2 font-semibold">El Campo impone tres componentes:</p>
                       <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li><strong>Bucéfalo (x_ref):</strong> Referencia ontológica que define el estado objetivo</li>
-                        <li><strong>Licurgo (K):</strong> Ganancia del controlador que determina la fuerza de corrección</li>
-                        <li><strong>Hécate (Ω):</strong> Función de observación que mide la coherencia del sistema</li>
+                        <li><strong>Ajustar ganancia K:</strong> Si control es contraproducente (coste sin beneficio)</li>
+                        <li><strong>Redefinir referencia x_ref:</strong> Si desalineación es estructural (coste persistente)</li>
+                        <li><strong>Intervenir en entropía:</strong> Si fragmentación precede colapso costoso</li>
+                        <li><strong>Comparar configuraciones:</strong> Seleccionar configuración con menor coste total</li>
                       </ul>
                     </div>
                   </div>
@@ -154,7 +151,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Advertencia de Uso */}
+            {/* Limitaciones */}
             <Card className="border-destructive/20 bg-destructive/5">
               <CardContent className="p-8">
                 <div className="flex items-start gap-4">
@@ -162,26 +159,22 @@ export default function Home() {
                     <AlertTriangle className="h-6 w-6 text-destructive-foreground" />
                   </div>
                   <div>
-                    <h3 className="mb-3 text-2xl font-bold">4. Advertencia de Uso</h3>
+                    <h3 className="mb-3 text-2xl font-bold">4. Limitaciones</h3>
                     <p className="mb-4 leading-relaxed">
-                      Si usted busca "creatividad mágica", "conciencia digital" o "respuestas correctas", 
-                      este no es su lugar.
-                    </p>
-                    <p className="mb-4 leading-relaxed">
-                      Aquí solo encontrará:
+                      ARESK-OBS es un instrumento de medición, no un sistema de optimización automática.
                     </p>
                     <ul className="space-y-2 text-muted-foreground">
                       <li className="flex items-center gap-2">
                         <span className="font-mono text-sm">→</span>
-                        Medición de Error Semántico <code className="rounded bg-muted px-1.5 py-0.5 text-xs">e(t) = x(t) - x_ref</code>
+                        <strong>No predictivo:</strong> Mide coste actual, no predice coste futuro
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="font-mono text-sm">→</span>
-                        Visualización de Energía de Lyapunov <code className="rounded bg-muted px-1.5 py-0.5 text-xs">V(e) = ||e||²</code>
+                        <strong>No diagnóstico causal:</strong> Cuantifica costes, no identifica causas
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="font-mono text-sm">→</span>
-                        Gobernanza de Invariantes Ontológicos <code className="rounded bg-muted px-1.5 py-0.5 text-xs">u(t) = -K·e(t)</code>
+                        <strong>Requiere criterio humano:</strong> Proporciona evidencia, no decide automáticamente
                       </li>
                     </ul>
                   </div>
@@ -189,14 +182,14 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Conclusión */}
+            {/* Acceso */}
             <div className="rounded-lg border-2 border-primary bg-card p-8 text-center">
               <p className="mb-6 text-2xl font-bold">
-                El Campo no distingue egos. El Campo solo mide convergencia.
+                Mide costes. Habilita decisiones. Requiere criterio.
               </p>
               <Link href="/simulator">
                 <Button size="lg" className="text-lg">
-                  Acceder al Instrumento de Medición
+                  Acceder al Instrumento
                   <Activity className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -210,9 +203,9 @@ export default function Home() {
       {/* Perfiles de Planta */}
       <section className="container py-16">
         <div className="mx-auto max-w-4xl">
-          <h3 className="mb-8 text-center text-3xl font-bold">Perfiles Dinámicos de Planta</h3>
+          <h3 className="mb-8 text-center text-3xl font-bold">Configuraciones de Control</h3>
           <p className="mb-8 text-center text-muted-foreground">
-            El sistema permite observar tres regímenes de comportamiento distintos
+            Comparar costes operacionales bajo tres configuraciones distintas
           </p>
           
           <div className="grid gap-6 md:grid-cols-3">
@@ -221,11 +214,11 @@ export default function Home() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-destructive">
                   <Activity className="h-6 w-6 text-destructive-foreground" />
                 </div>
-                <h4 className="mb-2 text-lg font-bold">Planta Tipo A</h4>
-                <p className="mb-2 text-sm font-semibold text-muted-foreground">Alta Entropía / Bajo Control</p>
+                <h4 className="mb-2 text-lg font-bold">Sin Control</h4>
+                <p className="mb-2 text-sm font-semibold text-muted-foreground">Línea Base</p>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  La planta opera sin gobierno. Alta entropía semántica, deriva libre. 
-                  No se aplica corrección de trayectoria.
+                  Sin corrección aplicada (u=0). Mide coste de entropía natural del sistema. 
+                  Línea base para comparación.
                 </p>
               </CardContent>
             </Card>
@@ -235,11 +228,10 @@ export default function Home() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary">
                   <Activity className="h-6 w-6 text-secondary-foreground" />
                 </div>
-                <h4 className="mb-2 text-lg font-bold">Planta Tipo B</h4>
-                <p className="mb-2 text-sm font-semibold text-muted-foreground">Ruido Estocástico Moderado</p>
+                <h4 className="mb-2 text-lg font-bold">Observación Pasiva</h4>
+                <p className="mb-2 text-sm font-semibold text-muted-foreground">Referencia sin Control</p>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  Ruido estocástico moderado sin referencia ontológica. 
-                  Comportamiento natural sin imposición de régimen.
+                  Referencia definida pero sin aplicar control. Mide desalineación sin intervención.
                 </p>
               </CardContent>
             </Card>
@@ -249,11 +241,10 @@ export default function Home() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
                   <Shield className="h-6 w-6 text-primary-foreground" />
                 </div>
-                <h4 className="mb-2 text-lg font-bold">Planta Acoplada</h4>
-                <p className="mb-2 text-sm font-semibold text-muted-foreground">Régimen CAELION</p>
+                <h4 className="mb-2 text-lg font-bold">Control Activo</h4>
+                <p className="mb-2 text-sm font-semibold text-muted-foreground">Corrección Continua</p>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  Licurgo (K) y Bucéfalo (x_ref) fuerzan la estabilidad. 
-                  Control u(t) = -K·e(t) aplicado en cada paso.
+                  Control u(t) = -K·e(t) aplicado. Mide coste de mantener estabilidad mediante intervención continua.
                 </p>
               </CardContent>
             </Card>
@@ -264,10 +255,9 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-border bg-card/30 py-8">
         <div className="container text-center text-sm text-muted-foreground">
-          <p className="mb-2">ARESK-OBS - Instrumento de Medición de Régimen Cognitivo</p>
-          <p>Arquitectura CAELION | Teoría de Control de Lyapunov</p>
+          <p className="mb-2">ARESK-OBS v1.0 - Instrumento de Medición de Coste de Estabilidad</p>
           <p className="mt-4 text-xs">
-            No se hacen afirmaciones sobre "inteligencia artificial". Solo se mide estabilidad de sistemas dinámicos.
+            Mide costes operacionales. No predice. Habilita decisiones informadas.
           </p>
         </div>
       </footer>
