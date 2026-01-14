@@ -1,10 +1,14 @@
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Brain, Activity, Shield, AlertTriangle } from "lucide-react";
+import { Brain, Activity, Shield, AlertTriangle, HelpCircle } from "lucide-react";
 import { Link } from "wouter";
+import { HelpDialog } from "@/components/HelpDialog";
 
 export default function Home() {
+  const [helpOpen, setHelpOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -46,6 +50,15 @@ export default function Home() {
                   Comparar Sesiones
                 </Button>
               </Link>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setHelpOpen(true)}
+                className="gap-2"
+              >
+                <HelpCircle className="h-4 w-4" />
+                Ayuda
+              </Button>
               <Link href="/erosion">
                 <Button variant="outline" size="lg">
                   Erosión Estructural
@@ -258,6 +271,8 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      <HelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
     </div>
   );
 }

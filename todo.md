@@ -719,3 +719,9 @@
 ## Guía de Usuario Operacional (Completado)
 
 - [x] Crear guía de usuario explicando interpretación de métricas y traducción a decisiones de control
+
+
+## Integración de Guía de Usuario en Dashboard (Completado)
+
+- [x] Crear componente HelpDialog con contenido de USER_GUIDE.md
+- [x] Agregar botón Ayuda en header del dashboard que abra HelpDialog
