@@ -163,6 +163,7 @@ Acceder a http://localhost:3000
 
 ## Documentación
 
+- **QUICKSTART.md:** Guía de inicio rápido con ejemplo práctico paso a paso (15 minutos)
 - **USER_GUIDE.md:** Guía operacional completa con flujo Observar-Interpretar-Decidir-Actuar
 - **RELEASE_NOTES_v1.0.md:** Capacidades, limitaciones y changelog
 - **HelpDialog:** Guía integrada accesible desde header del dashboard

@@ -769,3 +769,9 @@
 ## Badges Profesionales en README (Completado)
 
 - [x] Agregar badges de version v1.0, license MIT y build status en header del README
+
+
+## Guía de Inicio Rápido (Completado)
+
+- [x] Crear QUICKSTART.md con ejemplo práctico paso a paso
+- [x] Agregar enlace a QUICKSTART en README
