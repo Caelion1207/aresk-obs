@@ -787,3 +787,8 @@
 - [x] Identificar uso de canvas nativo en código
 - [x] Eliminar o aislar dependencia canvas del build de producción
 - [x] Validar que deploy pasa sin errores
+
+
+## Documentación de Limitaciones Conocidas (Completado)
+
+- [x] Agregar sección "Limitaciones Conocidas" en README documentando eliminación de exportación PDF

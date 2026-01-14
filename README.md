@@ -189,6 +189,31 @@ ARESK-OBS es un instrumento de medición, no un marco filosófico. Contribucione
 
 ---
 
+## Limitaciones Conocidas
+
+### Exportación PDF Removida
+
+**Estado:** Funcionalidad temporalmente deshabilitada para compatibilidad de despliegue.
+
+**Razón Técnica:** La exportación PDF server-side dependía de `chartjs-node-canvas` (dependencia nativa C++) incompatible con entornos de despliegue serverless/containerizados sin compiladores nativos.
+
+**Alternativas Actuales:**
+- Exportación CSV/JSON de segmentos visibles (completamente funcional)
+- Capturas de pantalla manuales del dashboard
+- Exportación de datos para procesamiento externo
+
+**Roadmap:** Si usuarios reales solicitan PDF, se implementará client-side usando jsPDF + html2canvas (browser-native, sin dependencias nativas).
+
+### Umbrales Heurísticos
+
+Los umbrales documentados (V > 0.7, Ω < 0.4, ε_eff < -0.2) son heurísticos iniciales. **Requieren calibración por dominio** basada en validación empírica con casos de uso reales.
+
+### Validación Empírica Pendiente
+
+Sistema en fase de exposición y estrés. Limitaciones adicionales pueden emerger de uso externo real. Documentación se actualizará basada en issues reportados por usuarios.
+
+---
+
 ## Disclaimer
 
 **Este es un instrumento de medición, no un sistema de optimización automática ni predicción.**
