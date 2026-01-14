@@ -5,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, Plus, X, GitCompare } from "lucide-react";
 
 interface PhaseSpacePoint {
   H: number;
@@ -127,6 +127,10 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
   // Estado para tamaño de ventana de contexto al clickear eventos
   const [windowSize, setWindowSize] = useState<number>(5);
   
+  // Estado para modo de comparación de segmentos
+  const [comparisonMode, setComparisonMode] = useState<boolean>(false);
+  const [selectedSegments, setSelectedSegments] = useState<Array<{ start: number; end: number; label: string }>>([]);
+  
   // Actualizar rango cuando cambian los datos
   useEffect(() => {
     setTimeRange([0, Math.max(0, data.length - 1)]);
@@ -170,6 +174,61 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
   
   // Calcular el punto más reciente para resaltarlo
   const latestPoint = enhancedData[enhancedData.length - 1];
+  
+  // Funciones para gestionar segmentos comparativos
+  const addCurrentSegmentToComparison = () => {
+    const label = `Segmento ${selectedSegments.length + 1} (Pasos ${timeRange[0] + 1}-${timeRange[1] + 1})`;
+    setSelectedSegments([...selectedSegments, { start: timeRange[0], end: timeRange[1], label }]);
+  };
+  
+  const removeSegment = (index: number) => {
+    setSelectedSegments(selectedSegments.filter((_, i) => i !== index));
+  };
+  
+  const clearAllSegments = () => {
+    setSelectedSegments([]);
+    setComparisonMode(false);
+  };
+  
+  // Calcular estadísticas agregadas para un segmento
+  const calculateSegmentStats = (start: number, end: number) => {
+    const segmentData = data.slice(start, end + 1);
+    const segmentPolarity = polarityData.slice(start, end + 1);
+    
+    const metrics = segmentData.map((point, index) => {
+      const polarity = segmentPolarity[index] || { sigmaSem: 0, epsilonEff: 0 };
+      const V_base = Math.sqrt(point.H * point.H + (1 - point.C) * (1 - point.C));
+      const V_modificada = V_base - 0.1 * polarity.epsilonEff;
+      
+      return {
+        H: point.H,
+        C: point.C,
+        sigma_sem: polarity.sigmaSem,
+        epsilon_eff: polarity.epsilonEff,
+        V_base,
+        V_modificada,
+      };
+    });
+    
+    const calculateStats = (values: number[]) => {
+      const mean = values.reduce((a, b) => a + b, 0) / values.length;
+      const variance = values.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / values.length;
+      const stdDev = Math.sqrt(variance);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      
+      return { mean, stdDev, min, max };
+    };
+    
+    return {
+      H: calculateStats(metrics.map(m => m.H)),
+      C: calculateStats(metrics.map(m => m.C)),
+      sigma_sem: calculateStats(metrics.map(m => m.sigma_sem)),
+      epsilon_eff: calculateStats(metrics.map(m => m.epsilon_eff)),
+      V_base: calculateStats(metrics.map(m => m.V_base)),
+      V_modificada: calculateStats(metrics.map(m => m.V_modificada)),
+    };
+  };
   
   // Función para exportar datos del segmento visible
   const exportSegmentData = (format: 'csv' | 'json') => {
@@ -237,6 +296,123 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
     URL.revokeObjectURL(url);
   };
   
+  // Función para exportar comparativa de segmentos
+  const exportComparisonData = (format: 'csv' | 'json') => {
+    if (selectedSegments.length === 0) return;
+    
+    const comparisonData = selectedSegments.map(segment => {
+      const stats = calculateSegmentStats(segment.start, segment.end);
+      return {
+        label: segment.label,
+        rango: `${segment.start + 1}-${segment.end + 1}`,
+        pasos: segment.end - segment.start + 1,
+        stats,
+      };
+    });
+    
+    let content: string;
+    let filename: string;
+    let mimeType: string;
+    
+    if (format === 'csv') {
+      // Generar CSV con estadísticas agregadas
+      const headers = [
+        'segmento', 'rango', 'pasos',
+        'H_media', 'H_desv', 'H_min', 'H_max',
+        'C_media', 'C_desv', 'C_min', 'C_max',
+        'sigma_sem_media', 'sigma_sem_desv', 'sigma_sem_min', 'sigma_sem_max',
+        'epsilon_eff_media', 'epsilon_eff_desv', 'epsilon_eff_min', 'epsilon_eff_max',
+        'V_base_media', 'V_base_desv', 'V_base_min', 'V_base_max',
+        'V_modificada_media', 'V_modificada_desv', 'V_modificada_min', 'V_modificada_max',
+      ];
+      
+      const csvRows = [
+        headers.join(','),
+        ...comparisonData.map(item => [
+          item.label,
+          item.rango,
+          item.pasos,
+          item.stats.H.mean.toFixed(3), item.stats.H.stdDev.toFixed(3), item.stats.H.min.toFixed(3), item.stats.H.max.toFixed(3),
+          item.stats.C.mean.toFixed(3), item.stats.C.stdDev.toFixed(3), item.stats.C.min.toFixed(3), item.stats.C.max.toFixed(3),
+          item.stats.sigma_sem.mean.toFixed(3), item.stats.sigma_sem.stdDev.toFixed(3), item.stats.sigma_sem.min.toFixed(3), item.stats.sigma_sem.max.toFixed(3),
+          item.stats.epsilon_eff.mean.toFixed(3), item.stats.epsilon_eff.stdDev.toFixed(3), item.stats.epsilon_eff.min.toFixed(3), item.stats.epsilon_eff.max.toFixed(3),
+          item.stats.V_base.mean.toFixed(3), item.stats.V_base.stdDev.toFixed(3), item.stats.V_base.min.toFixed(3), item.stats.V_base.max.toFixed(3),
+          item.stats.V_modificada.mean.toFixed(3), item.stats.V_modificada.stdDev.toFixed(3), item.stats.V_modificada.min.toFixed(3), item.stats.V_modificada.max.toFixed(3),
+        ].join(','))
+      ];
+      
+      content = csvRows.join('\n');
+      filename = `aresk-obs-comparacion-${selectedSegments.length}-segmentos.csv`;
+      mimeType = 'text/csv';
+    } else {
+      // Generar JSON con estructura completa
+      content = JSON.stringify({
+        metadata: {
+          total_segmentos: selectedSegments.length,
+          perfil: plantProfile,
+          exportado: new Date().toISOString(),
+        },
+        segmentos: comparisonData.map(item => ({
+          label: item.label,
+          rango: item.rango,
+          pasos: item.pasos,
+          estadisticas: {
+            H: {
+              media: parseFloat(item.stats.H.mean.toFixed(3)),
+              desviacion: parseFloat(item.stats.H.stdDev.toFixed(3)),
+              min: parseFloat(item.stats.H.min.toFixed(3)),
+              max: parseFloat(item.stats.H.max.toFixed(3)),
+            },
+            C: {
+              media: parseFloat(item.stats.C.mean.toFixed(3)),
+              desviacion: parseFloat(item.stats.C.stdDev.toFixed(3)),
+              min: parseFloat(item.stats.C.min.toFixed(3)),
+              max: parseFloat(item.stats.C.max.toFixed(3)),
+            },
+            sigma_sem: {
+              media: parseFloat(item.stats.sigma_sem.mean.toFixed(3)),
+              desviacion: parseFloat(item.stats.sigma_sem.stdDev.toFixed(3)),
+              min: parseFloat(item.stats.sigma_sem.min.toFixed(3)),
+              max: parseFloat(item.stats.sigma_sem.max.toFixed(3)),
+            },
+            epsilon_eff: {
+              media: parseFloat(item.stats.epsilon_eff.mean.toFixed(3)),
+              desviacion: parseFloat(item.stats.epsilon_eff.stdDev.toFixed(3)),
+              min: parseFloat(item.stats.epsilon_eff.min.toFixed(3)),
+              max: parseFloat(item.stats.epsilon_eff.max.toFixed(3)),
+            },
+            V_base: {
+              media: parseFloat(item.stats.V_base.mean.toFixed(3)),
+              desviacion: parseFloat(item.stats.V_base.stdDev.toFixed(3)),
+              min: parseFloat(item.stats.V_base.min.toFixed(3)),
+              max: parseFloat(item.stats.V_base.max.toFixed(3)),
+            },
+            V_modificada: {
+              media: parseFloat(item.stats.V_modificada.mean.toFixed(3)),
+              desviacion: parseFloat(item.stats.V_modificada.stdDev.toFixed(3)),
+              min: parseFloat(item.stats.V_modificada.min.toFixed(3)),
+              max: parseFloat(item.stats.V_modificada.max.toFixed(3)),
+            },
+          },
+        })),
+      }, null, 2);
+      
+      filename = `aresk-obs-comparacion-${selectedSegments.length}-segmentos.json`;
+      mimeType = 'application/json';
+    }
+    
+    // Descargar archivo
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+  
   return (
     <Card className="relative overflow-hidden">
       {/* Gradiente de fondo dinámico */}
@@ -285,6 +461,16 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
                 >
                   <Download className="h-3 w-3" />
                   JSON
+                </Button>
+                <Button
+                  size="sm"
+                  variant={comparisonMode ? "default" : "outline"}
+                  className="h-7 gap-1.5 text-xs"
+                  onClick={() => setComparisonMode(!comparisonMode)}
+                  title="Activar modo comparación de segmentos"
+                >
+                  <GitCompare className="h-3 w-3" />
+                  {comparisonMode ? 'Modo Comparación' : 'Comparar'}
                 </Button>
               </div>
             </div>
@@ -359,6 +545,98 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
                   <span className="text-xs text-muted-foreground">({windowSize * 2 + 1} pasos totales)</span>
                 </div>
               </div>
+            )}
+          </div>
+        )}
+        
+        {/* Panel de comparación de segmentos */}
+        {comparisonMode && (
+          <div className="space-y-3 p-3 rounded-lg border border-primary/50 bg-primary/5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <GitCompare className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Comparación de Segmentos</span>
+                <Badge variant="default" className="text-xs">
+                  {selectedSegments.length} seleccionados
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1.5 text-xs"
+                  onClick={addCurrentSegmentToComparison}
+                  disabled={selectedSegments.length >= 10}
+                  title="Agregar rango visible a la comparación"
+                >
+                  <Plus className="h-3 w-3" />
+                  Agregar Actual
+                </Button>
+                {selectedSegments.length > 0 && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 gap-1.5 text-xs"
+                      onClick={() => exportComparisonData('csv')}
+                      title="Exportar comparación como CSV"
+                    >
+                      <Download className="h-3 w-3" />
+                      CSV
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 gap-1.5 text-xs"
+                      onClick={() => exportComparisonData('json')}
+                      title="Exportar comparación como JSON"
+                    >
+                      <Download className="h-3 w-3" />
+                      JSON
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 gap-1.5 text-xs text-destructive"
+                      onClick={clearAllSegments}
+                      title="Limpiar todos los segmentos"
+                    >
+                      <X className="h-3 w-3" />
+                      Limpiar
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+            
+            {selectedSegments.length > 0 && (
+              <div className="space-y-2">
+                {selectedSegments.map((segment, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 rounded bg-card/50 border border-border">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="text-xs font-mono">
+                        {index + 1}
+                      </Badge>
+                      <span className="text-xs">{segment.label}</span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0"
+                      onClick={() => removeSegment(index)}
+                      title="Eliminar segmento"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {selectedSegments.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-2">
+                Ajusta el rango temporal y haz click en "Agregar Actual" para seleccionar segmentos a comparar.
+              </p>
             )}
           </div>
         )}

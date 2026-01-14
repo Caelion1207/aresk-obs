@@ -701,3 +701,10 @@
 ## Exportación de Datos de Segmentos (Completado)
 
 - [x] Implementar función de exportación de datos del segmento visible (CSV/JSON) con todas las métricas
+
+
+## Comparación de Segmentos Múltiples (Completado)
+
+- [x] Implementar selección de múltiples segmentos de trayectoria
+- [x] Calcular estadísticas agregadas (media, desviación, min/max) por segmento
+- [x] Exportar comparativa de segmentos con métricas agregadas
