@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 interface PhaseSpacePoint {
   H: number;
@@ -169,6 +171,72 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
   // Calcular el punto más reciente para resaltarlo
   const latestPoint = enhancedData[enhancedData.length - 1];
   
+  // Función para exportar datos del segmento visible
+  const exportSegmentData = (format: 'csv' | 'json') => {
+    // Preparar datos con todas las métricas
+    const exportData = filteredData.map((point, index) => {
+      const actualIndex = timeRange[0] + index;
+      const polarity = polarityData[actualIndex] || { sigmaSem: 0, epsilonEff: 0 };
+      
+      // Calcular V_base y V_modificada
+      const V_base = Math.sqrt(point.H * point.H + (1 - point.C) * (1 - point.C));
+      const V_modificada = V_base - 0.1 * polarity.epsilonEff;
+      
+      return {
+        paso: point.step,
+        H: point.H.toFixed(3),
+        C: point.C.toFixed(3),
+        sigma_sem: polarity.sigmaSem.toFixed(3),
+        epsilon_eff: polarity.epsilonEff.toFixed(3),
+        V_base: V_base.toFixed(3),
+        V_modificada: V_modificada.toFixed(3),
+        perfil: plantProfile,
+      };
+    });
+    
+    let content: string;
+    let filename: string;
+    let mimeType: string;
+    
+    if (format === 'csv') {
+      // Generar CSV
+      const headers = ['paso', 'H', 'C', 'sigma_sem', 'epsilon_eff', 'V_base', 'V_modificada', 'perfil'];
+      const csvRows = [
+        headers.join(','),
+        ...exportData.map(row => 
+          headers.map(header => row[header as keyof typeof row]).join(',')
+        )
+      ];
+      content = csvRows.join('\n');
+      filename = `aresk-obs-segmento-paso${timeRange[0]+1}-${timeRange[1]+1}.csv`;
+      mimeType = 'text/csv';
+    } else {
+      // Generar JSON
+      content = JSON.stringify({
+        metadata: {
+          rango_pasos: `${timeRange[0] + 1} - ${timeRange[1] + 1}`,
+          total_pasos: filteredData.length,
+          perfil: plantProfile,
+          exportado: new Date().toISOString(),
+        },
+        datos: exportData,
+      }, null, 2);
+      filename = `aresk-obs-segmento-paso${timeRange[0]+1}-${timeRange[1]+1}.json`;
+      mimeType = 'application/json';
+    }
+    
+    // Descargar archivo
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+  
   return (
     <Card className="relative overflow-hidden">
       {/* Gradiente de fondo dinámico */}
@@ -198,6 +266,26 @@ export default function PhaseSpaceMap({ data, plantProfile, polarityData = [], s
                 <Badge variant="secondary" className="text-xs">
                   {timeRange[1] - timeRange[0] + 1} / {data.length} pasos
                 </Badge>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1.5 text-xs"
+                  onClick={() => exportSegmentData('csv')}
+                  title="Exportar segmento visible como CSV"
+                >
+                  <Download className="h-3 w-3" />
+                  CSV
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 gap-1.5 text-xs"
+                  onClick={() => exportSegmentData('json')}
+                  title="Exportar segmento visible como JSON"
+                >
+                  <Download className="h-3 w-3" />
+                  JSON
+                </Button>
               </div>
             </div>
             <div className="relative">

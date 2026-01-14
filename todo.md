@@ -696,3 +696,8 @@
 ## Personalización de Ventana de Contexto (Completado)
 
 - [x] Agregar selector de tamaño de ventana de contexto ajustable (±N pasos) para eventos de drenaje
+
+
+## Exportación de Datos de Segmentos (Completado)
+
+- [x] Implementar función de exportación de datos del segmento visible (CSV/JSON) con todas las métricas
