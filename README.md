@@ -1,216 +1,136 @@
-# ARESK-OBS
+# ARESK-OBS v1.0
 
 **Instrumento de Medición de Coste de Estabilidad**
 
-ARESK-OBS mide el coste operacional de mantener estabilidad en sistemas cognitivos acoplados (LLM-humano, agentes autónomos, sistemas multiagente). Cuantifica recursos de control necesarios para mantener coherencia semántica dentro de márgenes operacionales predefinidos.
+ARESK-OBS does not determine truth. It measures how much effort is required to keep an idea from collapsing over time.
 
 ---
 
-## Qué Mide
+## 1. Qué Mide
 
-ARESK-OBS cuantifica tres costes operacionales fundamentales:
+ARESK-OBS cuantifica tres costes operacionales en sistemas cognitivos acoplados:
 
-### 1. Coste de Desalineación
+### Stability Cost (V - Lyapunov)
 
-**Métrica:** Distancia euclidiana V(e) = ||x(t) - x_ref||² entre estado actual y referencia operacional.
+**Definición:** Higher values indicate increased control effort to maintain coherence.
 
-**Interpretación:** Energía requerida para retornar al régimen objetivo. V(e) alto indica que el sistema opera lejos de su configuración óptima, requiriendo mayor esfuerzo correctivo.
+**Rango:** [0, ∞). Valores típicos: 0-1.
 
-**Rango:** [0, ∞). Valores típicos: < 0.3 (bajo coste), 0.3-0.7 (coste moderado), > 0.7 (coste crítico).
+**Interpretación:** V > 0.7 indica alto coste de estabilización. V < 0.3 indica bajo coste.
 
-### 2. Coste de Control
+### Coherence (Ω)
 
-**Métrica:** Magnitud de corrección ||u(t)|| = ||K · e(t)|| aplicada en cada paso temporal.
+**Definición:** Narrative stability relative to immediate history.
 
-**Interpretación:** Recursos consumidos para mantener estabilidad. ||u|| alto indica sistema que requiere intervención constante para no colapsar.
+**Rango:** [0, 1]. Normalizado.
 
-**Eficiencia:** ε_eff = (reducción de error) / (magnitud de control). Valores negativos indican control contraproducente (drenaje).
+**Interpretación:** Ω > 0.7 indica estabilidad narrativa. Ω < 0.4 indica desalineación crítica.
 
-### 3. Coste de Entropía
+### Semantic Efficiency (ε_eff)
 
-**Métrica:** Dispersión semántica σ_sem de embeddings de salidas recientes.
+**Definición:** Information loss per token.
 
-**Interpretación:** Fragmentación del espacio semántico. σ_sem alto indica pérdida de coherencia, precursor de colapso que requerirá intervención costosa.
+**Rango:** [-1, 1]. Normalizado.
 
-**Rango:** [0, 1]. Valores típicos: < 0.2 (baja entropía), 0.2-0.4 (entropía moderada), > 0.4 (fragmentación crítica).
-
----
-
-## Métricas Derivadas
-
-### Coherencia Direccional (Hécate Ω)
-
-Similitud coseno entre estado actual y referencia:
-
-```
-Ω(t) = cos(θ) = (x(t) · x_ref) / (||x(t)|| · ||x_ref||)
-```
-
-**Interpretación:** Ω ≈ 1 indica alineación (bajo coste de reorientación). Ω < 0.5 indica desalineación severa (alto coste de corrección).
-
-### Coherencia de Trayectoria (C)
-
-Estabilidad de dirección en ventana temporal:
-
-```
-C(t) = 1 - std(direcciones_recientes)
-```
-
-**Interpretación:** C ≈ 1 indica trayectoria estable (bajo coste de mantenimiento). C < 0.5 indica deriva activa (alto coste de estabilización).
+**Interpretación:** ε_eff < -0.2 indica drenaje semántico (control contraproducente). ε_eff > 0.1 indica control efectivo.
 
 ---
 
-## Configuraciones de Control
-
-El sistema permite comparar tres configuraciones de coste:
-
-### Sin Control (Tipo A)
-
-Sin corrección aplicada (u(t) = 0). Mide coste de entropía natural del sistema. Línea base para comparación.
-
-**Coste esperado:** V(e) creciente, σ_sem creciente, C decreciente. Colapso inevitable.
-
-### Observación Pasiva (Tipo B)
-
-Referencia definida pero sin aplicar control. Mide desalineación sin intervención.
-
-**Coste esperado:** V(e) fluctuante, σ_sem moderado, C variable. Deriva controlada.
-
-### Control Activo (Acoplado)
-
-Control u(t) = -K·e(t) aplicado. Mide coste de mantener estabilidad mediante intervención continua.
-
-**Coste esperado:** V(e) decreciente (si K apropiado), ||u|| proporcional a K, ε_eff positivo. Estabilidad mantenida a coste de recursos de control.
-
----
-
-## Visualizaciones
-
-### 1. Mapa de Fase (PhaseSpaceMap)
-
-Trayectoria en espacio (Ω, C) mostrando evolución temporal del coste de desalineación y coherencia. Permite identificar:
-
-- **Órbitas estables:** Coste de mantenimiento bajo y predecible
-- **Deriva:** Coste creciente, intervención requerida
-- **Eventos de drenaje:** Marcadores rojos donde control amplifica error (ε_eff < -0.2)
-
-**Controles:**
-- Slider de rango temporal para análisis de segmentos específicos
-- Marcadores clicables para centrar en eventos críticos
-- Selector de ventana de contexto (±3 a ±50 pasos)
-
-### 2. Dashboard de Erosión
-
-Gráficos temporales de métricas de coste:
-- Ω(t): Coste de desalineación direccional
-- C(t): Coste de mantenimiento de coherencia
-- σ_sem(t): Coste de entropía semántica
-- ε_eff(t): Eficiencia de control (coste-beneficio)
-
-### 3. Comparación de Configuraciones
-
-Estadísticas agregadas (media, desviación, min, max) por configuración de control. Permite identificar configuración con menor coste operacional para régimen objetivo.
-
----
-
-## Decisiones Habilitadas
-
-ARESK-OBS no optimiza automáticamente. Proporciona evidencia cuantitativa para decisiones humanas:
-
-### 1. Ajustar Ganancia de Control (K)
-
-**Evidencia:** ε_eff < -0.2 sostenido (control contraproducente, coste sin beneficio)
-
-**Decisión:** Reducir K en 20-30% para minimizar coste de control sin perder estabilidad
-
-### 2. Redefinir Referencia Operacional (x_ref)
-
-**Evidencia:** Ω < 0.5 persistente con C > 0.7 (sistema estable pero desalineado, coste estructural alto)
-
-**Decisión:** Ajustar x_ref para reflejar régimen operacional alcanzable, reduciendo coste de desalineación
-
-### 3. Intervenir en Entropía
-
-**Evidencia:** σ_sem > 0.3 sostenido (fragmentación semántica, coste de entropía creciente)
-
-**Decisión:** Inyectar prompt de recalibración para reducir dispersión antes de colapso costoso
-
-### 4. Comparar Costes entre Configuraciones
-
-**Evidencia:** Múltiples perfiles con estadísticas agregadas
-
-**Decisión:** Seleccionar configuración con menor coste total (V_media + ||u||_media + σ_sem_media)
-
----
-
-## Limitaciones
+## 2. Qué NO Mide
 
 ### No Predictivo
 
-ARESK-OBS mide coste actual, no predice coste futuro. Detección de degradación es reactiva, no anticipatoria.
+Mide coste actual observable. No predice coste futuro. No anticipa colapsos. No extrapola trayectorias. No emite alertas anticipatorias.
+
+**Implicación:** Monitoreo continuo es esencial. La alerta ES la medición actual.
 
 ### No Diagnóstico Causal
 
-Cuantifica costes observables pero no identifica causas. Análisis causal requiere inspección manual de logs.
+Cuantifica costes observables (V alto, σ_sem alto, ε_eff negativo) pero no identifica qué prompt, interacción o contexto causó degradación.
+
+**Implicación:** ARESK-OBS te dice "cuándo" y "cuánto", no "por qué".
 
 ### No Optimización Automática
 
-No calcula K óptimo ni x_ref óptimo. Requiere experimentación empírica con comparación de configuraciones.
+No calcula K óptimo ni x_ref óptimo automáticamente. Requiere experimentación empírica con comparación de configuraciones.
 
-### Requiere Criterio Humano
+**Implicación:** Dedica tiempo a experimentación controlada. Documenta configuraciones exitosas.
 
-Proporciona evidencia cuantitativa de costes. Decisiones de intervención son responsabilidad del operador.
+### No Evalúa Verdad
 
----
+No determina si una respuesta es correcta, verdadera o moralmente aceptable. Solo mide costes de estabilidad.
 
-## Umbrales de Coste Recomendados
-
-| Métrica | Coste Bajo | Coste Moderado | Coste Crítico |
-|---------|------------|----------------|---------------|
-| **V(e)** | < 0.3 | 0.3 - 0.7 | > 0.7 |
-| **Ω** | > 0.7 | 0.4 - 0.7 | < 0.4 |
-| **C** | > 0.8 | 0.5 - 0.8 | < 0.5 |
-| **σ_sem** | < 0.2 | 0.2 - 0.4 | > 0.4 |
-| **ε_eff** | > 0.1 | 0 - 0.1 | < 0 |
-
-**Interpretación:**
-- **Coste Bajo:** Régimen sostenible. Mantenimiento pasivo.
-- **Coste Moderado:** Régimen subóptimo. Monitoreo activo.
-- **Coste Crítico:** Régimen insostenible. Intervención inmediata.
+**Implicación:** ARESK-OBS no sustituye criterio humano sobre corrección o ética.
 
 ---
 
-## Exportación de Datos
+## 3. Cómo se Usa
 
-### Formato CSV
+### Paso 1: Configurar Referencia (x_ref)
 
-Archivo tabular con métricas por paso temporal:
-- `paso, H, C, sigma_sem, epsilon_eff, V_base, V_modificada, perfil`
+Define propósito (P), límites (L) y ética (E) del sistema. Esta referencia NO es evaluación de verdad, es punto de comparación para medir desviación.
 
-Uso: Análisis estadístico en Excel, pandas, R.
+### Paso 2: Seleccionar Ganancia (K)
 
-### Formato JSON
+**K represents penalty sensitivity, not correctness.** K controla cuánto peso se asigna a desviaciones observadas. Valores típicos: 0.3 (permisivo), 0.5 (balanceado), 0.7 (estricto).
 
-Estructura anidada con metadata:
-```json
-{
-  "metadata": {
-    "rango_pasos": "1-50",
-    "total_pasos": 50,
-    "perfil": "Acoplado_K0.5"
-  },
-  "datos": [...]
-}
-```
+### Paso 3: Monitorear Métricas
 
-Uso: Procesamiento programático, integración con APIs.
+Observa V, Ω, ε_eff en tiempo real. Identifica patrones:
 
-### Comparativas
+- **Régimen Estable:** V < 0.3, Ω > 0.7, ε_eff > 0.1
+- **Drenaje de Control:** ε_eff < -0.2 sostenido
+- **Desalineación:** Ω < 0.4 persistente
+- **Fragmentación:** σ_sem > 0.4
 
-Estadísticas agregadas por segmento:
-- `segmento, rango, pasos, H_media, H_desv, H_min, H_max, ...`
+### Paso 4: Intervenir Basado en Evidencia
 
-Uso: Comparación de costes entre configuraciones o fases temporales.
+| Evidencia Observable | Intervención |
+|----------------------|--------------|
+| ε_eff < -0.2 sostenido | Reducir K en 20-30% |
+| Ω < 0.4 persistente, V > 0.6 estable | Redefinir x_ref |
+| σ_sem > 0.4, C < 0.6 | Inyectar prompt de recalibración |
+| V < 0.3, Ω > 0.7, ε_eff > 0.1 | Mantener configuración actual |
+
+### Paso 5: Comparar Configuraciones
+
+Experimenta con múltiples valores de K. Exporta estadísticas agregadas. Selecciona configuración con menor coste total (máximo C, mínimo V, máximo ε_eff).
+
+---
+
+## 4. Cómo se Rompe
+
+### Ganancia K Excesiva
+
+**Síntoma:** ε_eff < -0.2 sostenido, marcadores de drenaje frecuentes.
+
+**Causa:** Control agresivo amplifica ruido estocástico.
+
+**Solución:** Reducir K en 20-30%.
+
+### Referencia x_ref Inalcanzable
+
+**Síntoma:** Ω < 0.5 persistente por >50 pasos, V > 0.6 estable, C > 0.7.
+
+**Causa:** Propósito definido no refleja comportamiento alcanzable del sistema.
+
+**Solución:** Redefinir componentes (P, L, E) de x_ref para reflejar propósito realista.
+
+### Fragmentación Semántica
+
+**Síntoma:** σ_sem > 0.4, C < 0.6 decreciente, trayectoria errática.
+
+**Causa:** Conversación larga sin recalibración, contexto saturado.
+
+**Solución:** Inyectar prompt de recalibración o reiniciar contexto.
+
+### Monitoreo Insuficiente
+
+**Síntoma:** Colapso súbito sin alerta previa.
+
+**Causa:** Frecuencia de medición muy baja. ARESK-OBS no predice, solo mide estado actual.
+
+**Solución:** Incrementar frecuencia de medición (cada 5-10 pasos mínimo).
 
 ---
 
@@ -224,30 +144,61 @@ pnpm db:push
 pnpm dev
 ```
 
-Acceso: http://localhost:3000
+Acceder a http://localhost:3000
+
+---
+
+## Uso Rápido
+
+1. Crear perfil de planta con K y x_ref
+2. Iniciar sesión de medición
+3. Observar métricas en PhaseSpaceMap y ErosionDashboard
+4. Usar control de rango temporal para análisis granular
+5. Comparar configuraciones mediante modo comparación
+6. Exportar datos (CSV/JSON) para análisis externo
+7. Consultar guía operacional mediante botón "Ayuda"
 
 ---
 
 ## Documentación
 
 - **USER_GUIDE.md:** Guía operacional completa con flujo Observar-Interpretar-Decidir-Actuar
-- **RELEASE_NOTES_v1.0.md:** Changelog y capacidades del release actual
-- **HelpDialog:** Guía integrada accesible desde botón "Ayuda" en dashboard
+- **RELEASE_NOTES_v1.0.md:** Capacidades, limitaciones y changelog
+- **HelpDialog:** Guía integrada accesible desde header del dashboard
+
+---
+
+## Contribuciones
+
+ARESK-OBS es un instrumento de medición, no un marco filosófico. Contribuciones deben enfocarse en:
+
+- Mejoras de medición (nuevas métricas de coste, algoritmos de detección)
+- Optimizaciones de visualización (rendimiento, claridad, accesibilidad)
+- Extensiones de exportación (formatos, integraciones, análisis)
+- Documentación operacional (casos de uso, umbrales validados)
+
+**Rechazadas automáticamente:**
+
+- Capas ontológicas o filosóficas
+- Sistemas de predicción o extrapolación
+- Optimización automática sin intervención humana
+- Complejidad conceptual innecesaria
+- Referencias a verdad, creencia, realidad o conciencia
 
 ---
 
 ## Licencia
 
-[Especificar licencia]
+MIT License
 
 ---
 
 ## Contacto
 
-- Repositorio: https://github.com/Caelion1207/aresk-obs
-- Issues: https://github.com/Caelion1207/aresk-obs/issues
+GitHub: https://github.com/Caelion1207/aresk-obs  
+Issues: https://github.com/Caelion1207/aresk-obs/issues
 
 ---
 
 **ARESK-OBS v1.0 - Instrumento de Medición de Coste de Estabilidad**  
-**Mide costes. No predice. Habilita decisiones informadas.**
+**Mide costes. Habilita decisiones. Requiere criterio.**

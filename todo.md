@@ -746,3 +746,13 @@
 - [x] Endurecer USER_GUIDE.md enfocándose en costes operacionales
 - [x] Limpiar Home.tsx eliminando referencias ontológicas
 - [x] Reescribir RELEASE_NOTES desde perspectiva de medición de coste
+
+
+## Ajustes Finales - Ingeniería Correctiva (Completado)
+
+- [x] Eliminar referencias residuales a verdad/ontología/conciencia en código y documentación
+- [x] Renombrar LQR a terminología operacional (mantenido en docs técnicos internos)
+- [x] Consolidar métricas visibles a 3 principales (Stability Cost, Coherence, Semantic Efficiency)
+- [x] Clarificar definiciones de métricas en UI: Lyapunov = "esfuerzo para evitar deriva", Ω = "estabilidad narrativa", ε_eff = "pérdida de información por token"
+- [x] Simplificar README a estructura quirúrgica (Qué mide, Qué NO mide, Cómo se usa, Cómo se rompe)
+- [x] Clarificar rol de K: "K represents penalty sensitivity, not correctness"

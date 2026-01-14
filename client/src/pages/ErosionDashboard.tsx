@@ -355,9 +355,9 @@ function ErosionDashboardContent() {
             {/* Gráfico de ε_eff(t) */}
             <Card>
               <CardHeader>
-                <CardTitle>Campo Efectivo ε_eff(t) = Ω(t) × σ_sem(t)</CardTitle>
+                <CardTitle>Semantic Efficiency ε_eff(t) = Ω(t) × σ_sem(t)</CardTitle>
                 <CardDescription>
-                  Valores negativos indican drenaje semántico. Línea roja marca umbral de alerta (-0.2)
+                  Information loss per token. Negative values indicate semantic drainage. Red line marks alert threshold (-0.2)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -462,7 +462,7 @@ function ErosionDashboardContent() {
               <CardHeader>
                 <CardTitle>Función de Lyapunov: V_base vs V_modificada</CardTitle>
                 <CardDescription>
-                  V_modificada = V_base - α×ε_eff. Valores más bajos indican mayor estabilidad
+                  Higher values indicate increased control effort to maintain coherence. V_modificada = V_base - α×ε_eff
                 </CardDescription>
               </CardHeader>
               <CardContent>

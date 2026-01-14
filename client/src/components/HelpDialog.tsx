@@ -76,6 +76,22 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                   </div>
                 </div>
 
+                <h4 className="font-semibold mt-4">Métricas Principales</h4>
+                <ul className="list-disc list-inside space-y-2 ml-2">
+                  <li><strong>Stability Cost (V):</strong> Higher values indicate increased control effort to maintain coherence</li>
+                  <li><strong>Coherence (Ω):</strong> Narrative stability relative to immediate history</li>
+                  <li><strong>Semantic Efficiency (ε_eff):</strong> Information loss per token. Negative values indicate drainage</li>
+                </ul>
+                
+                <div className="p-4 bg-muted rounded-lg mt-4">
+                  <h4 className="font-semibold mb-2">Rol de K (Ganancia de Control)</h4>
+                  <p>
+                    <strong>K represents penalty sensitivity, not correctness.</strong> K no mide inteligencia, 
+                    no determina decisión correcta, no evalúa moral. K controla cuánto peso se asigna a desviaciones 
+                    observadas. Valores altos amplifican ruido estocástico. Valores bajos permiten deriva.
+                  </p>
+                </div>
+                
                 <h4 className="font-semibold mt-4">Visualizaciones Principales</h4>
                 <ul className="list-disc list-inside space-y-2 ml-2">
                   <li><strong>PhaseSpaceMap:</strong> Trayectoria en espacio (H, C) con codificación cromática neurocognitiva</li>
