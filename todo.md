@@ -714,3 +714,8 @@
 
 - [x] Actualizar README.md con alcance operativo (qué mide, qué no predice, decisiones que habilita)
 - [ ] Exportar código a GitHub con tag v1.0 - Instrumento Operativo
+
+
+## Guía de Usuario Operacional (Completado)
+
+- [x] Crear guía de usuario explicando interpretación de métricas y traducción a decisiones de control
