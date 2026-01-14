@@ -775,3 +775,8 @@
 
 - [x] Crear QUICKSTART.md con ejemplo práctico paso a paso
 - [x] Agregar enlace a QUICKSTART en README
+
+
+## Plantilla de Issue de GitHub (Completado)
+
+- [x] Crear .github/ISSUE_TEMPLATE/bug_report.md con campos estructurados
