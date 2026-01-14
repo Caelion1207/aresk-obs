@@ -28,7 +28,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-3 gap-1">
             <TabsTrigger value="intro">Introducción</TabsTrigger>
             <TabsTrigger value="flujo">Flujo</TabsTrigger>
             <TabsTrigger value="decisiones">Decisiones</TabsTrigger>

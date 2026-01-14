@@ -792,3 +792,13 @@
 ## Documentación de Limitaciones Conocidas (Completado)
 
 - [x] Agregar sección "Limitaciones Conocidas" en README documentando eliminación de exportación PDF
+
+
+## Comunicación de Lanzamiento v1.0 (Completado)
+
+- [x] Redactar borrador de comunicación de lanzamiento para primeros usuarios técnicos
+
+
+## Bug Visual en HelpDialog (Completado)
+
+- [x] Arreglar superposición de tabs en HelpDialog que causa problema visual
