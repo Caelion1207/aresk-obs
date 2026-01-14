@@ -756,3 +756,11 @@
 - [x] Clarificar definiciones de métricas en UI: Lyapunov = "esfuerzo para evitar deriva", Ω = "estabilidad narrativa", ε_eff = "pérdida de información por token"
 - [x] Simplificar README a estructura quirúrgica (Qué mide, Qué NO mide, Cómo se usa, Cómo se rompe)
 - [x] Clarificar rol de K: "K represents penalty sensitivity, not correctness"
+
+
+## Mejoras Finales de Revisión Técnica (Completado)
+
+- [x] Clarificar normalización de métricas (ε_eff en [-1,1] vs otras en [0,1])
+- [x] Agregar advertencia de umbrales heurísticos (requieren calibración por dominio)
+- [x] Mover tabla de decisiones de intervención de README a USER_GUIDE
+- [x] Agregar disclaimer final: "Instrumento de medición, no sistema de optimización automática ni predicción"

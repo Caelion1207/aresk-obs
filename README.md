@@ -30,7 +30,7 @@ ARESK-OBS cuantifica tres costes operacionales en sistemas cognitivos acoplados:
 
 **Definición:** Information loss per token.
 
-**Rango:** [-1, 1]. Normalizado.
+**Rango:** [-1, 1]. Normalizado. Nota: A diferencia de Ω y C (siempre positivos [0,1]), ε_eff puede ser negativo cuando el control amplifica error en lugar de reducirlo.
 
 **Interpretación:** ε_eff < -0.2 indica drenaje semántico (control contraproducente). ε_eff > 0.1 indica control efectivo.
 
@@ -83,14 +83,11 @@ Observa V, Ω, ε_eff en tiempo real. Identifica patrones:
 - **Desalineación:** Ω < 0.4 persistente
 - **Fragmentación:** σ_sem > 0.4
 
+**Advertencia:** Estos umbrales son heurísticos y deben ajustarse según dominio, longitud de conversaciones y características del LLM. Calibración empírica es esencial.
+
 ### Paso 4: Intervenir Basado en Evidencia
 
-| Evidencia Observable | Intervención |
-|----------------------|--------------|
-| ε_eff < -0.2 sostenido | Reducir K en 20-30% |
-| Ω < 0.4 persistente, V > 0.6 estable | Redefinir x_ref |
-| σ_sem > 0.4, C < 0.6 | Inyectar prompt de recalibración |
-| V < 0.3, Ω > 0.7, ε_eff > 0.1 | Mantener configuración actual |
+Cuando las métricas indican degradación, interviene ajustando K, redefiniendo x_ref o inyectando prompts de recalibración. Consulta **USER_GUIDE.md** para matriz completa de evidencia-interpretación-decisión con justificaciones y casos de uso detallados.
 
 ### Paso 5: Comparar Configuraciones
 
@@ -184,6 +181,14 @@ ARESK-OBS es un instrumento de medición, no un marco filosófico. Contribucione
 - Optimización automática sin intervención humana
 - Complejidad conceptual innecesaria
 - Referencias a verdad, creencia, realidad o conciencia
+
+---
+
+## Disclaimer
+
+**Este es un instrumento de medición, no un sistema de optimización automática ni predicción.**
+
+ARESK-OBS cuantifica costes operacionales observables. No predice comportamientos futuros, no optimiza parámetros automáticamente, no evalúa verdad o corrección. Decisiones de intervención son responsabilidad del operador humano basadas en evidencia cuantitativa proporcionada por el instrumento.
 
 ---
 
