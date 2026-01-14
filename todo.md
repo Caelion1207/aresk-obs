@@ -764,3 +764,8 @@
 - [x] Agregar advertencia de umbrales heurísticos (requieren calibración por dominio)
 - [x] Mover tabla de decisiones de intervención de README a USER_GUIDE
 - [x] Agregar disclaimer final: "Instrumento de medición, no sistema de optimización automática ni predicción"
+
+
+## Badges Profesionales en README (Completado)
+
+- [x] Agregar badges de version v1.0, license MIT y build status en header del README

@@ -1,5 +1,9 @@
 # ARESK-OBS v1.0
 
+![Version](https://img.shields.io/badge/version-1.0-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
+
 **Instrumento de Medición de Coste de Estabilidad**
 
 ARESK-OBS does not determine truth. It measures how much effort is required to keep an idea from collapsing over time.
