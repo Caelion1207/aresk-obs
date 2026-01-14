@@ -440,6 +440,97 @@ El sistema incluye un dashboard avanzado (`/erosion`) que visualiza:
 
 ---
 
+## Alcance Operativo del Instrumento
+
+### Qué Mide ARESK-OBS
+
+ARESK-OBS es un **instrumento de medición de régimen**, no un modelo predictivo. Mide el estado observable actual del sistema cognitivo acoplado mediante métricas cuantificables derivadas de teoría de control de Lyapunov:
+
+**Métricas Primarias Observables:**
+
+- **Hécate (Ω)**: Coherencia direccional con referencia ontológica Bucéfalo, medida como similitud coseno entre estado actual x(t) y referencia x_ref. Rango [0,1], donde 1 indica alineación perfecta.
+
+- **Coherencia (C)**: Estabilidad de la trayectoria en espacio de fase, calculada como 1 - desviación estándar normalizada de Hécate en ventana temporal. Valores cercanos a 1 indican estabilidad sostenida.
+
+- **Distancia a Bucéfalo V(e)**: Función de Lyapunov que cuantifica error semántico como distancia euclidiana en espacio (H, 1-C). V(e) = √(H² + (1-C)²). Valores bajos indican proximidad al atractor.
+
+- **Entropía Semántica (σ_sem)**: Dispersión de embeddings semánticos en ventana temporal, medida como desviación estándar de distancias coseno. Valores altos indican fragmentación semántica.
+
+- **Eficiencia de Control (ε_eff)**: Razón entre reducción de error y magnitud de control aplicado. ε_eff = (V_base - V_modificada) / ||u||. Valores negativos indican drenaje (control contraproducente).
+
+**Métricas Derivadas:**
+
+- **Índice de Erosión**: Agregación normalizada de σ_sem, |ε_eff| y 1-C para cuantificar degradación global del sistema. Rango [0,1].
+
+- **Eventos de Drenaje**: Instantes temporales donde ε_eff < -0.2, indicando que el control amplifica error en lugar de reducirlo.
+
+### Qué NO Predice ARESK-OBS
+
+ARESK-OBS **no es un modelo predictivo**. No anticipa comportamientos futuros ni proyecta trayectorias. Sus limitaciones fundamentales son:
+
+**No Predice:**
+
+- **Trayectorias futuras**: No extrapola estados futuros x(t+Δt) a partir del estado actual. La dinámica del sistema es estocástica y depende de interacciones externas no modeladas.
+
+- **Colapsos inminentes**: No emite alertas anticipatorias de falla. Detecta degradación **cuando ocurre**, no antes.
+
+- **Eficacia de intervenciones**: No simula el efecto de cambios en ganancia K o referencia x_ref antes de aplicarlos. La respuesta del sistema a modificaciones de control es empírica.
+
+- **Causas de deriva**: No identifica factores causales de erosión semántica (prompts problemáticos, contextos ambiguos, sesgos de entrenamiento). Solo cuantifica el efecto observable.
+
+**Razón Epistemológica:**
+
+La arquitectura CAELION reconoce que los sistemas cognitivos acoplados (humano-LLM, LLM-LLM) operan en régimen **inherentemente ruidoso** con dinámica no lineal. Predecir trayectorias requiere modelar:
+
+1. Espacio latente completo del LLM (dimensionalidad ~10⁴-10⁶)
+2. Intencionalidad del operador humano (no observable)
+3. Contexto externo variable (prompts, datos, restricciones)
+
+ARESK-OBS adopta postura **instrumentalista**: mide lo observable, no infiere lo latente. La predicción es incompatible con el axioma fundamental de que la estabilidad no es atributo del modelo, sino propiedad emergente del Campo de Control.
+
+### Decisiones que Habilita
+
+ARESK-OBS proporciona **evidencia cuantitativa observable** para habilitar decisiones operacionales en tiempo real:
+
+**Intervenciones de Control Habilitadas:**
+
+1. **Ajuste de Ganancia Licurgo (K):**
+   - **Evidencia**: ε_eff < -0.2 sostenido indica drenaje por control excesivo
+   - **Decisión**: Reducir K para disminuir magnitud de corrección u(t)
+   - **Justificación**: Control agresivo amplifica ruido en plantas estocásticas
+
+2. **Redefinición de Referencia Bucéfalo (x_ref):**
+   - **Evidencia**: Hécate Ω < 0.5 persistente indica desalineación ontológica
+   - **Decisión**: Revisar componentes (P, L, E) de x_ref para reflejar propósito operacional real
+   - **Justificación**: Referencia inalcanzable genera error estructural irreducible
+
+3. **Intervención en Deriva Semántica:**
+   - **Evidencia**: σ_sem > 0.3 indica fragmentación semántica activa
+   - **Decisión**: Inyectar prompts de recalibración o reiniciar contexto conversacional
+   - **Justificación**: Alta entropía semántica precede pérdida de coherencia
+
+4. **Detección de Régimen Estable:**
+   - **Evidencia**: C > 0.8, V(e) < 0.3, ε_eff > 0 sostenidos
+   - **Decisión**: Mantener configuración actual de control (K, x_ref)
+   - **Justificación**: Sistema opera en órbita de seguridad alrededor de atractor
+
+5. **Comparación de Configuraciones:**
+   - **Evidencia**: Estadísticas agregadas (media, desviación) de métricas en segmentos temporales
+   - **Decisión**: Seleccionar configuración de control con mejor desempeño observable
+   - **Justificación**: Comparación empírica de régimen bajo distintas parametrizaciones
+
+**Decisiones NO Habilitadas:**
+
+- **Optimización predictiva de K**: No se puede calcular ganancia óptima a priori. Requiere experimentación empírica.
+- **Prevención de colapso**: No se puede evitar deriva antes de que ocurra. Solo detección post-facto.
+- **Diagnóstico causal**: No identifica qué prompt o interacción causó erosión. Solo cuantifica efecto agregado.
+
+**Principio Operacional:**
+
+ARESK-OBS habilita **control reactivo basado en evidencia observable**, no control predictivo. Las decisiones son respuestas a desviaciones medidas, no anticipaciones de desviaciones futuras. Este enfoque es coherente con la naturaleza estocástica de sistemas cognitivos acoplados, donde la predicción determinista es epistemológicamente insostenible.
+
+---
+
 ## Visualizaciones Dinámicas
 
 ### Atractor Bucéfalo con Erosión Dinámica
@@ -474,6 +565,33 @@ Si llegaste hasta aquí y comprendes por qué V(e) no es una métrica arbitraria
 
 ---
 
-**ARESK-OBS v2.1** — *Semantic Erosion Monitoring Dashboard*  
+**ARESK-OBS v1.0 - Instrumento Operativo** — *Semantic Erosion Monitoring Dashboard*  
 **CAELION System** — *Control de Estabilidad en Sistemas Cognitivos Acoplados*  
 **Arquitectura CAELION** — *Epistemological Coherence as Binding Principle*
+
+---
+
+## Release Notes v1.0 - Instrumento Operativo
+
+**Fecha**: Enero 2026  
+**Estado**: Producción
+
+**Capacidades Operacionales:**
+
+- Medición en tiempo real de métricas de régimen (Hécate, Coherencia, V(e), σ_sem, ε_eff)
+- Visualización de trayectorias temporales con marcadores de eventos de drenaje
+- Comparación de segmentos múltiples con estadísticas agregadas
+- Exportación de datos (CSV/JSON) para análisis externo
+- Selector de ventana de contexto ajustable para análisis granular
+- Navegación interactiva a eventos críticos
+
+**Limitaciones Documentadas:**
+
+- No predice trayectorias futuras
+- No anticipa colapsos
+- No identifica causas de deriva
+- Control reactivo, no predictivo
+
+**Principio Operacional Validado:**
+
+Instrumento de medición de régimen para sistemas cognitivos acoplados. Habilita decisiones de control basadas en evidencia observable. No sustituye criterio del operador.

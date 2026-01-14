@@ -708,3 +708,9 @@
 - [x] Implementar selección de múltiples segmentos de trayectoria
 - [x] Calcular estadísticas agregadas (media, desviación, min/max) por segmento
 - [x] Exportar comparativa de segmentos con métricas agregadas
+
+
+## Despliegue y Documentación v1.0 (En Progreso)
+
+- [x] Actualizar README.md con alcance operativo (qué mide, qué no predice, decisiones que habilita)
+- [ ] Exportar código a GitHub con tag v1.0 - Instrumento Operativo
