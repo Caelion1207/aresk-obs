@@ -78,22 +78,8 @@ function ErosionDashboardContent() {
     },
   });
   
-  const exportPDFMutation = trpc.erosion.exportDashboardPDF.useMutation({
-    onSuccess: (data) => {
-      // Descargar PDF
-      const blob = new Blob([Uint8Array.from(atob(data.pdf), c => c.charCodeAt(0))], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = data.filename;
-      link.click();
-      URL.revokeObjectURL(url);
-    },
-    onError: (error) => {
-      console.error('Error al exportar PDF:', error);
-      alert('Error al generar el PDF. Por favor intenta nuevamente.');
-    },
-  });
+  // exportPDFMutation: Eliminado (dependencia nativa canvas removida para deploy)
+  // Si se requiere exportación PDF, implementar client-side con jsPDF + html2canvas
 
   const handleDismissAlert = (alert: any) => {
     if (alert.severity === "critical") {
@@ -207,28 +193,7 @@ function ErosionDashboardContent() {
             
             {/* Zona derecha: Acciones */}
             <div className="flex items-center gap-2">
-              {selectedSessionId && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => exportPDFMutation.mutate({ sessionId: selectedSessionId })}
-                  disabled={exportPDFMutation.isPending}
-                >
-                  {exportPDFMutation.isPending ? (
-                    <>
-                      <Activity className="h-4 w-4 mr-2 animate-spin" />
-                      Generando...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                      </svg>
-                      Exportar PDF
-                    </>
-                  )}
-                </Button>
-              )}
+              {/* Botón Exportar PDF eliminado (dependencia nativa canvas removida para deploy) */}
             </div>
           </div>
         </div>

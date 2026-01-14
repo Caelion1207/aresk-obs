@@ -780,3 +780,10 @@
 ## Plantilla de Issue de GitHub (Completado)
 
 - [x] Crear .github/ISSUE_TEMPLATE/bug_report.md con campos estructurados
+
+
+## Resolución de Error de Deploy (Completado)
+
+- [x] Identificar uso de canvas nativo en código
+- [x] Eliminar o aislar dependencia canvas del build de producción
+- [x] Validar que deploy pasa sin errores
