@@ -802,3 +802,16 @@
 ## Bug Visual en HelpDialog (Completado)
 
 - [x] Arreglar superposición de tabs en HelpDialog que causa problema visual
+
+
+## Ajuste para Despliegue en Vercel (En Progreso)
+
+- [ ] Verificar eliminación completa de dependencias nativas (canvas, chartjs-node-canvas)
+- [ ] Confirmar scripts de build correctos en package.json
+- [ ] Verificar ausencia de backend activo en imports del cliente
+
+
+## Bug de Despliegue Público (Completado)
+
+- [x] Diagnosticar causa de página en blanco en despliegue público
+- [x] Arreglar error de compilación o configuración (reinicio de servidor limpió cache corrupto)
