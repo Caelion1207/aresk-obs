@@ -815,3 +815,8 @@
 
 - [x] Diagnosticar causa de página en blanco en despliegue público
 - [x] Arreglar error de compilación o configuración (reinicio de servidor limpió cache corrupto)
+
+
+## Archivo LICENSE (Completado)
+
+- [x] Crear archivo LICENSE con licencia MIT en raíz del repositorio
