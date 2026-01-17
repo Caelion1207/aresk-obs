@@ -97,6 +97,17 @@ Cuando las métricas indican degradación, interviene ajustando K, redefiniendo 
 
 Experimenta con múltiples valores de K. Exporta estadísticas agregadas. Selecciona configuración con menor coste total (máximo C, mínimo V, máximo ε_eff).
 
+### Paso 6: Analizar Dinámica en LAB
+
+Accede a **LAB | Dynamics Monitor** para visualizaciones avanzadas de dinámica de sistemas:
+
+- **Phase Portrait (H vs C):** Trayectoria en espacio entropía-coherencia. Convergencia hacia origen indica estabilidad estructural.
+- **Lyapunov Energy V²(t):** Energía cuadrática de estabilidad. Convergencia a cero indica control efectivo.
+- **Error Dynamics (ε_eff vs Δε_eff):** Eficiencia semántica vs velocidad de cambio. Cuadrante inferior izquierdo indica drenaje activo.
+- **Control Effort ΔV(t):** Tasa de cambio en coste de estabilidad. Picos revelan intervenciones correctivas.
+
+Estas visualizaciones permiten identificar patrones de convergencia, divergencia y efectividad de control que no son evidentes en gráficos temporales lineales.
+
 ---
 
 ## 4. Cómo se Rompe

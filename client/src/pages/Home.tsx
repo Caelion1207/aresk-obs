@@ -30,14 +30,9 @@ export default function Home() {
                   Explorar Arquitectura
                 </Button>
               </Link>
-              <Link href="/comparativa">
+              <Link href="/lab">
                 <Button variant="outline" size="lg" className="w-full">
-                  Vista Comparativa (2 Perfiles)
-                </Button>
-              </Link>
-              <Link href="/comparativa-triple">
-                <Button variant="outline" size="lg" className="w-full">
-                  Vista Comparativa (3 Perfiles)
+                  LAB | Dynamics Monitor
                 </Button>
               </Link>
               <Link href="/estadisticas">

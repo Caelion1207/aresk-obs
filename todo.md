@@ -820,3 +820,17 @@
 ## Archivo LICENSE (Completado)
 
 - [x] Crear archivo LICENSE con licencia MIT en raíz del repositorio
+
+
+## Reestructuración LAB - Reemplazo de Vistas Comparativas (En Progreso)
+
+- [x] Eliminar página ComparativeView.tsx (vista comparativa 2 perfiles)
+- [x] Eliminar página TripleComparative.tsx (vista comparativa 3 perfiles)
+- [x] Crear componente Lab.tsx con visualizaciones de dinámica de sistemas
+- [x] Implementar PhasePortrait: retrato de fase (H vs C) con trayectoria temporal
+- [x] Implementar LyapunovEnergy: gráfico temporal de V(e) mostrando convergencia/divergencia
+- [x] Implementar ErrorDynamics: gráfico de ε_eff vs Δε_eff (error vs velocidad de cambio)
+- [x] Implementar ControlEffort: visualización de esfuerzo de control aplicado
+- [x] Actualizar rutas en App.tsx: eliminar /comparativa y /comparativa-triple, agregar /lab
+- [x] Actualizar enlaces de navegación en Home.tsx
+- [x] Actualizar documentación (README, USER_GUIDE) con nueva sección LAB

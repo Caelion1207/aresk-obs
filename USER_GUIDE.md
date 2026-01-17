@@ -283,6 +283,59 @@ print(f"Eficiencia media: {df['epsilon_eff'].mean():.3f}")
 
 ---
 
+## Visualizaciones Avanzadas en LAB
+
+### Acceso a LAB | Dynamics Monitor
+
+LAB proporciona visualizaciones de dinámica de sistemas que revelan patrones de convergencia, divergencia y efectividad de control no evidentes en gráficos temporales lineales.
+
+### 1. Phase Portrait (H vs C)
+
+**Qué muestra:** Trayectoria en espacio entropía-coherencia.
+
+**Cómo interpretar:**
+- **Convergencia hacia origen:** Sistema estable con coste de entropía decreciente.
+- **Divergencia desde origen:** Fragmentación semántica creciente (alto coste de entropía).
+- **Espiral convergente:** Control efectivo reduciendo entropía gradualmente.
+- **Trayectoria errática:** Coste de control alto sin reducción de entropía.
+
+**Decisión habilitada:** Si trayectoria no converge, ajustar K o redefinir x_ref para reducir coste de entropía.
+
+### 2. Lyapunov Energy V²(t)
+
+**Qué muestra:** Energía cuadrática de estabilidad (coste de desalineación al cuadrado).
+
+**Cómo interpretar:**
+- **V² → 0:** Coste de desalineación convergiendo a cero (control efectivo).
+- **V² creciente:** Coste de desalineación divergiendo (control inefectivo).
+- **V² oscilante:** Coste de control alto sin estabilización sostenida.
+
+**Decisión habilitada:** Si V² no converge, redefinir x_ref o reducir K para minimizar coste total.
+
+### 3. Error Dynamics (ε_eff vs Δε_eff)
+
+**Qué muestra:** Eficiencia semántica vs velocidad de cambio (análisis de cuadrantes).
+
+**Cómo interpretar:**
+- **Cuadrante inferior izquierdo (ε_eff < -0.2, Δε_eff < 0):** Drenaje activo (coste sin beneficio).
+- **Cuadrante superior derecho (ε_eff > 0.1, Δε_eff > 0):** Control efectivo (coste justificado).
+- **Cuadrante inferior derecho (ε_eff < -0.2, Δε_eff > 0):** Recuperación desde drenaje.
+
+**Decisión habilitada:** Si trayectoria permanece en cuadrante inferior izquierdo, reducir K inmediatamente.
+
+### 4. Control Effort ΔV(t)
+
+**Qué muestra:** Tasa de cambio en coste de estabilidad (esfuerzo de control aplicado).
+
+**Cómo interpretar:**
+- **Picos positivos:** Intervenciones correctivas (coste de control alto).
+- **Picos negativos:** Relajación de control (coste de control reducido).
+- **ΔV ≈ 0 sostenido:** Régimen estable (coste de mantenimiento bajo).
+
+**Decisión habilitada:** Si picos frecuentes sin reducción de V, control es contraproducente (reducir K).
+
+---
+
 ## Limitaciones
 
 ### No Predictivo
