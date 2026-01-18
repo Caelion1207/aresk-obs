@@ -180,7 +180,7 @@ function LabContent() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold">
-                    {chartData.length > 0 ? chartData[chartData.length - 1].V.toFixed(3) : "N/A"}
+                    {chartData.length > 0 && chartData[chartData.length - 1]?.V != null ? chartData[chartData.length - 1].V.toFixed(3) : "N/A"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">Stability cost</p>
                 </CardContent>
@@ -192,7 +192,7 @@ function LabContent() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold">
-                    {chartData.length > 0 ? chartData[chartData.length - 1].coherence.toFixed(3) : "N/A"}
+                    {chartData.length > 0 && chartData[chartData.length - 1]?.coherence != null ? chartData[chartData.length - 1].coherence.toFixed(3) : "N/A"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">Narrative stability</p>
                 </CardContent>
@@ -204,7 +204,7 @@ function LabContent() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-3xl font-bold">
-                    {chartData.length > 0 ? chartData[chartData.length - 1].epsilon_eff.toFixed(3) : "N/A"}
+                    {chartData.length > 0 && chartData[chartData.length - 1]?.epsilon_eff != null ? chartData[chartData.length - 1].epsilon_eff.toFixed(3) : "N/A"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">Information loss/token</p>
                 </CardContent>

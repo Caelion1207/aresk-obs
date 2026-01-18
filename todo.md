@@ -834,3 +834,15 @@
 - [x] Actualizar rutas en App.tsx: eliminar /comparativa y /comparativa-triple, agregar /lab
 - [x] Actualizar enlaces de navegación en Home.tsx
 - [x] Actualizar documentación (README, USER_GUIDE) con nueva sección LAB
+
+
+## Validación LAB con Sesión de Prueba (En Progreso)
+
+- [x] Crear sesión acoplada en simulador
+- [x] Generar conversación de prueba con variedad de patrones (deriva, drenaje, estabilidad)
+- [x] Acceder a LAB y verificar visualizaciones con datos reales
+- [x] Validar Phase Portrait (H vs C)
+- [x] Validar Lyapunov Energy V²(t)
+- [x] Validar Error Dynamics (ε_eff vs Δε_eff)
+- [x] Validar Control Effort ΔV(t)
+- [x] Documentar resultados y capturas de pantalla

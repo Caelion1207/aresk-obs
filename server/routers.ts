@@ -1690,15 +1690,20 @@ export const appRouter = router({
         
         // Extraer datos de polaridad y calcular erosión
         const history = metrics.map((m, index) => {
-          const sigmaSem = (m as any).sigmaSem || 0;
-          const epsilonEff = (m as any).epsilonEff || 0;
-          const vModified = (m as any).vModified || m.funcionLyapunov;
+          const sigmaSem = (m as any).signoSemantico || 0;
+          const epsilonEff = (m as any).campoEfectivo || 0;
+          const vModified = (m as any).funcionLyapunovModificada || m.funcionLyapunov;
           
           return {
             step: index + 1,
             timestamp: m.timestamp,
-            sigmaSem,
+            // Campos necesarios para LAB
+            lyapunovValue: m.funcionLyapunov,
+            coherence: m.coherenciaInternaC,
+            entropy: m.entropiaH,
             epsilonEff,
+            sigmaSem,
+            // Campos adicionales para compatibilidad
             vBase: m.funcionLyapunov,
             vModified,
             omega: m.coherenciaObservable,
