@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, plantProfile, createdAt, userId FROM sessions WHERE id = 390003;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute SELECT id, plantProfile, createdAt, userId FROM sessions WHERE id = 390003;",
+  "rows": [
+    {
+      "id": "390003",
+      "plantProfile": "acoplada",
+      "createdAt": "2026-01-17 23:54:59",
+      "userId": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tplantProfile\tcreatedAt\tuserId\n390003\tacoplada\t2026-01-17 23:54:59\t1\n",
+  "stderr": "",
+  "execution_time_ms": 118
+}

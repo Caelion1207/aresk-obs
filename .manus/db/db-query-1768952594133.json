@@ -1,0 +1,9 @@
+{
+  "query": "CREATE INDEX IF NOT EXISTS idx_sessions_userId ON sessions(userId);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute CREATE INDEX IF NOT EXISTS idx_sessions_userId ON sessions(userId);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 666
+}

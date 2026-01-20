@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, asc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, sessions, messages, metrics, timeMarkers, sessionAlerts, erosionAlerts, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker, InsertSessionAlert, InsertErosionAlert } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -11,8 +11,14 @@ export async function getDb() {
     try {
       _db = drizzle(process.env.DATABASE_URL);
     } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("[Database] Failed to connect:", {
+        message: errorMessage,
+        url: process.env.DATABASE_URL?.substring(0, 20) + '...',
+        timestamp: new Date().toISOString()
+      });
       _db = null;
+      throw new Error(`Database connection failed: ${errorMessage}`);
     }
   }
   return _db;
@@ -109,11 +115,25 @@ export async function getSession(sessionId: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function getUserSessions(userId: number) {
+export async function getUserSessions(
+  userId: number,
+  options?: { limit?: number; offset?: number; orderBy?: 'asc' | 'desc' }
+) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  return await db.select().from(sessions).where(eq(sessions.userId, userId));
+  const { limit = 50, offset = 0, orderBy = 'desc' } = options || {};
+  
+  // Construir query con ordenamiento y paginación
+  const query = db
+    .select()
+    .from(sessions)
+    .where(eq(sessions.userId, userId))
+    .orderBy(orderBy === 'desc' ? desc(sessions.createdAt) : asc(sessions.createdAt))
+    .limit(limit)
+    .offset(offset);
+  
+  return await query;
 }
 
 export async function updateSessionMode(sessionId: number, plantProfile: "tipo_a" | "tipo_b" | "acoplada") {
