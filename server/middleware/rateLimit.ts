@@ -15,6 +15,10 @@ import Redis from "ioredis";
 // Cliente Redis (singleton)
 let redisClient: Redis | null = null;
 
+// Fallback en memoria cuando Redis no está disponible
+const memoryStore = new Map<string, Array<number>>();
+let useMemoryFallback = false;
+
 /**
  * Inicializa cliente Redis
  */
@@ -62,6 +66,11 @@ async function checkRateLimit(
   limit: number,
   windowSeconds: number
 ): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
+  // Si Redis falló previamente, usar memoria
+  if (useMemoryFallback) {
+    return checkRateLimitMemory(userId, endpoint, limit, windowSeconds);
+  }
+  
   try {
     const redis = getRedisClient();
     
@@ -104,10 +113,44 @@ async function checkRateLimit(
     
     return { allowed, remaining, resetAt };
   } catch (error: any) {
-    // Si Redis falla, permitir request (fail-open)
-    console.error("[RATE_LIMIT] Error checking rate limit:", error.message);
-    return { allowed: true, remaining: limit, resetAt: Date.now() + windowSeconds * 1000 };
+    // Si Redis falla, cambiar a memoria
+    console.warn("[RATE_LIMIT] Redis failed, switching to memory fallback");
+    useMemoryFallback = true;
+    return checkRateLimitMemory(userId, endpoint, limit, windowSeconds);
   }
+}
+
+/**
+ * Fallback de rate limiting en memoria (desarrollo local)
+ */
+function checkRateLimitMemory(
+  userId: number,
+  endpoint: string,
+  limit: number,
+  windowSeconds: number
+): { allowed: boolean; remaining: number; resetAt: number } {
+  const key = `${userId}:${endpoint}`;
+  const now = Date.now();
+  const windowStart = now - windowSeconds * 1000;
+  
+  // Obtener timestamps de la ventana
+  let timestamps = memoryStore.get(key) || [];
+  
+  // Filtrar timestamps fuera de la ventana
+  timestamps = timestamps.filter(ts => ts > windowStart);
+  
+  // Agregar nuevo timestamp
+  timestamps.push(now);
+  
+  // Guardar en memoria
+  memoryStore.set(key, timestamps);
+  
+  const count = timestamps.length;
+  const allowed = count <= limit;
+  const remaining = Math.max(0, limit - count);
+  const resetAt = now + windowSeconds * 1000;
+  
+  return { allowed, remaining, resetAt };
 }
 
 /**

@@ -1,0 +1,16 @@
+{
+  "query": "SELECT s.id, s.plantProfile, COUNT(m.id) as message_count, COUNT(mt.id) as metric_count \nFROM sessions s \nLEFT JOIN messages m ON s.id = m.sessionId \nLEFT JOIN metrics mt ON s.id = mt.sessionId \nWHERE s.isTestData = true \nGROUP BY s.id \nORDER BY s.id DESC \nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute SELECT s.id, s.plantProfile, COUNT(m.id) as message_count, COUNT(mt.id) as metric_count \nFROM sessions s \nLEFT JOIN messages m ON s.id = m.sessionId \nLEFT JOIN metrics mt ON s.id = mt.sessionId \nWHERE s.isTestData = true \nGROUP BY s.id \nORDER BY s.id DESC \nLIMIT 5;",
+  "rows": [
+    {
+      "id": "540001",
+      "plantProfile": "acoplada",
+      "message_count": "2",
+      "metric_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tplantProfile\tmessage_count\tmetric_count\n540001\tacoplada\t2\t0\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}
