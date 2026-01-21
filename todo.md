@@ -965,3 +965,37 @@
 - [ ] Implementar test de reinyección de control
 - [ ] Implementar test de convergencia post-recuperación
 - [ ] Validar hipótesis CAELION con datos reales
+
+
+## 🧪 TESTS DE COLAPSO Y RECUPERACIÓN (FASE 4)
+
+**Objetivo:** Validar hipótesis CAELION de control de estabilidad cognitiva
+
+### Infraestructura de Simulación
+
+- [x] Crear server/tests/helpers/controlSimulator.ts
+- [x] Implementar función simulateSession con parámetros de control
+- [x] Implementar función withdrawControl (u(t)→0)
+- [x] Implementar función reinjectControl (restaurar u(t))
+
+### Test de Colapso (Retirada de Control)
+
+- [x] Crear server/tests/control.collapse.test.ts
+- [x] Test: Crear sesión estable con control activo
+- [x] Test: Retirar control (u(t)→0) y medir degradación
+- [x] Test: Validar caída de Ω (coherencia) y aumento de ε_eff (error)
+- [x] Test: Validar aumento de V(e) (energía de Lyapunov)
+
+### Test de Recuperación (Reinyección de Control)
+
+- [x] Test: Reinyectar control después de colapso
+- [x] Test: Medir convergencia hacia estado estable
+- [x] Test: Validar reducción de V(e) hacia mínimo local
+- [x] Test: Validar recuperación de Ω y reducción de ε_eff
+
+### Validación de Hipótesis CAELION
+
+- [x] Test: Comparar sesión con control vs sin control
+- [x] Test: Medir tiempo de convergencia post-recuperación
+- [x] Test: Validar que control acelera estabilización
+- [x] Documentar resultados en CAELION_VALIDATION.md
