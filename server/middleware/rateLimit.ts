@@ -312,7 +312,7 @@ export const rateLimitMiddleware = (options?: {
     }
     
     // Agregar headers de rate limit a la respuesta
-    if (ctx.res) {
+    if (ctx.res && typeof ctx.res.setHeader === "function") {
       ctx.res.setHeader("X-RateLimit-Limit", limit.toString());
       ctx.res.setHeader("X-RateLimit-Remaining", result.remaining.toString());
       ctx.res.setHeader("X-RateLimit-Reset", result.resetAt.toString());

@@ -564,7 +564,7 @@ export const appRouter = router({
     /**
      * Enviar un mensaje y obtener respuesta del LLM con métricas de control
      */
-    sendMessage: protectedProcedure
+    sendMessage: auditedProcedure
       .input(z.object({
         sessionId: z.number(),
         content: z.string().min(1),
