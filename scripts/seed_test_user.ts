@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 /**
  * Script de seed para crear usuario de prueba con sesiones sintéticas
  * 
@@ -91,15 +90,16 @@ async function seedTestUser() {
     const testSessions = [
       {
         userId: testUser.id,
-        purpose: "Sesión de prueba - Estabilidad básica",
-        limits: "No proporcionar diseños completos",
-        ethics: "Priorizar precisión matemática",
+        purpose: "Sesión de prueba - Régimen acoplado",
+        limits: "No proporcionar diseños completos de sistemas críticos",
+        ethics: "Priorizar precisión matemática y transparencia",
         plantProfile: "acoplada" as const,
         controlGain: 0.5,
         stabilityRadius: 0.3,
         alphaPenalty: 0.3,
         tprCurrent: 0,
-        tprMax: 0
+        tprMax: 0,
+        isTestData: true  // Marcar como datos de prueba
       },
       {
         userId: testUser.id,
@@ -111,7 +111,8 @@ async function seedTestUser() {
         stabilityRadius: 0.2,
         alphaPenalty: 0.5,
         tprCurrent: 0,
-        tprMax: 0
+        tprMax: 0,
+        isTestData: true  // Marcar como datos de prueba
       },
       {
         userId: testUser.id,
@@ -123,7 +124,8 @@ async function seedTestUser() {
         stabilityRadius: 0.25,
         alphaPenalty: 0.4,
         tprCurrent: 0,
-        tprMax: 0
+        tprMax: 0,
+        isTestData: true  // Marcar como datos de prueba
       }
     ];
     
@@ -179,6 +181,7 @@ async function seedTestUser() {
     console.log(`  - OpenID: ${testUser.openId}`);
     console.log(`  - Sesiones creadas: ${createdSessions.length}`);
     console.log(`  - IDs de sesiones: ${createdSessions.map(s => s.id).join(", ")}`);
+    console.log(`  - Todas las sesiones marcadas como isTestData: true`);
     
     console.log("\n🧪 Para usar en tests:");
     console.log(`  const TEST_USER_ID = ${testUser.id};`);
@@ -190,9 +193,4 @@ async function seedTestUser() {
   }
 }
 
-seedTestUser()
-  .then(() => process.exit(0))
-  .catch(error => {
-    console.error("❌ Error fatal:", error);
-    process.exit(1);
-  });
+seedTestUser();

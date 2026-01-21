@@ -71,6 +71,13 @@
       "when": 1768266133992,
       "tag": "0009_awesome_king_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1768955020385,
+      "tag": "0010_jazzy_warlock",
+      "breakpoints": true
     }
   ]
 }

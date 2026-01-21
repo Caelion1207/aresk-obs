@@ -41,6 +41,7 @@ export const sessions = mysqlTable("sessions", {
   alphaPenalty: float("alphaPenalty").default(0.3).notNull(), // α: factor de penalización semántica para V_modificada
   tprCurrent: int("tprCurrent").default(0).notNull(), // Tiempo de Permanencia en Régimen actual (en turnos)
   tprMax: int("tprMax").default(0).notNull(), // TPR máximo alcanzado en la sesión
+  isTestData: boolean("isTestData").default(false).notNull(), // Marca sesiones de prueba para limpieza automática
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

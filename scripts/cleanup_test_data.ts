@@ -41,17 +41,14 @@ async function cleanupTestData() {
     
     console.log(`📅 Fecha límite: ${cutoffDate.toISOString()}\n`);
 
-    // 1. Identificar sesiones de prueba (IDs >= 390000 son sintéticas)
+    // 1. Identificar sesiones de prueba (usando campo isTestData)
     const testSessions = await db
       .select()
       .from(sessions)
       .where(
-        or(
-          eq(sessions.purpose, "Sesión de prueba sintética"),
-          and(
-            eq(sessions.purpose, "Asistir al usuario en análisis"),
-            lt(sessions.createdAt, cutoffDate)
-          )
+        and(
+          eq(sessions.isTestData, true),
+          lt(sessions.createdAt, cutoffDate)
         )
       );
 

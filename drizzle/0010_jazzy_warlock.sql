@@ -1,0 +1,1 @@
+ALTER TABLE `sessions` ADD `isTestData` boolean DEFAULT false NOT NULL;

@@ -870,3 +870,40 @@
 - [x] Implementar helper de autenticación para tests
 - [x] Crear suite de tests de integración con autenticación
 - [x] Documentar flujo de pruebas automatizadas
+
+
+## 🚦 MANUS INTEGRATION GATE - Criterios de Despliegue
+
+**Estado actual:** 🔴 **RED - BLOCKED**  
+**Objetivo:** Completar todos los criterios para desbloquear producción
+
+### 🔴 FASE 1: NÚCLEO DE SEGURIDAD (HARD GATES) - 100% Requerido
+
+- [x] Aislamiento por Usuario (idx_sessions_userId + protectedProcedure)
+- [x] Validación de Identidad (ctx.user.id exclusivo)
+- [x] **[CRÍTICO]** Normalización de Errores (Migrar throw Error a TRPCError)
+- [x] **[CRÍTICO]** Validación de Índice (EXPLAIN ANALYZE bajo carga)
+
+### 🟠 FASE 2: ESTABILIDAD BAJO CARGA - Requerido para tráfico agéntico
+
+- [x] Paginación por Defecto (Limit 50 + Offset)
+- [x] **[RIESGO]** Aislamiento de Datos de Prueba (Campo isTestData + limpieza automática)
+- [x] Mock de Autenticación (Para agentes autónomos en CI/CD)
+
+### 🟡 FASE 3: GOBERNANZA SISTÉMICA - Requerido para Professional Tier
+
+- [ ] **[BLOCKER]** Rate Limiting (100 req/min/user + Logs de abuso)
+- [ ] **[BLOCKER]** Logging de Auditoría (Tabla auditLogs con traza causal)
+- [ ] Superficie de Ataque (security.yml formalizado en repo)
+
+### 🟢 FASE 4: CIENCIA DE CONTROL - Validación de Hipótesis CAELION
+
+- [x] Observador de Estado Semántico (Cálculo de Ω(t) y Lyapunov)
+- [ ] **[HIPÓTESIS]** Test de Colapso (Retirada de control u(t)→0 y medición)
+- [ ] **[HIPÓTESIS]** Test de Recuperación (Reinyección y convergencia)
+
+### Criterios de Decisión
+
+- 🔴 **RED:** Fallo en Fase 1 o Rate Limiting → **NO DEPLOY**
+- 🟡 **YELLOW:** Fase 1 OK + Rate Limit OK → **BETA RESTRICTIVA**
+- 🟢 **GREEN:** Fase 1-4 Completas → **PRODUCCIÓN GENERAL**

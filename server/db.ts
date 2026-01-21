@@ -1,5 +1,6 @@
 import { eq, desc, asc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { TRPCError } from "@trpc/server";
 import { InsertUser, users, sessions, messages, metrics, timeMarkers, sessionAlerts, erosionAlerts, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker, InsertSessionAlert, InsertErosionAlert } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -18,7 +19,11 @@ export async function getDb() {
         timestamp: new Date().toISOString()
       });
       _db = null;
-      throw new Error(`Database connection failed: ${errorMessage}`);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Service unavailable",
+        cause: error
+      });
     }
   }
   return _db;
@@ -26,7 +31,10 @@ export async function getDb() {
 
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) {
-    throw new Error("User openId is required for upsert");
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "User openId is required"
+    });
   }
 
   const db = await getDb();
@@ -101,7 +109,7 @@ export async function getUserByOpenId(openId: string) {
 
 export async function createSession(session: InsertSession) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   const result = await db.insert(sessions).values(session);
   return result[0].insertId;
@@ -109,7 +117,7 @@ export async function createSession(session: InsertSession) {
 
 export async function getSession(sessionId: number) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   const result = await db.select().from(sessions).where(eq(sessions.id, sessionId)).limit(1);
   return result.length > 0 ? result[0] : undefined;
@@ -120,7 +128,7 @@ export async function getUserSessions(
   options?: { limit?: number; offset?: number; orderBy?: 'asc' | 'desc' }
 ) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   const { limit = 50, offset = 0, orderBy = 'desc' } = options || {};
   
@@ -138,18 +146,18 @@ export async function getUserSessions(
 
 export async function updateSessionMode(sessionId: number, plantProfile: "tipo_a" | "tipo_b" | "acoplada") {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   await db.update(sessions).set({ plantProfile }).where(eq(sessions.id, sessionId));
 }
 
 export async function updateTPR(sessionId: number, errorMagnitud: number, stabilityRadius: number) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   // Obtener la sesión actual
   const sessionResult = await db.select().from(sessions).where(eq(sessions.id, sessionId)).limit(1);
-  if (sessionResult.length === 0) throw new Error("Session not found");
+  if (sessionResult.length === 0) throw new TRPCError({ code: "NOT_FOUND", message: "Session not found" });
   
   const session = sessionResult[0];
   
@@ -177,7 +185,7 @@ export async function updateTPR(sessionId: number, errorMagnitud: number, stabil
 
 export async function createMessage(message: InsertMessage) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   const result = await db.insert(messages).values(message);
   return result[0].insertId;
@@ -185,21 +193,21 @@ export async function createMessage(message: InsertMessage) {
 
 export async function getSessionMessages(sessionId: number) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   return await db.select().from(messages).where(eq(messages.sessionId, sessionId));
 }
 
 export async function createMetric(metric: InsertMetric) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   await db.insert(metrics).values(metric);
 }
 
 export async function getSessionMetrics(sessionId: number) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   return await db.select().from(metrics).where(eq(metrics.sessionId, sessionId));
 }
@@ -210,7 +218,7 @@ export async function getSessionMetrics(sessionId: number) {
 
 export async function createTimeMarker(marker: InsertTimeMarker) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   const [result] = await db.insert(timeMarkers).values(marker);
   return result.insertId;
@@ -218,21 +226,21 @@ export async function createTimeMarker(marker: InsertTimeMarker) {
 
 export async function getTimeMarkersBySession(sessionId: number) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   return db.select().from(timeMarkers).where(eq(timeMarkers.sessionId, sessionId)).orderBy(timeMarkers.messageIndex);
 }
 
 export async function updateTimeMarker(id: number, updates: Partial<InsertTimeMarker>) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   await db.update(timeMarkers).set(updates).where(eq(timeMarkers.id, id));
 }
 
 export async function deleteTimeMarker(id: number) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   await db.delete(timeMarkers).where(eq(timeMarkers.id, id));
 }
@@ -369,7 +377,7 @@ export async function detectAnomalies(sessionId: number): Promise<void> {
 
 export async function createErosionAlert(alert: InsertErosionAlert): Promise<number> {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   const result = await db.insert(erosionAlerts).values(alert);
   return result[0].insertId;
 }

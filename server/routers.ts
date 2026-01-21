@@ -110,7 +110,7 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const session = await getSession(input.sessionId);
         if (!session) {
-          throw new Error("Sesión no encontrada");
+          throw new TRPCError({ code: "NOT_FOUND", message: "Sesión no encontrada" });
         }
         
         const messages = await getSessionMessages(input.sessionId);
@@ -199,7 +199,7 @@ export const appRouter = router({
         ]);
         
         if (!session1 || !session2) {
-          throw new Error("Una o ambas sesiones no fueron encontradas");
+          throw new TRPCError({ code: "NOT_FOUND", message: "Una o ambas sesiones no fueron encontradas" });
         }
         
         const [messages1, messages2, metrics1, metrics2] = await Promise.all([
@@ -348,7 +348,7 @@ export const appRouter = router({
         ]);
         
         if (!session1 || !session2 || !session3) {
-          throw new Error("Una o más sesiones no fueron encontradas");
+          throw new TRPCError({ code: "NOT_FOUND", message: "Una o más sesiones no fueron encontradas" });
         }
         
         const [messages1, messages2, messages3, metrics1, metrics2, metrics3] = await Promise.all([
@@ -566,7 +566,7 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const session = await getSession(input.sessionId);
         if (!session) {
-          throw new Error("Sesión no encontrada");
+          throw new TRPCError({ code: "NOT_FOUND", message: "Sesión no encontrada" });
         }
         
         // Guardar mensaje del usuario
@@ -744,7 +744,7 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const session = await getSession(input.sessionId);
         if (!session) {
-          throw new Error("Sesión no encontrada");
+          throw new TRPCError({ code: "NOT_FOUND", message: "Sesión no encontrada" });
         }
         
         // Obtener todos los mensajes
@@ -1130,7 +1130,7 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const session = await getSession(input.sessionId);
         if (!session) {
-          throw new Error("Sesión no encontrada");
+          throw new TRPCError({ code: "NOT_FOUND", message: "Sesión no encontrada" });
         }
         
         const messages = await getSessionMessages(input.sessionId);
@@ -1231,7 +1231,7 @@ export const appRouter = router({
         const session = await getSession(input.sessionId);
         
         if (!session) {
-          throw new Error("Sesión no encontrada");
+          throw new TRPCError({ code: "NOT_FOUND", message: "Sesión no encontrada" });
         }
         
         // Construir serie temporal con métricas y mensajes sincronizados
