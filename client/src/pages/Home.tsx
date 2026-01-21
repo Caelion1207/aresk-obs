@@ -59,6 +59,11 @@ export default function Home() {
                   Erosión Estructural
                 </Button>
               </Link>
+              <Link href="/cycles">
+                <Button variant="outline" size="lg">
+                  Ciclos COM-72
+                </Button>
+              </Link>
               <Link href="/simulator">
                 <Button size="lg">
                   Acceder al Instrumento

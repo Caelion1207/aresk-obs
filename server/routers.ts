@@ -33,6 +33,7 @@ import { auditMiddleware } from "./middleware/audit";
 import { rateLimitMiddleware } from "./middleware/rateLimit";
 import { adminRouter } from "./admin";
 import { commandRouter } from "./routers/command";
+import { cyclesRouter } from "./routers/cycles";
 
 // Procedimientos con auditoría y rate limiting
 const auditedProcedure = protectedProcedure.use(auditMiddleware).use(rateLimitMiddleware());
@@ -2199,6 +2200,7 @@ export const appRouter = router({
   // Marco Legal CAELION: Sistema de comandos
   // ============================================
   command: commandRouter,
+  cycles: cyclesRouter,
 });
 
 

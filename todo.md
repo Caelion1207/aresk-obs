@@ -1238,3 +1238,27 @@
 - [x] Crear checkpoint del proyecto
 
 **Estado:** Marco Legal CAELION v1.0.5-FINAL operativo. Sistema de comandos con leyes físicas (COM-72, ETH-01, CMD-01) funcionando correctamente.
+
+
+## Dashboard de Ciclos COM-72 ✅
+
+### Fase 1: Endpoints tRPC
+- [x] Crear router cycles con endpoints list, get, create, updateStatus
+- [x] Agregar helpers en db.ts para consultar ciclos (getAllCycles, getActiveCycles, getCycleById, createCycle, updateCycleStatus)
+
+### Fase 2: Componente UI
+- [x] Crear página CyclesDashboard.tsx con tabla de ciclos
+- [x] Implementar indicadores visuales de estado (badges con iconos)
+- [x] Agregar contador de tiempo restante en tiempo real (actualiza cada segundo)
+- [x] Mostrar transiciones de estado permitidas según COM-72
+- [x] Instalar date-fns para formateo de fechas
+
+### Fase 3: Integración
+- [x] Agregar ruta /cycles en App.tsx
+- [x] Agregar enlace en navegación principal (Home.tsx)
+- [x] Probar funcionalidad completa (ciclo #1 visible con 2d 18h restantes)
+
+### Fase 4: Checkpoint
+- [x] Crear checkpoint del proyecto
+
+**Estado:** Dashboard de Ciclos COM-72 operativo. Monitoreo en tiempo real de ciclos activos con visualización de estados, tiempos y transiciones permitidas.

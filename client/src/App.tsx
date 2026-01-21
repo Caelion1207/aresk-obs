@@ -15,6 +15,7 @@ import Proposals from "./pages/Proposals";
 import Statistics from "./pages/Statistics";
 import CompareHistorical from "./pages/CompareHistorical";
 import ErosionDashboard from "./pages/ErosionDashboard";
+import { CyclesDashboard } from "./pages/CyclesDashboard";
 
 function Router() {
   return (
@@ -30,6 +31,7 @@ function Router() {
       <Route path={"/estadisticas"} component={Statistics} />
       <Route path={"/comparar-sesiones"} component={CompareHistorical} />
       <Route path={"/erosion"} component={ErosionDashboard} />
+      <Route path={"/cycles"} component={CyclesDashboard} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

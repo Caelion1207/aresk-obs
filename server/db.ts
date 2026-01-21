@@ -427,3 +427,61 @@ export async function hasRecentErosionAlert(userId: number, alertType: string): 
     new Date(alert.detectedAt) > oneDayAgo
   );
 }
+
+// ============================================
+// Ciclos COM-72
+// ============================================
+
+export async function getAllCycles() {
+  const db = await getDb();
+  if (!db) return [];
+  const { cycles } = await import('../drizzle/schema');
+  const { desc } = await import('drizzle-orm');
+  return await db.select().from(cycles).orderBy(desc(cycles.id));
+}
+
+export async function getActiveCycles() {
+  const db = await getDb();
+  if (!db) return [];
+  const { cycles } = await import('../drizzle/schema');
+  const { sql, desc } = await import('drizzle-orm');
+  return await db.select()
+    .from(cycles)
+    .where(sql`status NOT IN ('CLOSED', 'FAILED') AND scheduledEndAt > NOW()`)
+    .orderBy(desc(cycles.id));
+}
+
+export async function getCycleById(cycleId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const { cycles } = await import('../drizzle/schema');
+  const { eq } = await import('drizzle-orm');
+  const result = await db.select().from(cycles).where(eq(cycles.id, cycleId)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function createCycle(data: {
+  protocolId: string;
+  triggerType: 'FOUNDER' | 'COMMAND' | 'SYSTEM' | 'EXTERNAL';
+  objective: string;
+  scheduledEndAt: Date;
+}) {
+  const db = await getDb();
+  if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+  const { cycles } = await import('../drizzle/schema');
+  const result = await db.insert(cycles).values(data);
+  return result[0].insertId;
+}
+
+export async function updateCycleStatus(cycleId: number, status: 'INIT' | 'EXECUTION' | 'REVIEW' | 'CLOSED' | 'FAILED', outcome?: any) {
+  const db = await getDb();
+  if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database unavailable' });
+  const { cycles } = await import('../drizzle/schema');
+  const { eq } = await import('drizzle-orm');
+  
+  const updateData: any = { status };
+  if (outcome !== undefined) updateData.outcome = outcome;
+  if (status === 'CLOSED' || status === 'FAILED') updateData.closedAt = new Date();
+  
+  await db.update(cycles).set(updateData).where(eq(cycles.id, cycleId));
+}
