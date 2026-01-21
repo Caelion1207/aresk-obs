@@ -999,3 +999,52 @@
 - [x] Test: Medir tiempo de convergencia post-recuperación
 - [x] Test: Validar que control acelera estabilización
 - [x] Documentar resultados en CAELION_VALIDATION.md
+
+
+## 🚀 SECUENCIA DE IMPLEMENTACIÓN BLOQUES 2-5
+
+**Objetivo:** Completar Fase 3 del Integration Gate para desbloquear producción
+
+### BLOQUE 2: Audit Middleware (3h) - CRÍTICO
+
+- [x] Crear server/middleware/audit.ts con auditProcedure
+- [x] Implementar Mutex global para serialización de escrituras
+- [x] Implementar rehidratación de prevHash desde última entrada
+- [ ] Integrar auditProcedure en routers.ts (session.*, conversation.*)
+- [x] Crear server/infra/emergency.ts con detección de corrupción
+- [ ] Crear tests: server/tests/audit.integrity.test.ts
+- [ ] Validar hash chain con 100+ entradas
+
+### BLOQUE 3: Startup Validation (2h) - CRÍTICO
+
+- [ ] Crear server/db/validateSchema.ts con verificación de índices
+- [ ] Implementar validación de integridad de cadena al inicio
+- [ ] Agregar startup hook en server/_core/index.ts
+- [ ] Crear tests: server/tests/startup.validation.test.ts
+- [ ] Validar comportamiento ante corrupción detectada
+
+### BLOQUE 4: Rate Limit + Admin (3h) - BLOCKER
+
+- [ ] Instalar dependencias: ioredis, @trpc/server rate-limit
+- [ ] Crear server/middleware/rateLimit.ts con Redis
+- [ ] Configurar límites: 100 req/min/user, 10 req/min para admin
+- [ ] Integrar rateLimitMiddleware en routers.ts
+- [ ] Crear server/routers/admin.ts con queryAuditLogs
+- [ ] Crear tests: server/tests/rateLimit.test.ts
+- [ ] Validar logs de abuso
+
+### BLOQUE 5: Integrity Jobs + Alerts (2h) - CRÍTICO
+
+- [ ] Crear server/infra/jobs/integrityCheck.ts con verificación horaria
+- [ ] Crear server/infra/alerts.ts con notifyOwner en corrupción
+- [ ] Integrar job en server/_core/index.ts con cron
+- [ ] Crear tests: server/tests/integrity.job.test.ts
+- [ ] Validar detección y alerta de corrupción simulada
+
+### RE-EJECUCIÓN FASE 4 CON DATOS REALES
+
+- [ ] Crear 3 sesiones acopladas reales en simulador
+- [ ] Ejecutar control.collapse.test.ts con sessionIds reales
+- [ ] Documentar resultados en CAELION_VALIDATION_REAL.md
+- [ ] Comparar métricas simuladas vs reales
+- [ ] Validar necesidad de ajuste PID basado en datos reales
