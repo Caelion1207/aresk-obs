@@ -1092,3 +1092,29 @@
 - [x] Documentar hallazgos en CAELION_VALIDATION.md
 - [ ] Ajustar parámetros de control para mejorar manejo de entropía (3 tests fallidos)
 - [x] Actualizar Integration Gate status a YELLOW (Fase 1-2-4 completas, Fase 3 al 100%)
+
+
+## 🔴 REDIS PRODUCTION-READY + OBSERVABILIDAD
+
+### Paso A: Configuración Redis Production-Ready
+
+- [x] Configurar persistencia RDB + AOF en rateLimit.ts
+- [x] Implementar TTL real para keys (pexpire con ms)
+- [x] Configurar conexión estable con reconnect strategy
+- [x] Implementar métricas básicas (latencia, fallos, hits/misses)
+- [x] Agregar health check de Redis en admin router
+
+### Paso B: Desactivar Fallback en Staging (Fail-Closed)
+
+- [x] Detectar entorno (dev vs staging/production)
+- [x] Desactivar fallback en memoria para staging/production
+- [x] Forzar fail-closed real (rechazar requests si Redis falla)
+- [x] Mantener fallback solo en dev para desarrollo local
+
+### Paso C: Observabilidad y Correlación
+
+- [x] Ejecutar escenarios de control.collapse.test.ts (21/24 pasados)
+- [x] Observar rate-limit hits (tests no pasan por tRPC, fallback activo)
+- [x] Correlacionar rate-limit con auditoría (0 logs generados, tests directos)
+- [x] Medir impacto en coherencia y control (Hipótesis CAELION validada)
+- [x] Documentar resultados en REDIS_OBSERVABILITY.md

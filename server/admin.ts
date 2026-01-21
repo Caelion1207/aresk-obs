@@ -12,7 +12,7 @@ import { getDb } from "./db";
 import { auditLogs } from "../drizzle/auditLogs";
 import { desc, and, gte, lte, eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { adminRateLimitMiddleware, getAbuseStats } from "./middleware/rateLimit";
+import { adminRateLimitMiddleware, getAbuseStats, checkRedisHealth, getRedisMetrics } from "./middleware/rateLimit";
 import { checkSchemaHealth } from "./db/validateSchema";
 import { stripHashes } from "./infra/crypto";
 
@@ -124,14 +124,14 @@ export const adminRouter = router({
    */
   healthCheck: adminProcedure.query(async () => {
     const schemaHealth = await checkSchemaHealth();
+    const redisHealth = await checkRedisHealth();
+    const redisMetrics = getRedisMetrics();
     
     return {
       timestamp: new Date(),
       schema: schemaHealth,
-      redis: {
-        // TODO: Implementar health check de Redis
-        connected: true,
-      },
+      redis: redisHealth,
+      redisMetrics,
     };
   }),
 });

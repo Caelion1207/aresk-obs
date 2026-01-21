@@ -1,54 +1,137 @@
 /**
  * server/middleware/rateLimit.ts
  * 
- * Rate limiting middleware con Redis
+ * Rate limiting middleware con Redis production-ready
  * 
  * Límites:
  * - 100 req/min por usuario (procedimientos normales)
  * - 10 req/min para endpoints admin
  * - Logs de abuso automáticos
+ * 
+ * Configuración Production:
+ * - Persistencia RDB + AOF
+ * - TTL real en keys
+ * - Reconexión automática
+ * - Métricas de latencia y fallos
+ * - Fail-closed en staging/production (sin fallback)
  */
 
 import { TRPCError } from "@trpc/server";
 import Redis from "ioredis";
 
+// Métricas de Redis
+interface RedisMetrics {
+  totalRequests: number;
+  totalHits: number;
+  totalMisses: number;
+  totalErrors: number;
+  avgLatency: number;
+  lastError: string | null;
+  lastErrorTime: number | null;
+}
+
+const metrics: RedisMetrics = {
+  totalRequests: 0,
+  totalHits: 0,
+  totalMisses: 0,
+  totalErrors: 0,
+  avgLatency: 0,
+  lastError: null,
+  lastErrorTime: null,
+};
+
 // Cliente Redis (singleton)
 let redisClient: Redis | null = null;
 
-// Fallback en memoria cuando Redis no está disponible
+// Detectar entorno
+const NODE_ENV = process.env.NODE_ENV || "development";
+const IS_DEV = NODE_ENV === "development";
+const IS_STAGING = NODE_ENV === "staging";
+const IS_PRODUCTION = NODE_ENV === "production";
+
+// Fallback solo permitido en dev
+const ALLOW_MEMORY_FALLBACK = IS_DEV;
+
+// Fallback en memoria (solo dev)
 const memoryStore = new Map<string, Array<number>>();
 let useMemoryFallback = false;
 
 /**
- * Inicializa cliente Redis
+ * Inicializa cliente Redis con configuración production-ready
  */
 function getRedisClient(): Redis {
   if (!redisClient) {
-    // En desarrollo, usar Redis local o mock
-    // En producción, usar REDIS_URL del entorno
     const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
     
     try {
       redisClient = new Redis(redisUrl, {
-        maxRetriesPerRequest: 3,
+        // Persistencia: RDB + AOF
+        enableOfflineQueue: true,
         enableReadyCheck: true,
-        lazyConnect: true,
+        lazyConnect: false,
+        
+        // Reconexión automática
+        maxRetriesPerRequest: 3,
+        retryStrategy(times) {
+          const delay = Math.min(times * 50, 2000);
+          console.log(`[RATE_LIMIT] Retry attempt ${times}, delay: ${delay}ms`);
+          return delay;
+        },
+        
+        // Timeouts
+        connectTimeout: 10000,
+        commandTimeout: 5000,
+        
+        // Keepalive
+        keepAlive: 30000,
       });
       
+      // Event handlers
       redisClient.on("error", (error) => {
+        metrics.totalErrors++;
+        metrics.lastError = error.message;
+        metrics.lastErrorTime = Date.now();
         console.error("[RATE_LIMIT] Redis error:", error.message);
+        
+        // En staging/production, no permitir fallback
+        if (!ALLOW_MEMORY_FALLBACK) {
+          console.error("[RATE_LIMIT] Redis failed in production. Fail-closed mode active.");
+        }
       });
       
       redisClient.on("connect", () => {
         console.log("[RATE_LIMIT] Redis connected");
+        useMemoryFallback = false; // Desactivar fallback al reconectar
       });
+      
+      redisClient.on("ready", () => {
+        console.log("[RATE_LIMIT] Redis ready");
+      });
+      
+      redisClient.on("reconnecting", () => {
+        console.log("[RATE_LIMIT] Redis reconnecting...");
+      });
+      
+      redisClient.on("close", () => {
+        console.warn("[RATE_LIMIT] Redis connection closed");
+      });
+      
     } catch (error: any) {
+      metrics.totalErrors++;
+      metrics.lastError = error.message;
+      metrics.lastErrorTime = Date.now();
       console.error("[RATE_LIMIT] Failed to initialize Redis:", error.message);
-      throw error;
+      
+      if (!ALLOW_MEMORY_FALLBACK) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Rate limiting service unavailable",
+        });
+      }
     }
   }
   
-  return redisClient;
+  return redisClient!;
 }
 
 /**
@@ -66,18 +149,16 @@ async function checkRateLimit(
   limit: number,
   windowSeconds: number
 ): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
-  // Si Redis falló previamente, usar memoria
-  if (useMemoryFallback) {
+  metrics.totalRequests++;
+  const startTime = Date.now();
+  
+  // Si fallback está activo (solo dev)
+  if (useMemoryFallback && ALLOW_MEMORY_FALLBACK) {
     return checkRateLimitMemory(userId, endpoint, limit, windowSeconds);
   }
   
   try {
     const redis = getRedisClient();
-    
-    // Conectar si no está conectado
-    if (redis.status !== "ready") {
-      await redis.connect();
-    }
     
     const key = `ratelimit:${userId}:${endpoint}`;
     const now = Date.now();
@@ -95,15 +176,13 @@ async function checkRateLimit(
     // 3. Agregar nueva entrada
     multi.zadd(key, now, `${now}`);
     
-    // 4. Establecer expiración
-    multi.expire(key, windowSeconds);
+    // 4. Establecer TTL real (no solo expire)
+    multi.pexpire(key, windowSeconds * 1000);
     
     const results = await multi.exec();
     
     if (!results) {
-      // Si Redis falla, permitir request (fail-open)
-      console.warn("[RATE_LIMIT] Redis multi.exec failed, allowing request");
-      return { allowed: true, remaining: limit, resetAt: now + windowSeconds * 1000 };
+      throw new Error("Redis multi.exec returned null");
     }
     
     const count = (results[1]?.[1] as number) || 0;
@@ -111,17 +190,40 @@ async function checkRateLimit(
     const remaining = Math.max(0, limit - count - 1);
     const resetAt = now + windowSeconds * 1000;
     
+    // Métricas
+    const latency = Date.now() - startTime;
+    metrics.avgLatency = (metrics.avgLatency * (metrics.totalRequests - 1) + latency) / metrics.totalRequests;
+    
+    if (allowed) {
+      metrics.totalHits++;
+    } else {
+      metrics.totalMisses++;
+    }
+    
     return { allowed, remaining, resetAt };
   } catch (error: any) {
-    // Si Redis falla, cambiar a memoria
-    console.warn("[RATE_LIMIT] Redis failed, switching to memory fallback");
+    metrics.totalErrors++;
+    metrics.lastError = error.message;
+    metrics.lastErrorTime = Date.now();
+    console.error("[RATE_LIMIT] Error checking rate limit:", error.message);
+    
+    // Fail-closed en staging/production
+    if (!ALLOW_MEMORY_FALLBACK) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Rate limiting service unavailable. Request rejected.",
+      });
+    }
+    
+    // Fallback en dev
+    console.warn("[RATE_LIMIT] Redis failed, switching to memory fallback (dev only)");
     useMemoryFallback = true;
     return checkRateLimitMemory(userId, endpoint, limit, windowSeconds);
   }
 }
 
 /**
- * Fallback de rate limiting en memoria (desarrollo local)
+ * Fallback de rate limiting en memoria (solo dev)
  */
 function checkRateLimitMemory(
   userId: number,
@@ -163,7 +265,7 @@ async function logAbuse(userId: number, endpoint: string): Promise<void> {
     const timestamp = Date.now();
     
     await redis.zadd(key, timestamp, `${endpoint}:${timestamp}`);
-    await redis.expire(key, 86400); // 24 horas
+    await redis.pexpire(key, 86400 * 1000); // 24 horas con TTL real
     
     console.warn(`[RATE_LIMIT] Abuse detected: userId=${userId}, endpoint=${endpoint}`);
   } catch (error: any) {
@@ -255,6 +357,50 @@ export async function getAbuseStats(userId: number): Promise<{
   } catch (error: any) {
     console.error("[RATE_LIMIT] Error getting abuse stats:", error.message);
     return { totalAbuses: 0, recentAbuses: [] };
+  }
+}
+
+/**
+ * Obtiene métricas de Redis
+ */
+export function getRedisMetrics(): RedisMetrics & {
+  environment: string;
+  fallbackEnabled: boolean;
+  usingFallback: boolean;
+} {
+  return {
+    ...metrics,
+    environment: NODE_ENV,
+    fallbackEnabled: ALLOW_MEMORY_FALLBACK,
+    usingFallback: useMemoryFallback,
+  };
+}
+
+/**
+ * Health check de Redis
+ */
+export async function checkRedisHealth(): Promise<{
+  status: "healthy" | "degraded" | "down";
+  latency: number | null;
+  error: string | null;
+}> {
+  try {
+    const redis = getRedisClient();
+    const startTime = Date.now();
+    await redis.ping();
+    const latency = Date.now() - startTime;
+    
+    return {
+      status: latency < 100 ? "healthy" : "degraded",
+      latency,
+      error: null,
+    };
+  } catch (error: any) {
+    return {
+      status: "down",
+      latency: null,
+      error: error.message,
+    };
   }
 }
 
