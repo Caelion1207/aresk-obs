@@ -1118,3 +1118,30 @@
 - [x] Correlacionar rate-limit con auditoría (0 logs generados, tests directos)
 - [x] Medir impacto en coherencia y control (Hipótesis CAELION validada)
 - [x] Documentar resultados en REDIS_OBSERVABILITY.md
+
+
+## 🚀 DESPLIEGUE REDIS STAGING - VALIDACIÓN FAIL-CLOSED
+
+### Configuración Redis Staging
+
+- [ ] Configurar variable REDIS_URL en secrets (formato: redis://host:port)
+- [ ] Actualizar rateLimit.ts para leer REDIS_URL de env
+- [ ] Verificar detección de entorno (NODE_ENV=staging)
+- [ ] Confirmar desactivación de fallback en staging
+
+### Test de Validación Fail-Closed
+
+- [x] Crear server/tests/rateLimit.failClosed.test.ts
+- [x] Test: Conectar a Redis válido y verificar rate limiting
+- [x] Test: Desconectar Redis y verificar TRPCError (INTERNAL_SERVER_ERROR)
+- [x] Test: Verificar que requests son rechazadas (no fallback a memoria)
+- [x] Test: Verificar métricas de Redis (totalErrors incrementa)
+
+### Escenario Real
+
+- [x] Iniciar servidor con REDIS_URL configurado (staging simulado, puerto 3001)
+- [x] Simular caída de Redis (URL inválido configurado)
+- [x] Crear scripts de validación (start_staging.sh, test_failclosed_manual.ts)
+- [ ] Generar tráfico real HTTP (requiere staging desplegado)
+- [ ] Verificar rechazo de requests con 500 (requiere staging desplegado)
+- [x] Documentar resultados en REDIS_STAGING_VALIDATION.md
