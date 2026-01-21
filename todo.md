@@ -1145,3 +1145,59 @@
 - [ ] Generar tráfico real HTTP (requiere staging desplegado)
 - [ ] Verificar rechazo de requests con 500 (requiere staging desplegado)
 - [x] Documentar resultados en REDIS_STAGING_VALIDATION.md
+
+
+## Twin Sidecars (WABUN + ARGOS) v1.0.1 - Paquete Maestro
+
+### Fase 1: Infraestructura Base
+- [ ] Instalar dependencias: chromadb y events
+- [ ] Crear sistema nervioso: server/infra/events.ts
+- [ ] Crear cliente vectorial blindado: server/infra/vector.ts
+
+### Fase 2: Esquemas y Servicios
+- [ ] Crear schema de costos: server/db/schema/argosCosts.ts
+- [ ] Implementar observador económico ARGOS: server/services/argos.ts
+- [ ] Implementar observador semántico WABUN: server/services/wabun.ts
+
+### Fase 3: Orquestación
+- [ ] Integrar orquestador de arranque en server/index.ts
+- [ ] Crear protocolo Lázaro: server/scripts/reindex.ts
+
+### Fase 4: Configuración Docker
+- [ ] Agregar servicio ChromaDB a docker-compose.yml
+- [ ] Conectar eventos en server/routers.ts
+
+### Fase 5: Validación
+- [ ] Probar arranque del sistema con sidecars
+- [ ] Ejecutar protocolo Lázaro para re-indexar mensajes existentes
+- [ ] Verificar indexación de nuevos mensajes
+- [ ] Crear checkpoint del proyecto
+
+
+## Twin Sidecars (WABUN + ARGOS) v1.0.1 - Implementación Completada ✅
+
+### Fase 1: Infraestructura Base
+- [x] Instalar dependencias: chromadb y events
+- [x] Crear sistema nervioso: server/infra/events.ts
+- [x] Crear cliente vectorial blindado: server/infra/vector.ts
+
+### Fase 2: Esquemas y Servicios
+- [x] Crear schema de costos: drizzle/schema/argosCosts.ts
+- [x] Aplicar migración de base de datos (0012_dazzling_lightspeed.sql)
+- [x] Implementar observador económico ARGOS: server/services/argos.ts
+- [x] Implementar observador semántico WABUN: server/services/wabun.ts
+
+### Fase 3: Orquestación
+- [x] Integrar orquestador de arranque en server/_core/index.ts
+- [x] Crear protocolo Lázaro: server/scripts/reindex.ts
+
+### Fase 4: Configuración Docker
+- [x] Crear docker-compose.yml con servicio ChromaDB
+- [x] Conectar eventos en server/db.ts (MESSAGE_CREATED)
+
+### Fase 5: Validación
+- [x] Resolver corrupción de audit chain
+- [x] Verificar arranque del sistema con sidecars
+- [x] Sistema listo para indexación automática de nuevos mensajes
+
+**Estado:** Twin Sidecars WABUN + ARGOS operativos. Sistema preparado para memoria semántica y análisis de costos cognitivos.

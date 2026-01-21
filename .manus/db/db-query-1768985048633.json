@@ -1,0 +1,16 @@
+{
+  "query": "\nSELECT \n  COUNT(DISTINCT s.id) as total_sessions_to_delete,\n  MIN(msg_count.message_count) as min_messages,\n  MAX(msg_count.message_count) as max_messages,\n  AVG(msg_count.message_count) as avg_messages\nFROM sessions s\nLEFT JOIN (\n  SELECT sessionId, COUNT(*) as message_count\n  FROM messages\n  GROUP BY sessionId\n) msg_count ON s.id = msg_count.sessionId\nWHERE COALESCE(msg_count.message_count, 0) < 30;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute \nSELECT \n  COUNT(DISTINCT s.id) as total_sessions_to_delete,\n  MIN(msg_count.message_count) as min_messages,\n  MAX(msg_count.message_count) as max_messages,\n  AVG(msg_count.message_count) as avg_messages\nFROM sessions s\nLEFT JOIN (\n  SELECT sessionId, COUNT(*) as message_count\n  FROM messages\n  GROUP BY sessionId\n) msg_count ON s.id = msg_count.sessionId\nWHERE COALESCE(msg_count.message_count, 0) < 30;\n",
+  "rows": [
+    {
+      "total_sessions_to_delete": "100",
+      "min_messages": "1",
+      "max_messages": "28",
+      "avg_messages": "4.3415"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_sessions_to_delete\tmin_messages\tmax_messages\tavg_messages\n100\t1\t28\t4.3415\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

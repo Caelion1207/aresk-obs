@@ -1,5 +1,8 @@
 import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, float } from "drizzle-orm/mysql-core";
 
+// Export schema modules
+export * from './schema/argosCosts';
+
 /**
  * Core user table backing auth flow.
  * Extend this file with additional tables as your product grows.

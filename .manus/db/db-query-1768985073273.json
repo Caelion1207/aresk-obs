@@ -1,0 +1,16 @@
+{
+  "query": "\nSELECT \n  COUNT(DISTINCT s.id) as total_sessions_remaining,\n  MIN(msg_count.message_count) as min_messages,\n  MAX(msg_count.message_count) as max_messages,\n  AVG(msg_count.message_count) as avg_messages\nFROM sessions s\nLEFT JOIN (\n  SELECT sessionId, COUNT(*) as message_count\n  FROM messages\n  GROUP BY sessionId\n) msg_count ON s.id = msg_count.sessionId;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute \nSELECT \n  COUNT(DISTINCT s.id) as total_sessions_remaining,\n  MIN(msg_count.message_count) as min_messages,\n  MAX(msg_count.message_count) as max_messages,\n  AVG(msg_count.message_count) as avg_messages\nFROM sessions s\nLEFT JOIN (\n  SELECT sessionId, COUNT(*) as message_count\n  FROM messages\n  GROUP BY sessionId\n) msg_count ON s.id = msg_count.sessionId;\n",
+  "rows": [
+    {
+      "total_sessions_remaining": "2",
+      "min_messages": "60",
+      "max_messages": "60",
+      "avg_messages": "60.0000"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_sessions_remaining\tmin_messages\tmax_messages\tavg_messages\n2\t60\t60\t60.0000\n",
+  "stderr": "",
+  "execution_time_ms": 54
+}

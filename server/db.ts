@@ -3,6 +3,7 @@ import { drizzle } from "drizzle-orm/mysql2";
 import { TRPCError } from "@trpc/server";
 import { InsertUser, users, sessions, messages, metrics, timeMarkers, sessionAlerts, erosionAlerts, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker, InsertSessionAlert, InsertErosionAlert } from "../drizzle/schema";
 import { ENV } from './_core/env';
+import { SystemEvents, EVENTS } from './infra/events';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
@@ -188,7 +189,12 @@ export async function createMessage(message: InsertMessage) {
   if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Service unavailable" });
   
   const result = await db.insert(messages).values(message);
-  return result[0].insertId;
+  const messageId = result[0].insertId;
+  
+  // Emitir evento para observadores (ARGOS, WABUN)
+  SystemEvents.emit(EVENTS.MESSAGE_CREATED, { messageId });
+  
+  return messageId;
 }
 
 export async function getSessionMessages(sessionId: number) {

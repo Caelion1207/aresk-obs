@@ -9,6 +9,8 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { validateSchemaOnStartup } from "../db/validateSchema";
 import { startIntegrityCheckJob } from "../infra/jobs/integrityCheck";
+import { startArgosObserver } from "../services/argos";
+import { startWabunObserver } from "../services/wabun";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -72,6 +74,15 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    console.log('🛡️ Core System Secured. Initializing Sidecars...');
+    
+    // 3. INICIALIZACIÓN DE OBSERVADORES (Orden Estricto)
+    // A. ARGOS (Economía): Debe estar listo para calcular el precio.
+    startArgosObserver();
+    
+    // B. WABUN (Semántica): Depende conceptualmente de la economía.
+    startWabunObserver();
     
     // Iniciar job de verificación de integridad
     startIntegrityCheckJob();
