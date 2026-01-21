@@ -907,3 +907,61 @@
 - 🔴 **RED:** Fallo en Fase 1 o Rate Limiting → **NO DEPLOY**
 - 🟡 **YELLOW:** Fase 1 OK + Rate Limit OK → **BETA RESTRICTIVA**
 - 🟢 **GREEN:** Fase 1-4 Completas → **PRODUCCIÓN GENERAL**
+
+
+## 🚀 IMPLEMENTACIÓN v3.2.2-GOLDEN-HARDENED
+
+**Objetivo:** Completar Fase 3 y Fase 4 del Integration Gate
+
+### BLOQUE 1: Crypto + Schema (2h)
+
+- [x] Crear server/infra/crypto.ts con calculateLogHash y stripHashes
+- [x] Crear drizzle/schema/auditLogs.ts con campos hash, prevHash
+- [x] Agregar índices: timestamp, hash, userId+timestamp
+- [x] Generar migración SQL y aplicar con pnpm db:push
+- [x] Verificar índices con EXPLAIN
+
+### BLOQUE 2: Audit Middleware (3h)
+
+- [ ] Crear server/middleware/audit.ts con Mutex + rehidratación atómica
+- [ ] Implementar Boot ID en logs de rehidratación
+- [ ] Implementar verificación de coherencia hash rehidratado vs DB
+- [ ] Implementar getAuditCacheHealth()
+- [ ] Crear server/infra/emergency.ts con emergencyWrite (filesystem fallback)
+- [ ] Crear tests de rehidratación antes de pushAudit
+- [ ] Crear tests de coherencia hash rehidratado vs DB
+
+### BLOQUE 3: Startup Validation (2h)
+
+- [ ] Crear server/db/validateSchema.ts con checkIndexOrDie
+- [ ] Implementar checkRedisOrDie (Fail-Closed en producción)
+- [ ] Llamar rehydrateAuditCache() en startup
+- [ ] Crear tests: startup falla sin índice
+- [ ] Crear tests: startup falla sin Redis (prod)
+
+### BLOQUE 4: Rate Limit + Admin (2h)
+
+- [ ] Crear server/middleware/rateLimit.ts con Fail-Closed en producción
+- [ ] Implementar multi-bucket (user + IP)
+- [ ] Crear server/scripts/rateLimit.lua (Redis atomic script)
+- [ ] Crear server/routers/admin.ts con endpoint auditHealth
+- [ ] Proteger admin endpoints con adminProcedure
+- [ ] Crear tests: Fail-Closed cuando Redis cae
+- [ ] Crear tests: Health endpoint retorna estado correcto
+
+### BLOQUE 5: Integrity Job + Alerts (2h)
+
+- [ ] Crear server/infra/jobs.ts con verifyAuditChain()
+- [ ] Implementar transacción para verificación de integridad
+- [ ] Crear server/infra/alerts.ts con sendSecurityAlert
+- [ ] Implementar alerting en corrupciones
+- [ ] Crear tests de verificación de integridad
+
+### FASE 4: Tests de Colapso y Recuperación
+
+- [ ] Crear server/tests/control.collapse.test.ts
+- [ ] Implementar test de retirada de control u(t)→0
+- [ ] Implementar test de medición de caída de estabilidad
+- [ ] Implementar test de reinyección de control
+- [ ] Implementar test de convergencia post-recuperación
+- [ ] Validar hipótesis CAELION con datos reales
