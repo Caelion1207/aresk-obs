@@ -1048,3 +1048,23 @@
 - [ ] Documentar resultados en CAELION_VALIDATION_REAL.md
 - [ ] Comparar métricas simuladas vs reales
 - [ ] Validar necesidad de ajuste PID basado en datos reales
+
+
+## 🔗 INTEGRACIÓN DE MIDDLEWARES Y FASE 4 REAL
+
+### Integración de Middlewares
+
+- [x] Integrar auditMiddleware en session.* (create, get, list, update)
+- [ ] Integrar auditMiddleware en conversation.sendMessage
+- [x] Integrar rateLimitMiddleware en routers críticos
+- [x] Integrar adminRouter en appRouter
+- [x] Reiniciar servidor y verificar logs de auditoría
+
+### Ejecución Fase 4 con Tráfico Real
+
+- [ ] Crear 3 sesiones acopladas en simulador con conversaciones reales
+- [ ] Anotar sessionIds de sesiones creadas
+- [ ] Modificar control.collapse.test.ts para usar sessionIds reales
+- [ ] Ejecutar tests de Fase 4 con datos reales
+- [ ] Analizar resultados y comparar con simulación sintética
+- [ ] Documentar hallazgos en CAELION_VALIDATION.md

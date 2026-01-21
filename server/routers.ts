@@ -29,6 +29,12 @@ import { calculateMetricsSimplified } from "./semantic_bridge";
 import { analyzeSemanticPolarity, calculateEffectiveField } from "./semanticPolarity";
 import { calculateModifiedLyapunov, normalizeModifiedLyapunov } from "./lyapunovModified";
 import { applyLicurgoControl, validateMetrics } from "./licurgoControl";
+import { auditMiddleware } from "./middleware/audit";
+import { rateLimitMiddleware } from "./middleware/rateLimit";
+import { adminRouter } from "./admin";
+
+// Procedimientos con auditoría y rate limiting
+const auditedProcedure = protectedProcedure.use(auditMiddleware).use(rateLimitMiddleware());
 
 export const appRouter = router({
   system: systemRouter,
@@ -51,7 +57,7 @@ export const appRouter = router({
     /**
      * Crear una nueva sesión de simulación con referencia ontológica
      */
-    create: protectedProcedure
+    create: auditedProcedure
       .input(z.object({
         purpose: z.string().min(10, "El propósito debe tener al menos 10 caracteres"),
         limits: z.string().min(10, "Los límites deben tener al menos 10 caracteres"),
@@ -75,7 +81,7 @@ export const appRouter = router({
     /**
      * Obtener una sesión por ID
      */
-    get: protectedProcedure
+    get: auditedProcedure
       .input(z.object({ sessionId: z.number() }))
       .query(async ({ input }) => {
         return await getSession(input.sessionId);
@@ -84,7 +90,7 @@ export const appRouter = router({
     /**
      * Listar todas las sesiones del usuario
      */
-    list: protectedProcedure
+    list: auditedProcedure
       .query(async ({ ctx }) => {
         return await getUserSessions(ctx.user.id);
       }),
@@ -92,7 +98,7 @@ export const appRouter = router({
     /**
      * Cambiar el modo de control de una sesión
      */
-    toggleMode: protectedProcedure
+    toggleMode: auditedProcedure
       .input(z.object({
         sessionId: z.number(),
         plantProfile: z.enum(["tipo_a", "tipo_b", "acoplada"]),
@@ -2182,6 +2188,11 @@ export const appRouter = router({
     // exportDashboardPDF: Eliminado para desbloquear deploy (dependencia nativa canvas)
     // Si se requiere exportación PDF en el futuro, implementar client-side con jsPDF + html2canvas
   }),
+  
+  // ============================================
+  // Admin: Auditoría y monitoreo
+  // ============================================
+  admin: adminRouter,
 });
 
 
