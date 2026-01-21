@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO cycles (\n  protocolId, status, triggerType, objective, scheduledEndAt\n) VALUES (\n  'COM-72-01',\n  'INIT',\n  'SYSTEM',\n  'Initialize CAELION Legal Framework',\n  DATE_ADD(NOW(), INTERVAL 72 HOUR)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute INSERT INTO cycles (\n  protocolId, status, triggerType, objective, scheduledEndAt\n) VALUES (\n  'COM-72-01',\n  'INIT',\n  'SYSTEM',\n  'Initialize CAELION Legal Framework',\n  DATE_ADD(NOW(), INTERVAL 72 HOUR)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 111
+}

@@ -2,6 +2,8 @@ import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, float } 
 
 // Export schema modules
 export * from './schema/argosCosts';
+export * from './schema/cycles';
+export * from './schema/ethicalLogs';
 
 /**
  * Core user table backing auth flow.

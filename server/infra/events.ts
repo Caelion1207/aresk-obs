@@ -1,10 +1,68 @@
 import EventEmitter from 'events';
 
-class ARESKEventEmitter extends EventEmitter {
+export const EVENTS = {
+  // Eventos ARESK-OBS (Twin Sidecars)
+  MESSAGE_CREATED: 'message:created',
+  COST_RECORDED: 'cost:recorded',
+  SESSION_UPDATED: 'session:updated',
+  
+  // Eventos Marco Legal CAELION
+  COMMAND_DISPATCHED: 'command:dispatched',
+  ETHICAL_VIOLATION: 'ethical:violation',
+  CYCLE_TRANSITION: 'cycle:transition',
+  SYSTEM_INTEGRITY_FAILURE: 'system:integrity:failure'
+} as const;
+
+export type EventMap = {
+  [EVENTS.MESSAGE_CREATED]: {
+    messageId: number;
+  };
+  [EVENTS.COST_RECORDED]: {
+    messageId: number;
+    cost: any;
+  };
+  [EVENTS.SESSION_UPDATED]: {
+    sessionId: number;
+  };
+  [EVENTS.COMMAND_DISPATCHED]: {
+    commandId: string;
+    intent: string;
+    protocol: string;
+    userId: number;
+    timestamp: Date;
+  };
+  [EVENTS.ETHICAL_VIOLATION]: {
+    logId: number;
+    constant: string;
+    resolution: 'BLOCKED' | 'WARNING' | 'OBSERVATION' | 'OVERRIDE';
+    timestamp: Date;
+  };
+  [EVENTS.CYCLE_TRANSITION]: {
+    cycleId: number;
+    from: string;
+    to: string;
+    timestamp: Date;
+  };
+  [EVENTS.SYSTEM_INTEGRITY_FAILURE]: {
+    component: string;
+    error: string;
+    severity: 'HIGH' | 'MEDIUM' | 'LOW';
+    timestamp: Date;
+  };
+};
+
+class TypedEventEmitter extends EventEmitter {
   constructor() {
     super();
-    // Aumentamos límite para soportar múltiples observadores (WABUN, ARGOS, Logging)
     this.setMaxListeners(20);
+  }
+
+  emit<K extends keyof EventMap>(event: K, payload: EventMap[K]): boolean {
+    return super.emit(event, payload);
+  }
+  
+  on<K extends keyof EventMap>(event: K, listener: (payload: EventMap[K]) => void): this {
+    return super.on(event, listener as any);
   }
 }
 
@@ -12,23 +70,4 @@ class ARESKEventEmitter extends EventEmitter {
  * Bus de Eventos del Sistema (Singleton).
  * Desacopla el núcleo transaccional de los observadores analíticos.
  */
-export const SystemEvents = new ARESKEventEmitter();
-
-export const EVENTS = {
-  // Disparado por ARESK tras commit en SQL + Auditoría
-  MESSAGE_CREATED: 'message:created',
-  
-  /**
-   * COST_RECORDED
-   * Disparado por ARGOS tras persistir la factura computacional.
-   * USO RESERVADO PARA:
-   * 1. Dashboards de consumo en tiempo real.
-   * 2. Alertas de "Pensamiento Caro" (Drenaje Crítico).
-   * 3. Futuros controladores adaptativos (no bloqueantes).
-   * NO ELIMINAR AUNQUE NO TENGA LISTENERS ACTIVOS HOY.
-   */
-  COST_RECORDED: 'cost:recorded',
-  
-  // Eventos de ciclo de vida
-  SESSION_UPDATED: 'session:updated',
-} as const;
+export const SystemEvents = new TypedEventEmitter();

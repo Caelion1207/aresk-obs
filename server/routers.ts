@@ -32,6 +32,7 @@ import { applyLicurgoControl, validateMetrics } from "./licurgoControl";
 import { auditMiddleware } from "./middleware/audit";
 import { rateLimitMiddleware } from "./middleware/rateLimit";
 import { adminRouter } from "./admin";
+import { commandRouter } from "./routers/command";
 
 // Procedimientos con auditoría y rate limiting
 const auditedProcedure = protectedProcedure.use(auditMiddleware).use(rateLimitMiddleware());
@@ -2193,6 +2194,11 @@ export const appRouter = router({
   // Admin: Auditoría y monitoreo
   // ============================================
   admin: adminRouter,
+  
+  // ============================================
+  // Marco Legal CAELION: Sistema de comandos
+  // ============================================
+  command: commandRouter,
 });
 
 

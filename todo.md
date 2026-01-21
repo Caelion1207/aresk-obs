@@ -1201,3 +1201,40 @@
 - [x] Sistema listo para indexación automática de nuevos mensajes
 
 **Estado:** Twin Sidecars WABUN + ARGOS operativos. Sistema preparado para memoria semántica y análisis de costos cognitivos.
+
+
+## Marco Legal CAELION v1.0.5-FINAL - Leyes Físicas del Sistema ✅
+
+### Fase 1: Estructura e Instalación
+- [x] Crear estructura de directorios: server/core/{guards,cmd01}
+- [x] Instalar dependencias: date-fns, uuid
+
+### Fase 2: Infraestructura Base
+- [x] Actualizar Event Bus tipado con EventMap (server/infra/events.ts)
+- [x] Crear Transactional Outbox (server/infra/outbox.ts)
+
+### Fase 3: Guardianes de Leyes
+- [x] Implementar guardián COM-72 (server/core/guards/com72.ts)
+- [x] Implementar guardián ETH-01 (server/core/guards/eth01.ts)
+
+### Fase 4: Motor CMD-01
+- [x] Crear tipos estrictos (server/core/cmd01/types.ts)
+- [x] Implementar compilador CMD-01 (server/core/cmd01/engine.ts)
+
+### Fase 5: Esquemas de Base de Datos
+- [x] Crear schema de ciclos (drizzle/schema/cycles.ts)
+- [x] Crear schema de logs éticos (drizzle/schema/ethicalLogs.ts)
+- [x] Aplicar migración 0013_curious_slayback.sql
+- [x] Insertar ciclo inicial del sistema
+
+### Fase 6: Router de Comandos
+- [x] Crear router de comandos (server/routers/command.ts)
+- [x] Integrar router en appRouter principal
+
+### Fase 7: Validación
+- [x] Crear tests unitarios (engine.test.ts)
+- [x] Probar clasificación de comandos (8 tests pasados)
+- [x] Verificar guardianes COM-72 y ETH-01
+- [x] Crear checkpoint del proyecto
+
+**Estado:** Marco Legal CAELION v1.0.5-FINAL operativo. Sistema de comandos con leyes físicas (COM-72, ETH-01, CMD-01) funcionando correctamente.
