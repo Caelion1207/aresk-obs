@@ -7,6 +7,8 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
+import { validateSchemaOnStartup } from "../db/validateSchema";
+import { startIntegrityCheckJob } from "../infra/jobs/integrityCheck";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -28,6 +30,17 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  // Validar esquema de base de datos al inicio
+  console.log("[STARTUP] Running schema validation...");
+  try {
+    await validateSchemaOnStartup();
+    console.log("[STARTUP] Schema validation passed");
+  } catch (error: any) {
+    console.error("[STARTUP] Schema validation failed:", error.message);
+    console.error("[STARTUP] Server cannot start. Fix schema issues and restart.");
+    process.exit(1);
+  }
+  
   const app = express();
   const server = createServer(app);
   // Configure body parser with larger size limit for file uploads
@@ -59,6 +72,9 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Iniciar job de verificación de integridad
+    startIntegrityCheckJob();
   });
 }
 

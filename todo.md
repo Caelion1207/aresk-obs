@@ -1017,27 +1017,27 @@
 
 ### BLOQUE 3: Startup Validation (2h) - CRÍTICO
 
-- [ ] Crear server/db/validateSchema.ts con verificación de índices
-- [ ] Implementar validación de integridad de cadena al inicio
-- [ ] Agregar startup hook en server/_core/index.ts
+- [x] Crear server/db/validateSchema.ts con verificación de índices
+- [x] Implementar validación de integridad de cadena al inicio
+- [x] Agregar startup hook en server/_core/index.ts
 - [ ] Crear tests: server/tests/startup.validation.test.ts
 - [ ] Validar comportamiento ante corrupción detectada
 
 ### BLOQUE 4: Rate Limit + Admin (3h) - BLOCKER
 
-- [ ] Instalar dependencias: ioredis, @trpc/server rate-limit
-- [ ] Crear server/middleware/rateLimit.ts con Redis
-- [ ] Configurar límites: 100 req/min/user, 10 req/min para admin
+- [x] Instalar dependencias: ioredis, @trpc/server rate-limit
+- [x] Crear server/middleware/rateLimit.ts con Redis
+- [x] Configurar límites: 100 req/min/user, 10 req/min para admin
 - [ ] Integrar rateLimitMiddleware en routers.ts
-- [ ] Crear server/routers/admin.ts con queryAuditLogs
+- [x] Crear server/admin.ts con queryAuditLogs
 - [ ] Crear tests: server/tests/rateLimit.test.ts
 - [ ] Validar logs de abuso
 
 ### BLOQUE 5: Integrity Jobs + Alerts (2h) - CRÍTICO
 
-- [ ] Crear server/infra/jobs/integrityCheck.ts con verificación horaria
-- [ ] Crear server/infra/alerts.ts con notifyOwner en corrupción
-- [ ] Integrar job en server/_core/index.ts con cron
+- [x] Crear server/infra/jobs/integrityCheck.ts con verificación horaria
+- [x] Integrar notifyOwner en corrupción (ya existe en _core/notification)
+- [x] Integrar job en server/_core/index.ts con cron
 - [ ] Crear tests: server/tests/integrity.job.test.ts
 - [ ] Validar detección y alerta de corrupción simulada
 
