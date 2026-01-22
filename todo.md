@@ -1555,3 +1555,15 @@
 - [x] Crear checkpoint del proyecto
 
 **Estado:** Exportación de gráficas LAB implementada. Botón disponible en página LAB para capturar las 4 visualizaciones (Phase Portrait, Lyapunov Energy, Error Dynamics, Control Effort) e incluirlas en PDFs de ciclo COM-72.
+
+
+## Mejora de Resolución de Imágenes LAB en PDFs ✅
+
+### Fase 1: Actualizar Resolución
+- [x] Cambiar resolución de canvas de 800x600 a 1600x1200
+- [x] Verificar que no hay errores TypeScript
+
+### Fase 2: Checkpoint
+- [x] Crear checkpoint con mejora de resolución
+
+**Estado:** Resolución de imágenes LAB aumentada a 1600x1200 para mejorar nitidez en PDFs impresos.

@@ -109,8 +109,8 @@ function LabContent() {
       return new Promise((resolve) => {
         const svgData = new XMLSerializer().serializeToString(svg);
         const canvas = document.createElement('canvas');
-        canvas.width = 800;
-        canvas.height = 600;
+        canvas.width = 1600;
+        canvas.height = 1200;
         const ctx = canvas.getContext('2d');
         const img = new Image();
         img.onload = () => {
