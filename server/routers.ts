@@ -34,6 +34,7 @@ import { rateLimitMiddleware } from "./middleware/rateLimit";
 import { adminRouter } from "./admin";
 import { commandRouter } from "./routers/command";
 import { cyclesRouter } from "./routers/cycles";
+import { healthRouter } from "./routers/health";
 
 // Procedimientos con auditoría y rate limiting
 const auditedProcedure = protectedProcedure.use(auditMiddleware).use(rateLimitMiddleware());
@@ -2201,6 +2202,7 @@ export const appRouter = router({
   // ============================================
   command: commandRouter,
   cycles: cyclesRouter,
+  health: healthRouter,
 });
 
 

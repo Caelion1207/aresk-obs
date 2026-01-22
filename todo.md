@@ -1262,3 +1262,34 @@
 - [x] Crear checkpoint del proyecto
 
 **Estado:** Dashboard de Ciclos COM-72 operativo. Monitoreo en tiempo real de ciclos activos con visualización de estados, tiempos y transiciones permitidas.
+
+
+## Infraestructura Avanzada CAELION v1.0.5 ✅
+
+### Fase 1: Sistema de Eventos y Outbox
+- [x] Actualizar events.ts con singleton pattern y logging
+- [x] Mejorar outbox.ts con reintentos automáticos y stats
+- [x] Agregar flush automático cada 10 segundos
+
+### Fase 2: Sistema de Métricas
+- [x] Crear metrics.ts con MetricsCollector
+- [x] Implementar contadores de comandos, violaciones, transiciones
+- [x] Agregar histogramas de latencia (p50, p95, p99)
+
+### Fase 3: Router de Comandos Mejorado
+- [x] Actualizar command.ts con FOR UPDATE WAIT 5
+- [x] Agregar validación robusta con regex
+- [x] Implementar traceId para trazabilidad completa
+- [x] Manejar deadlocks y timeouts (ER_LOCK_WAIT_TIMEOUT, ER_LOCK_DEADLOCK)
+
+### Fase 4: Endpoints de Salud
+- [x] Crear router health con endpoints outbox, metrics, cycles, summary
+- [x] Implementar sistema de alertas (violaciones éticas, ciclos >72h, outbox >100)
+- [x] Agregar monitoreo de integridad
+
+### Fase 5: Validación
+- [x] Servidor arrancado correctamente sin errores
+- [x] Verificar sistema de métricas (contadores y latencias)
+- [x] Crear checkpoint del proyecto
+
+**Estado:** Infraestructura avanzada CAELION v1.0.5 operativa. Sistema de métricas, Outbox Pattern con reintentos, FOR UPDATE con timeout, y endpoints de salud funcionando correctamente.

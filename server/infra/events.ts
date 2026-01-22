@@ -52,17 +52,34 @@ export type EventMap = {
 };
 
 class TypedEventEmitter extends EventEmitter {
-  constructor() {
+  private static instance: TypedEventEmitter;
+  
+  private constructor() {
     super();
-    this.setMaxListeners(20);
+    this.setMaxListeners(50);
+  }
+  
+  static getInstance(): TypedEventEmitter {
+    if (!TypedEventEmitter.instance) {
+      TypedEventEmitter.instance = new TypedEventEmitter();
+    }
+    return TypedEventEmitter.instance;
   }
 
   emit<K extends keyof EventMap>(event: K, payload: EventMap[K]): boolean {
+    console.log(`🔊 EVENT: ${event}`, {
+      ...payload,
+      timestamp: new Date().toISOString()
+    });
     return super.emit(event, payload);
   }
   
   on<K extends keyof EventMap>(event: K, listener: (payload: EventMap[K]) => void): this {
     return super.on(event, listener as any);
+  }
+  
+  once<K extends keyof EventMap>(event: K, listener: (payload: EventMap[K]) => void): this {
+    return super.once(event, listener as any);
   }
 }
 
@@ -70,4 +87,4 @@ class TypedEventEmitter extends EventEmitter {
  * Bus de Eventos del Sistema (Singleton).
  * Desacopla el núcleo transaccional de los observadores analíticos.
  */
-export const SystemEvents = new TypedEventEmitter();
+export const SystemEvents = TypedEventEmitter.getInstance();
