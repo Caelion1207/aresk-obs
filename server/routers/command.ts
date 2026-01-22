@@ -8,7 +8,7 @@ import { EVENTS } from '../infra/events';
 import { metrics } from '../infra/metrics';
 import { v4 as uuidv4 } from 'uuid';
 import { TRPCError } from '@trpc/server';
-import { protectedProcedure, router } from '../_core/trpc';
+import { protectedProcedure, publicProcedure, router } from '../_core/trpc';
 
 const CommandInputSchema = z.object({
   text: z.string()
@@ -24,6 +24,66 @@ const CommandInputSchema = z.object({
 });
 
 export const commandRouter = router({
+  /**
+   * Endpoint de auditoría sin efectos secundarios
+   * Reutiliza motor CMD-01 y guards COM-72/ETH-01 pero no ejecuta acciones reales
+   */
+  auditDispatch: publicProcedure
+    .input(CommandInputSchema)
+    .mutation(async ({ input }) => {
+      const startTime = Date.now();
+      const db = await getDb();
+      if (!db) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Database unavailable'
+        });
+      }
+      
+      const traceId = `audit_${Date.now()}_${uuidv4().substr(0, 8)}`;
+      
+      try {
+        // Obtener ciclo activo SIN bloqueo (solo lectura)
+        const lockQuery = sql`
+          SELECT * FROM cycles 
+          WHERE status NOT IN ('CLOSED', 'FAILED')
+            AND scheduledEndAt > NOW()
+          ORDER BY id DESC 
+          LIMIT 1
+        `;
+        
+        const cycleResults = await db.execute(lockQuery);
+        const rows = Array.isArray(cycleResults[0]) ? cycleResults[0] : [];
+        const activeCycle = rows.length > 0 ? rows[0] : undefined;
+        
+        // Procesar comando (solo validación, sin efectos secundarios)
+        const cmdResult = await CmdEngine.process({
+          rawInput: input.text,
+          actor: { 
+            id: -1, // ID especial para sistema de auditoría
+            role: 'user'
+          }
+        }, activeCycle);
+        
+        const latency = Date.now() - startTime;
+        
+        // NO emitir eventos
+        // NO registrar métricas
+        // NO escribir en DB
+        
+        return {
+          ...cmdResult,
+          traceId,
+          latencyMs: latency,
+          auditMode: true
+        };
+        
+      } catch (error: any) {
+        const latency = Date.now() - startTime;
+        throw error;
+      }
+    }),
+  
   dispatch: protectedProcedure
     .input(CommandInputSchema)
     .mutation(async ({ ctx, input }) => {

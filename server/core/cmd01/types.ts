@@ -4,6 +4,7 @@ export type IntentType =
   | 'COGNITIVE'    // Consolidación de memoria (SYN-10)
   | 'ETHICAL'      // Validación ética (ETH-01)
   | 'ECONOMIC'     // Optimización de costos (ARGOS)
+  | 'DESTRUCTIVE'  // Eliminación de memoria (ETH-01 + E5)
   | 'PHILOSOPHICAL'; // Reflexión sin acción
 
 export type TargetProtocol = 

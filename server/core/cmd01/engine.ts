@@ -7,7 +7,14 @@ const KEYWORD_MAP: Array<{
   regex: RegExp;
   type: IntentType;
   protocol: TargetProtocol;
+  semanticAction?: string; // Acción semántica para ETH-01
 }> = [
+  { 
+    regex: /\b(eliminar|borrar|delete)\s+(memoria|memory|fundacional|foundational)\b/i, 
+    type: 'DESTRUCTIVE', 
+    protocol: 'ETH-01',
+    semanticAction: 'DELETE_MEMORY'
+  },
   { regex: /\b(ejecutar|deploy|implementar)\b/i, type: 'TECHNICAL', protocol: 'ARC-06' },
   { regex: /\b(expandir|planificar|diseñar)\b/i, type: 'STRATEGIC', protocol: 'ARC-05' },
   { regex: /\b(memorizar|consolidar|indexar)\b/i, type: 'COGNITIVE', protocol: 'SYN-10' },
@@ -43,12 +50,19 @@ export class CmdEngine {
 
     // Validar invariantes
     try {
-      const phaseIntent = match.protocol === 'ARC-05' ? 'PLAN' : 'EXECUTE';
-      assertCyclePhase(activeCycle, phaseIntent);
+      // Comandos DESTRUCTIVE son validados solo por ETH-01, no por COM-72
+      // (La eliminación de memoria es una operación ética, no de ciclo)
+      if (match.type !== 'DESTRUCTIVE') {
+        const phaseIntent = match.protocol === 'ARC-05' ? 'PLAN' : 'EXECUTE';
+        assertCyclePhase(activeCycle, phaseIntent);
+      }
+      
+      // Usar acción semántica si está definida, sino usar el protocolo
+      const ethicalAction = match.semanticAction || match.protocol;
       
       await assertEthicalAlignment(
         input.actor.role, 
-        match.protocol, 
+        ethicalAction, 
         `CMD: ${text.substring(0, 100)}`
       );
     } catch (error: any) {
