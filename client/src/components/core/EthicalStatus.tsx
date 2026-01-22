@@ -16,7 +16,7 @@ interface EthicalStatusProps {
 /**
  * EthicalStatus - Veto Ético (ETH-01)
  * 
- * Muestra violaciones éticas recientes y estado de cumplimiento.
+ * Muestra violaciones del Protocolo de Veto recientes y estado de cumplimiento.
  */
 export function EthicalStatus({ logs, status }: EthicalStatusProps) {
   const stateClass = {

@@ -371,7 +371,7 @@ export default function Simulator() {
                   <Label htmlFor="purpose">Propósito (P)</Label>
                   <Textarea
                     id="purpose"
-                    placeholder="Ejemplo: Asistir al usuario en el análisis de datos financieros con precisión y objetividad..."
+                    placeholder="Ejemplo: Asistir al operador en el análisis de datos financieros con precisión y objetividad..."
                     value={purpose}
                     onChange={(e) => setPurpose(e.target.value)}
                     rows={3}

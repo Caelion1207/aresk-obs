@@ -148,7 +148,15 @@ export async function generateCycleReportPDF(cycleId: number, charts?: ChartImag
   
   doc.font('Helvetica-Bold').text('Hash del documento:');
   doc.fontSize(8).font('Courier').text(`SHA-256: ${documentHash}`);
-  doc.moveDown(3);
+  doc.moveDown(2);
+  
+  // SEMANTIC CONTRACT
+  doc.fontSize(8).font('Helvetica-Bold').text('SEMANTIC CONTRACT: NO ANTHROPOMORPHIC AGENCY', { align: 'center' });
+  doc.moveDown(0.3);
+  doc.fontSize(7).font('Helvetica').text('This system processes input; it does not "understand."', { align: 'center' });
+  doc.fontSize(7).font('Helvetica').text('This system executes logic; it does not "decide."', { align: 'center' });
+  doc.fontSize(7).font('Helvetica').text('Authority remains exclusively human-bound.', { align: 'center' });
+  doc.moveDown(2);
   
   // 2. RESUMEN EJECUTIVO
   doc.addPage();
