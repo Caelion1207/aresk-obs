@@ -1567,3 +1567,23 @@
 - [x] Crear checkpoint con mejora de resolución
 
 **Estado:** Resolución de imágenes LAB aumentada a 1600x1200 para mejorar nitidez en PDFs impresos.
+
+
+## Endpoint trpc.argos.getCosts
+
+### Fase 1: Router ARGOS
+- [x] Crear router argos con endpoint getCosts
+- [x] Agregar helpers en db.ts para consultar argosCosts
+- [x] Agregar router al appRouter principal
+
+### Fase 2: Integración en PDFs
+- [x] Actualizar pdfGenerator.ts para usar costos reales
+- [x] Reemplazar costos placeholder con datos de argosCosts
+
+### Fase 3: Integración en Dashboard
+- [x] Actualizar ArgosMonitor para usar trpc.argos.getCosts
+- [x] Mostrar costos reales por mensaje
+
+### Fase 4: Pruebas
+- [x] Verificar servidor arranca sin errores
+- [ ] Crear checkpoint del proyecto

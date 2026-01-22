@@ -36,6 +36,7 @@ import { commandRouter } from "./routers/command";
 import { cyclesRouter } from "./routers/cycles";
 import { healthRouter } from "./routers/health";
 import { pdfRouter } from "./routers/pdf";
+import { argosRouter } from "./routers/argos";
 
 // Procedimientos con auditoría y rate limiting
 const auditedProcedure = protectedProcedure.use(auditMiddleware).use(rateLimitMiddleware());
@@ -2205,6 +2206,7 @@ export const appRouter = router({
   cycles: cyclesRouter,
   health: healthRouter,
   pdf: pdfRouter,
+  argos: argosRouter,
 });
 
 

@@ -1,7 +1,8 @@
-import { eq, desc, asc } from "drizzle-orm";
+import { eq, desc, asc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { TRPCError } from "@trpc/server";
 import { InsertUser, users, sessions, messages, metrics, timeMarkers, sessionAlerts, erosionAlerts, InsertSession, InsertMessage, InsertMetric, InsertTimeMarker, InsertSessionAlert, InsertErosionAlert } from "../drizzle/schema";
+import { argosCosts } from "../drizzle/schema/argosCosts";
 import { ENV } from './_core/env';
 import { SystemEvents, EVENTS } from './infra/events';
 
@@ -484,4 +485,64 @@ export async function updateCycleStatus(cycleId: number, status: 'INIT' | 'EXECU
   if (status === 'CLOSED' || status === 'FAILED') updateData.closedAt = new Date();
   
   await db.update(cycles).set(updateData).where(eq(cycles.id, cycleId));
+}
+
+// ============================================================================
+// ARGOS: Costos Computacionales
+// ============================================================================
+
+export async function getArgosCostsBySession(sessionId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db
+    .select()
+    .from(argosCosts)
+    .innerJoin(messages, eq(argosCosts.messageId, messages.id))
+    .where(eq(messages.sessionId, sessionId))
+    .orderBy(asc(argosCosts.createdAt));
+}
+
+export async function getArgosCostsByMessage(messageId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db
+    .select()
+    .from(argosCosts)
+    .where(eq(argosCosts.messageId, messageId))
+    .limit(1);
+}
+
+export async function getArgosSessionSummary(sessionId: number) {
+  const db = await getDb();
+  if (!db) {
+    return {
+      totalTokens: 0,
+      avgLatency: 0,
+      totalStabilityCost: 0,
+      avgCoherence: 0,
+      messageCount: 0,
+    };
+  }
+  
+  const costs = await db
+    .select({
+      totalTokens: sql<number>`SUM(${argosCosts.tokenCount})`,
+      avgLatency: sql<number>`AVG(${argosCosts.latencyMs})`,
+      totalStabilityCost: sql<number>`SUM(${argosCosts.stabilityCost})`,
+      avgCoherence: sql<number>`AVG(${argosCosts.coherence})`,
+      messageCount: sql<number>`COUNT(*)`,
+    })
+    .from(argosCosts)
+    .innerJoin(messages, eq(argosCosts.messageId, messages.id))
+    .where(eq(messages.sessionId, sessionId));
+
+  return costs[0] || {
+    totalTokens: 0,
+    avgLatency: 0,
+    totalStabilityCost: 0,
+    avgCoherence: 0,
+    messageCount: 0,
+  };
 }

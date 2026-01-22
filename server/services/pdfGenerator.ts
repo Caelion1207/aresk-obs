@@ -2,6 +2,7 @@ import PDFDocument from 'pdfkit';
 import { createHash } from 'crypto';
 import { getDb } from '../db';
 import { cycles, ethicalLogs, sessions, metrics as metricsTable } from '../../drizzle/schema';
+import { argosCosts as argosCostsTable } from '../../drizzle/schema/argosCosts';
 import { eq, and, gte, lte } from 'drizzle-orm';
 
 /**
@@ -103,11 +104,30 @@ export async function generateCycleReportPDF(cycleId: number, charts?: ChartImag
     .from(ethicalLogs)
     .where(eq(ethicalLogs.cycleId, cycleId));
   
-  // Calcular costos ARGOS (placeholder - necesita tabla argosCosts)
+  // Calcular costos ARGOS desde tabla argosCosts
+  const argosCostsData = await db
+    .select()
+    .from(argosCostsTable)
+    .innerJoin(metricsTable, eq(argosCostsTable.messageId, metricsTable.messageId))
+    .where(
+      and(
+        gte(metricsTable.timestamp, cycle.startedAt),
+        lte(metricsTable.timestamp, cycle.scheduledEndAt)
+      )
+    );
+  
+  const totalTokens = argosCostsData.reduce((sum, row) => sum + (row.argosCosts.tokenCount || 0), 0);
+  const totalStabilityCost = argosCostsData.reduce((sum, row) => sum + (row.argosCosts.stabilityCost || 0), 0);
+  const totalInteractions = argosCostsData.length;
+  
+  // Estimación de costo USD: $0.002 por 1000 tokens (modelo GPT-4 promedio)
+  const costPerToken = 0.002 / 1000;
+  const totalCostUSD = totalTokens * costPerToken;
+  
   const argosCosts = {
-    totalCost: allMetrics.length * 0.000042,
-    avgCostPerMessage: 0.000042,
-    totalInteractions: allMetrics.length,
+    totalCost: totalCostUSD,
+    avgCostPerMessage: totalInteractions > 0 ? totalCostUSD / totalInteractions : 0,
+    totalInteractions,
   };
   
   const reportData: CycleReportData = {

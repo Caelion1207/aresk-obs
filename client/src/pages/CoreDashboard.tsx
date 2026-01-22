@@ -40,6 +40,12 @@ export function CoreDashboard() {
     { sessionId: activeSession?.id || 0 },
     { enabled: !!activeSession }
   );
+  
+  // Obtener costos ARGOS de la sesión activa
+  const { data: argosSummary, refetch: refetchArgos } = trpc.argos.getSummary.useQuery(
+    { sessionId: activeSession?.id || 0 },
+    { enabled: !!activeSession }
+  );
 
   // Auto-refresh cada 5 segundos
   useEffect(() => {
@@ -49,10 +55,11 @@ export function CoreDashboard() {
       refetchCycles();
       refetchHealth();
       refetchMetrics();
+      refetchArgos();
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [autoRefresh, refetchCycles, refetchHealth, refetchMetrics]);
+  }, [autoRefresh, refetchCycles, refetchHealth, refetchMetrics, refetchArgos]);
 
   // Datos del ciclo activo
   const activeCycle = cycleData?.[0];
@@ -75,13 +82,11 @@ export function CoreDashboard() {
   const omegaSparkline = generateSparkline(omegaValues);
   const veSparkline = generateSparkline(veValues);
 
-  // Datos de costos ARGOS
-  const totalCommands = metricsData?.commands.total || 0;
-  const avgCostPerMessage = 0.000042; // Placeholder - necesita endpoint de argosCosts
+  // Datos de costos ARGOS (reales desde tabla argosCosts)
   const argosCost = {
-    totalCost: totalCommands * avgCostPerMessage,
-    avgCostPerMessage,
-    status: getArgosCostStatus(avgCostPerMessage),
+    totalCost: argosSummary?.totalStabilityCost || 0,
+    avgCostPerMessage: argosSummary?.costPerMessage || 0,
+    status: getArgosCostStatus(argosSummary?.costPerMessage || 0),
   };
 
   // Estado ético
