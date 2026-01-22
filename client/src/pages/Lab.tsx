@@ -36,6 +36,8 @@ import {
   AreaChart,
   Area
 } from "recharts";
+import { ActiveFieldChart } from "@/components/instrumentation/ActiveFieldChart";
+import { MetricFrame } from "@/types/instrumentation";
 
 export default function Lab() {
   return (
@@ -367,63 +369,35 @@ function LabContent() {
                 </CardContent>
               </Card>
 
-              {/* 2. ENERGÍA DE LYAPUNOV (V²) */}
+              {/* 2. ESTABILIDAD V(e) - Instrumentación de Campo */}
               <Card className="border-blue-500/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Zap className="h-5 w-5 text-blue-500" />
-                    Lyapunov Energy V²(t)
+                    Estabilidad V(e)
                   </CardTitle>
                   <CardDescription>
-                    Squared stability cost. Convergence to zero indicates stable control.
+                    Costo de estabilidad en tiempo real. Convergencia a cero indica control efectivo.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {loadingHistory ? (
-                    <div className="h-[350px] flex items-center justify-center">
+                    <div className="h-64 flex items-center justify-center">
                       <p className="text-muted-foreground">Cargando datos...</p>
                     </div>
+                  ) : erosionHistory && erosionHistory.length > 0 ? (
+                    <ActiveFieldChart
+                      data={erosionHistory.map((point: any, index: number) => ({
+                        timestamp: index + 1,
+                        value: Math.min(point.lyapunovValue, 1.0), // Normalizar a [0, 1]
+                        state: point.state || 'NOMINAL' // Estado calculado por el backend
+                      } as MetricFrame))}
+                      label="ESTABILIDAD"
+                      law="V(e) → 0 (Lyapunov)"
+                    />
                   ) : (
-                    <div className="h-[350px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={chartData}>
-                          <defs>
-                            <linearGradient id="energyGradient" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="oklch(from var(--border) l c h / 0.3)" />
-                          <XAxis 
-                            dataKey="step" 
-                            label={{ value: 'Temporal Step', position: 'insideBottom', offset: -5 }}
-                            stroke="oklch(from var(--foreground) l c h / 0.5)"
-                          />
-                          <YAxis 
-                            domain={[0, 'auto']}
-                            label={{ value: 'Energy V²', angle: -90, position: 'insideLeft' }}
-                            stroke="oklch(from var(--foreground) l c h / 0.5)"
-                          />
-                          <Tooltip 
-                            contentStyle={{ 
-                              backgroundColor: 'oklch(from var(--card) l c h)', 
-                              border: '1px solid oklch(from var(--border) l c h)',
-                              borderRadius: '6px'
-                            }}
-                            formatter={(value: any) => (typeof value === 'number' ? value.toFixed(4) : value)}
-                          />
-                          <Legend />
-                          <Area 
-                            type="monotone" 
-                            dataKey="energy" 
-                            stroke="#3b82f6" 
-                            strokeWidth={2}
-                            fill="url(#energyGradient)" 
-                            name="V² Energy"
-                          />
-                          <ReferenceLine y={0} stroke="#10b981" strokeDasharray="3 3" label="Target (0)" />
-                        </AreaChart>
-                      </ResponsiveContainer>
+                    <div className="h-64 flex items-center justify-center">
+                      <p className="text-muted-foreground">No hay datos disponibles</p>
                     </div>
                   )}
                 </CardContent>

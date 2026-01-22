@@ -1620,4 +1620,25 @@
 ### Fase 3: Integración
 - [x] Integrar gráfica en Core Dashboard
 - [x] Probar visualización con datos reales
+- [x] Crear checkpoint del proyecto
+
+
+## Instrumentación Visual v2.1 (ActiveFieldChart)
+
+### Fase 1: Preparación de Tipos
+- [x] Crear client/src/types/instrumentation.ts con MetricFrame y SystemState
+- [x] Modificar endpoint metrics para incluir campo 'state' calculado por backend
+- [x] Verificar que backend envía state explícitamente (NOMINAL/DRIFT/CRITICAL)
+
+### Fase 2: Componente ActiveFieldChart
+- [x] Crear client/src/components/instrumentation/ActiveFieldChart.tsx
+- [x] Implementar 6 capas visuales (vacío, estructura, leyes, dinámica, vignette, HUD)
+- [x] Mapear estados a colores sin lógica de umbrales en frontend
+- [x] Verificar que componente es "tonto" (solo renderiza, no decide)
+
+### Fase 3: Integración en LAB
+- [x] Reemplazar gráficas de V(e) en /lab con ActiveFieldChart
+- [x] Eliminar ejes X/Y visibles y grillas por defecto
+- [x] Verificar regiones de ley visibles en fondo
+- [x] Verificar cambio instantáneo de color según estado del backend
 - [ ] Crear checkpoint del proyecto

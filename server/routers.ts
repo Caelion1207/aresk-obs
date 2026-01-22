@@ -1228,7 +1228,26 @@ export const appRouter = router({
     getSessionMetrics: protectedProcedure
       .input(z.object({ sessionId: z.number() }))
       .query(async ({ input }) => {
-        return await getSessionMetrics(input.sessionId);
+        const metrics = await getSessionMetrics(input.sessionId);
+        
+        // Calcular estado del sistema para cada métrica (autoridad del backend)
+        return metrics.map(metric => {
+          let state: 'NOMINAL' | 'DRIFT' | 'CRITICAL';
+          
+          // Lógica de umbrales (solo el backend decide)
+          if (metric.funcionLyapunov > 0.8 || metric.coherenciaObservable < 0.3) {
+            state = 'CRITICAL';
+          } else if (metric.funcionLyapunov > 0.5 || metric.coherenciaObservable < 0.6) {
+            state = 'DRIFT';
+          } else {
+            state = 'NOMINAL';
+          }
+          
+          return {
+            ...metric,
+            state,
+          };
+        });
       }),
     
     /**
