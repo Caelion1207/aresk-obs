@@ -1601,5 +1601,23 @@
 - [x] Capturar tokens, latencia, stabilityCost, coherence
 
 ### Fase 3: Validación
-- [ ] Probar envío de mensaje y verificar registro en argosCosts
+- [x] Probar envío de mensaje y verificar registro en argosCosts
+- [x] Crear checkpoint del proyecto
+
+
+## Gráfica de Tokens por Perfil de Planta
+
+### Fase 1: Endpoint Backend
+- [x] Crear endpoint argos.getTokensByProfile
+- [x] Consultar argosCosts agrupados por plantProfile
+- [x] Calcular suma de tokens por perfil (tipo_a, tipo_b, acoplada)
+
+### Fase 2: Componente Frontend
+- [x] Crear componente TokensByProfileChart con Recharts
+- [x] Implementar gráfica de barras con colores por perfil
+- [x] Agregar labels y tooltips
+
+### Fase 3: Integración
+- [x] Integrar gráfica en Core Dashboard
+- [x] Probar visualización con datos reales
 - [ ] Crear checkpoint del proyecto

@@ -6,6 +6,7 @@ import { InterpretationTooltip } from '../components/core/InterpretationTooltip'
 import { PhaseTimeline, CyclePhase } from '../components/core/PhaseTimeline';
 import { ArgosMonitor } from '../components/core/ArgosMonitor';
 import { EthicalStatus } from '../components/core/EthicalStatus';
+import { TokensByProfileChart } from '../components/core/TokensByProfileChart';
 import {
   getOmegaStatus,
   getLyapunovStatus,
@@ -46,6 +47,9 @@ export function CoreDashboard() {
     { sessionId: activeSession?.id || 0 },
     { enabled: !!activeSession }
   );
+  
+  // Obtener tokens por perfil de planta
+  const { data: tokensByProfile, refetch: refetchTokens } = trpc.argos.getTokensByProfile.useQuery();
 
   // Auto-refresh cada 5 segundos
   useEffect(() => {
@@ -56,10 +60,11 @@ export function CoreDashboard() {
       refetchHealth();
       refetchMetrics();
       refetchArgos();
+      refetchTokens();
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [autoRefresh, refetchCycles, refetchHealth, refetchMetrics, refetchArgos]);
+  }, [autoRefresh, refetchCycles, refetchHealth, refetchMetrics, refetchArgos, refetchTokens]);
 
   // Datos del ciclo activo
   const activeCycle = cycleData?.[0];
@@ -215,6 +220,16 @@ export function CoreDashboard() {
                 logs={[]}
                 status={ethicalStatus}
               />
+            </DeepCard>
+          </InterpretationTooltip>
+
+          <InterpretationTooltip
+            law="ARGOS Tokens por Perfil"
+            value="Comparativa"
+            interpretation="Comparación de tokens consumidos por cada perfil de planta. Tipo A (alta entropía) consume más tokens por deriva semántica. Acoplada (CAELION) optimiza consumo con control Licurgo."
+          >
+            <DeepCard title="TOKENS POR PERFIL">
+              <TokensByProfileChart data={tokensByProfile || []} />
             </DeepCard>
           </InterpretationTooltip>
         </section>

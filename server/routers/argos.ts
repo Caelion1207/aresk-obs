@@ -3,8 +3,12 @@ import { publicProcedure, router } from '../_core/trpc';
 import { 
   getArgosCostsBySession, 
   getArgosCostsByMessage,
-  getArgosSessionSummary 
+  getArgosSessionSummary,
+  getDb
 } from '../db';
+import { messages } from '../../drizzle/schema';
+import { argosCosts as argosCostsTable } from '../../drizzle/schema/argosCosts';
+import { eq, sql } from 'drizzle-orm';
 
 /**
  * Router ARGOS: Costos Computacionales
@@ -94,5 +98,41 @@ export const argosRouter = router({
         coherence: costs[0].coherence,
         createdAt: costs[0].createdAt,
       };
+    }),
+
+  /**
+   * Obtener tokens consumidos agrupados por perfil de planta
+   * Retorna suma de tokens para cada perfil: tipo_a, tipo_b, acoplada
+   */
+  getTokensByProfile: publicProcedure
+    .query(async () => {
+      const db = await getDb();
+      if (!db) throw new Error('Database unavailable');
+      
+      // Consultar todos los costos con join a messages para obtener plantProfile
+      const costsWithProfile = await db
+        .select({
+          plantProfile: messages.plantProfile,
+          tokenCount: argosCostsTable.tokenCount,
+        })
+        .from(argosCostsTable)
+        .innerJoin(messages, eq(argosCostsTable.messageId, messages.id))
+        .where(sql`${messages.plantProfile} IS NOT NULL`);
+      
+      // Agrupar y sumar tokens por perfil
+      const grouped = costsWithProfile.reduce((acc, row) => {
+        const profile = row.plantProfile || 'unknown';
+        if (!acc[profile]) {
+          acc[profile] = 0;
+        }
+        acc[profile] += row.tokenCount || 0;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      return [
+        { profile: 'tipo_a', label: 'Tipo A', tokens: grouped['tipo_a'] || 0 },
+        { profile: 'tipo_b', label: 'Tipo B', tokens: grouped['tipo_b'] || 0 },
+        { profile: 'acoplada', label: 'Acoplada', tokens: grouped['acoplada'] || 0 },
+      ];
     }),
 });
