@@ -174,4 +174,63 @@
       max-width: 1280px; /* Standard content width */
     }
   }
+
+  /* ========================================
+     ARESK-OBS Core UI v1.0.0
+     Ley Constitucional de Visualización
+     ======================================== */
+
+  /* Paleta de Autoridad */
+  .bg-void {
+    background-color: #0A0A0B;
+  }
+
+  .border-subtle {
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .text-verdict {
+    @apply font-sans font-bold tracking-widest uppercase;
+  }
+
+  .text-technical {
+    @apply font-mono text-xs opacity-60;
+  }
+
+  /* Estados del Sistema */
+  .state-nominal {
+    color: #10B981; /* Verde Esmeralda */
+  }
+
+  .state-drift {
+    color: #F59E0B; /* Ámbar */
+  }
+
+  .state-critical {
+    color: #EF4444; /* Rojo */
+  }
+
+  .bg-state-nominal {
+    background-color: #10B981;
+  }
+
+  .bg-state-drift {
+    background-color: #F59E0B;
+  }
+
+  .bg-state-critical {
+    background-color: #EF4444;
+  }
+
+  .border-state-nominal {
+    border-color: #10B981;
+  }
+
+  .border-state-drift {
+    border-color: #F59E0B;
+  }
+
+  .border-state-critical {
+    border-color: #EF4444;
+  }
 }

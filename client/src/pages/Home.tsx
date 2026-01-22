@@ -64,6 +64,11 @@ export default function Home() {
                   Ciclos COM-72
                 </Button>
               </Link>
+              <Link href="/core">
+                <Button variant="outline" size="lg">
+                  Core Dashboard
+                </Button>
+              </Link>
               <Link href="/health">
                 <Button variant="outline" size="lg">
                   Salud del Sistema

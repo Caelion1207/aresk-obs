@@ -1362,3 +1362,66 @@
 - [x] Verificar con auditoría (EXIT CODE 0 ✅)
 
 **Estado:** Marco de Violaciones ETH-01 v1.0.0 definido y operativo. Sistema registra violaciones con severidad y vincula a ciclos COM-72.
+
+
+## Core UI Starter v1.0.0 - Ley Constitucional de Visualización
+
+### Fase 1: Sistema de Diseño
+- [ ] Actualizar index.css con paleta de autoridad (bg-void, border-subtle, text-verdict, text-technical)
+- [ ] Definir estados del sistema (NOMINAL, DRIFT, CRITICAL)
+- [ ] Instalar framer-motion para animaciones semánticas
+
+### Fase 2: Componentes Base
+- [ ] Crear DeepCard (contenedor con profundidad)
+- [ ] Crear StateMetric (juez con header/body/footer)
+- [ ] Implementar flash de 100ms en cambio de estado
+
+### Fase 3: Componentes Avanzados
+- [ ] Crear InterpretationTooltip (la verdad)
+- [ ] Crear PhaseTimeline (reloj COM-72)
+- [ ] Crear ArgosMonitor (régimen energético)
+- [ ] Crear EthicalStatus (veto ético)
+
+### Fase 4: Dashboard Grid
+- [ ] Crear página CoreDashboard con grid de 3 columnas
+- [ ] Columna 1: Gobernanza Temporal (COM-72)
+- [ ] Columna 2: Estabilidad Semántica (ARESK)
+- [ ] Columna 3: Economía & Ética (ARGOS/ETH)
+- [ ] Integrar en navegación principal
+
+### Fase 5: Validación
+- [ ] Verificar cumplimiento de Ley Constitucional de Visualización
+- [ ] Probar en navegador (debe ser aburrido, intimidante y estable)
+- [ ] Crear checkpoint
+
+
+## Core UI Starter v1.0.0 - Ley Constitucional de Visualización ✅
+
+### Fase 1: Sistema de Diseño
+- [x] Instalar framer-motion para animaciones semánticas
+- [x] Actualizar index.css con paleta de autoridad
+- [x] Definir clases de estado (NOMINAL, DRIFT, CRITICAL)
+
+### Fase 2: Componentes Base
+- [x] Crear DeepCard (contenedor con profundidad)
+- [x] Crear StateMetric (el juez con flash de 100ms)
+
+### Fase 3: Componentes Avanzados
+- [x] Crear InterpretationTooltip (la verdad)
+- [x] Crear PhaseTimeline (reloj COM-72)
+- [x] Crear ArgosMonitor (régimen energético)
+- [x] Crear EthicalStatus (veto ético)
+
+### Fase 4: Dashboard Grid
+- [x] Crear CoreDashboard con grid de 3 columnas
+- [x] Columna 1: Gobernanza Temporal (COM-72)
+- [x] Columna 2: Estabilidad Semántica (ARESK)
+- [x] Columna 3: Economía & Ética (ARGOS/ETH)
+- [x] Agregar ruta /core en App.tsx
+- [x] Agregar enlace en navegación principal
+
+### Fase 5: Pruebas
+- [x] Probar funcionalidad completa (servidor arrancado correctamente)
+- [x] Crear checkpoint del proyecto
+
+**Estado:** Core UI Starter v1.0.0 implementado. Dashboard minimalista, estático, sin dopamina, con componentes DeepCard, StateMetric, InterpretationTooltip, PhaseTimeline, ArgosMonitor y EthicalStatus.

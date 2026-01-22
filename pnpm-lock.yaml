@@ -159,7 +159,7 @@ importers:
         specifier: ^4.21.2
         version: 4.22.1
       framer-motion:
-        specifier: ^12.23.22
+        specifier: ^12.26.2
         version: 12.26.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       input-otp:
         specifier: ^1.4.2
