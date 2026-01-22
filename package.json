@@ -50,7 +50,9 @@
     "@types/pdfkit": "^0.17.4",
     "async-mutex": "^0.5.0",
     "axios": "^1.12.0",
+    "canvas": "^3.2.1",
     "chart.js": "^4.5.1",
+    "chartjs-node-canvas": "^5.0.0",
     "chromadb": "^3.2.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -123,6 +125,8 @@
     "overrides": {
       "tailwindcss>nanoid": "3.3.7"
     },
-    "onlyBuiltDependencies": []
+    "onlyBuiltDependencies": [
+      "canvas"
+    ]
   }
 }

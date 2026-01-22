@@ -9,9 +9,15 @@ export const pdfRouter = router({
   generateCycleReport: publicProcedure
     .input(z.object({
       cycleId: z.number(),
+      charts: z.object({
+        phasePortrait: z.string().optional(),
+        lyapunovEnergy: z.string().optional(),
+        errorDynamics: z.string().optional(),
+        controlEffort: z.string().optional(),
+      }).optional(),
     }))
     .mutation(async ({ input }) => {
-      const pdfBuffer = await generateCycleReportPDF(input.cycleId);
+      const pdfBuffer = await generateCycleReportPDF(input.cycleId, input.charts);
       
       // Convertir buffer a base64 para enviar al cliente
       const base64 = pdfBuffer.toString('base64');

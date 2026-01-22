@@ -58,10 +58,17 @@ function generateVerdict(status: string, ethicalViolations: number): string {
   return 'Se detectaron eventos críticos que requieren intervención humana inmediata.';
 }
 
+interface ChartImages {
+  phasePortrait?: string;
+  lyapunovEnergy?: string;
+  errorDynamics?: string;
+  controlEffort?: string;
+}
+
 /**
  * Genera PDF de informe de ciclo COM-72
  */
-export async function generateCycleReportPDF(cycleId: number): Promise<Buffer> {
+export async function generateCycleReportPDF(cycleId: number, charts?: ChartImages): Promise<Buffer> {
   const db = await getDb();
   if (!db) throw new Error('Database unavailable');
   
@@ -300,8 +307,50 @@ export async function generateCycleReportPDF(cycleId: number): Promise<Buffer> {
   
   doc.fontSize(11).font('Helvetica-Bold').text('Frase final:');
   doc.moveDown(0.5);
-  doc.fontSize(11).font('Helvetica');
-  doc.text('Este documento refleja el estado observable del sistema. No contiene predicciones ni promesas.');
+   doc.fontSize(11).font('Helvetica').text('Este documento refleja el estado observable del sistema. No contiene predicciones ni promesas.');
+  
+  // 10. APÉNDICES (gráficas del LAB)
+  if (charts && (charts.phasePortrait || charts.lyapunovEnergy || charts.errorDynamics || charts.controlEffort)) {
+    doc.addPage();
+    doc.fontSize(18).font('Helvetica-Bold').text('APÉNDICES: VISUALIZACIONES DEL LAB');
+    doc.moveDown(1);
+    
+    let yPosition = doc.y;
+    
+    if (charts.phasePortrait) {
+      doc.fontSize(12).font('Helvetica-Bold').text('A.1 Phase Portrait (H vs C)');
+      doc.moveDown(0.5);
+      const imgBuffer = Buffer.from(charts.phasePortrait.split(',')[1], 'base64');
+      doc.image(imgBuffer, { width: 400, align: 'center' });
+      doc.moveDown(1);
+    }
+    
+    if (charts.lyapunovEnergy) {
+      if (doc.y > 600) doc.addPage();
+      doc.fontSize(12).font('Helvetica-Bold').text('A.2 Lyapunov Energy V²(t)');
+      doc.moveDown(0.5);
+      const imgBuffer = Buffer.from(charts.lyapunovEnergy.split(',')[1], 'base64');
+      doc.image(imgBuffer, { width: 400, align: 'center' });
+      doc.moveDown(1);
+    }
+    
+    if (charts.errorDynamics) {
+      if (doc.y > 600) doc.addPage();
+      doc.fontSize(12).font('Helvetica-Bold').text('A.3 Error Dynamics (ε_eff vs Δε_eff)');
+      doc.moveDown(0.5);
+      const imgBuffer = Buffer.from(charts.errorDynamics.split(',')[1], 'base64');
+      doc.image(imgBuffer, { width: 400, align: 'center' });
+      doc.moveDown(1);
+    }
+    
+    if (charts.controlEffort) {
+      if (doc.y > 600) doc.addPage();
+      doc.fontSize(12).font('Helvetica-Bold').text('A.4 Control Effort ΔV(t)');
+      doc.moveDown(0.5);
+      const imgBuffer = Buffer.from(charts.controlEffort.split(',')[1], 'base64');
+      doc.image(imgBuffer, { width: 400, align: 'center' });
+    }
+  }
   
   doc.end();
   

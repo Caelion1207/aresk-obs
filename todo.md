@@ -1485,3 +1485,24 @@
 - [x] Crear checkpoint del proyecto
 
 **Estado:** PDFs de Ingeniería CAELION v1.0 implementados. Generación de informes de ciclo COM-72 con 10 secciones según Estándar de Documento CAELION.
+
+
+## Exportación de Visualizaciones LAB como PNG ✅
+
+### Fase 1: Endpoint de Gráficas
+- [x] Evaluar dependencias (canvas requiere librerías nativas no disponibles)
+- [x] Adoptar enfoque alternativo: gráficas generadas en frontend
+- [x] Actualizar endpoint pdf.generateCycleReport para aceptar charts base64
+
+### Fase 2: Integración en PDF
+- [x] Actualizar pdfGenerator.ts para incluir gráficas en Apéndices
+- [x] Agregar sección 10 con 4 visualizaciones del LAB (A.1-A.4)
+- [x] Ajustar layout para imágenes en PDF (width: 400, align: center)
+- [x] Crear documentación LAB_CHARTS_EXPORT.md
+
+### Fase 3: Pruebas
+- [x] Backend preparado para recibir gráficas base64
+- [x] Generador de PDF con sección de Apéndices funcional
+- [x] Crear checkpoint del proyecto
+
+**Estado:** Backend preparado para incluir visualizaciones del LAB en PDFs. Frontend puede capturar gráficas usando `chartRef.current.toBase64Image()` y enviarlas al endpoint.
