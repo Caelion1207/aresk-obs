@@ -27,19 +27,27 @@ export const ActiveFieldChart: React.FC<ActiveFieldProps> = ({ data, label, law 
       <div className="absolute inset-0 bg-void z-0" />
 
       {/* CAPA 2: ESTRUCTURA LATENTE (Grid No-Cartesiano) */}
-      {/* Opacidad ultra-baja. Solo se siente, no se lee. */}
-      <div className="absolute inset-0 z-10 opacity-[0.03]" 
-           style={{ backgroundImage: 'radial-gradient(circle, #FFFFFF 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+      {/* Patrón radial que sugiere campo, no cuadrícula cartesiana */}
+      <div className="absolute inset-0 z-10 opacity-[0.05]" 
+           style={{ 
+             backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 0.5px, transparent 0.5px)', 
+             backgroundSize: '24px 24px',
+             backgroundPosition: 'center center'
+           }} />
+      <div className="absolute inset-0 z-10 opacity-[0.02]" 
+           style={{ 
+             backgroundImage: 'radial-gradient(ellipse at center, transparent 30%, rgba(255,255,255,0.05) 70%, transparent 100%)'
+           }} />
 
       {/* CAPA 3: LAS LEYES (Regiones Físicas) */}
       {/* Estas zonas son invariantes. El gráfico vive dentro de ellas. */}
       <div className="absolute inset-0 flex flex-col z-20 pointer-events-none">
-         {/* Zona de Veto (Invariante ETH-01) */}
-         <div className="h-[15%] w-full bg-[#FF003C] opacity-[0.02] border-b border-[#FF003C]/10" />
-         {/* Zona de Deriva (Tolerancia) */}
-         <div className="h-[25%] w-full bg-[#FFD600] opacity-[0.015] border-b border-[#FFD600]/5" />
-         {/* Zona Nominal (Espacio Seguro) */}
-         <div className="flex-1 w-full" />
+         {/* Zona de Veto (Invariante ETH-01) - V(e) > 4ε² */}
+         <div className="h-[15%] w-full bg-gradient-to-b from-[#FF003C]/[0.08] to-[#FF003C]/[0.02] border-b border-[#FF003C]/20" />
+         {/* Zona de Deriva (Tolerancia) - ε² < V(e) < 4ε² */}
+         <div className="h-[25%] w-full bg-gradient-to-b from-[#FFD600]/[0.05] to-[#FFD600]/[0.01] border-b border-[#FFD600]/15" />
+         {/* Zona Nominal (Espacio Seguro) - V(e) ≤ ε² */}
+         <div className="flex-1 w-full bg-gradient-to-b from-transparent to-[#00F0FF]/[0.01]" />
       </div>
 
       {/* CAPA 4: LA DINÁMICA (Datos) */}
@@ -74,10 +82,10 @@ export const ActiveFieldChart: React.FC<ActiveFieldProps> = ({ data, label, law 
       {/* CAPA 5: VIGNETTE & UI (Cristal Frontal) */}
       <div className="absolute inset-0 z-40 bg-[radial-gradient(circle_at_center,transparent_50%,#000000_100%)] opacity-40 pointer-events-none" />
 
-      {/* CAPA 6: HUD (Heads-Up Display) */}
-      <div className="absolute top-3 right-4 z-50 text-right">
+      {/* CAPA 6: HUD (Heads-Up Display) con transiciones suaves */}
+      <div className="absolute top-3 right-4 z-50 text-right transition-all duration-300">
         <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{label}</div>
-        <div className="text-sm font-bold tracking-tighter" style={{ color: stateColor }}>
+        <div className="text-sm font-bold tracking-tighter transition-colors duration-300" style={{ color: stateColor }}>
           {currentState} <span className="text-xs opacity-60 ml-1">[{currentFrame.value.toFixed(3)}]</span>
         </div>
         <div className="text-[9px] text-gray-600 mt-1 font-mono">{law}</div>

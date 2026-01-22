@@ -1641,4 +1641,19 @@
 - [x] Eliminar ejes X/Y visibles y grillas por defecto
 - [x] Verificar regiones de ley visibles en fondo
 - [x] Verificar cambio instantáneo de color según estado del backend
+- [x] Crear checkpoint del proyecto
+
+
+## FASE 1: Inyección de Vida (ARGOS)
+- [x] Generar 3 conversaciones en Simulador Web (Perfil Acoplado)
+- [x] Verificar que ARGOS captura costos (tokens=2066, latency=11128ms)
+- [x] Confirmar que argosCosts tiene datos reales (3 registros)
+- [x] Validar que gráficas de tokens muestran barras con datos (~7500 tokens para Acoplada)
+
+## FASE 2: Refinamiento Visual (ActiveFieldChart Existente)
+- [x] Agregar transiciones suaves de 300ms al HUD y colores
+- [x] Mejorar grid estructural con patrón radial no-cartesiano
+- [x] Refinar regiones de ley con gradientes más visibles
+- [x] Mantener separación estricta: Backend decide, Frontend renderiza
+- [x] Verificar visualización en LAB (HUD cian, regiones visibles, patrón radial)
 - [ ] Crear checkpoint del proyecto
