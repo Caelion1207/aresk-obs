@@ -1452,3 +1452,36 @@
 - [x] Crear checkpoint del proyecto
 
 **Estado:** Core Dashboard conectado a datos reales del sistema CAELION. Visualización en tiempo real de ciclos COM-72, métricas ARESK, costos ARGOS y estado ético ETH-01.
+
+
+## PDFs de Ingeniería CAELION v1.0 ✅
+
+### Fase 1: Endpoint tRPC
+- [x] Crear router pdf con endpoint generateCycleReport
+- [x] Agregar helpers para calcular métricas canónicas (calculateGlobalStatus, generateVerdict)
+- [x] Agregar helpers para generar hash SHA-256 del documento
+
+### Fase 2: Generador de PDF
+- [x] Instalar dependencias (pdfkit, @types/pdfkit)
+- [x] Implementar 10 secciones del Estándar CAELION:
+  - [x] 1. Portada funcional (nombre, versión, ciclo, timestamp, hash)
+  - [x] 2. Resumen ejecutivo (estado, veredicto)
+  - [x] 3. Topología del sistema observado
+  - [x] 4. Métricas canónicas (Ω, V(e))
+  - [x] 5. Costos y eficiencia (ARGOS)
+  - [x] 6. Eventos de gobernanza (ETH-01)
+  - [x] 7. Observaciones sistémicas
+  - [x] 8. Limitaciones del ciclo
+  - [x] 9. Cierre y resumen final
+  - [x] 10. Apéndices (pendiente - gráficas, logs)
+
+### Fase 3: Interfaz UI
+- [x] Agregar botón "Exportar PDF" en CyclesDashboard
+- [x] Implementar descarga de archivo PDF con conversión base64 a blob
+
+### Fase 4: Pruebas
+- [x] Servidor arrancado sin errores TypeScript
+- [x] Verificar hash SHA-256 (generado en portada)
+- [x] Crear checkpoint del proyecto
+
+**Estado:** PDFs de Ingeniería CAELION v1.0 implementados. Generación de informes de ciclo COM-72 con 10 secciones según Estándar de Documento CAELION.

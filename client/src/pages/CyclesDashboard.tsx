@@ -3,7 +3,7 @@ import { trpc } from '@/lib/trpc';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Activity, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { Clock, Activity, CheckCircle2, XCircle, AlertTriangle, Download } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -20,6 +20,35 @@ const STATUS_CONFIG: Record<CycleStatus, { label: string; variant: 'default' | '
 export function CyclesDashboard() {
   const { data: cycles, isLoading, refetch } = trpc.cycles.list.useQuery();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const generatePDF = trpc.pdf.generateCycleReport.useMutation();
+
+  const handleExportPDF = async (cycleId: number) => {
+    try {
+      const result = await generatePDF.mutateAsync({ cycleId });
+      
+      // Convertir base64 a blob y descargar
+      const byteCharacters = atob(result.pdf);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      
+      // Crear link de descarga
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = result.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error generando PDF:', error);
+      alert('Error al generar el PDF. Revisa la consola para más detalles.');
+    }
+  };
 
   // Actualizar tiempo cada segundo para countdown en tiempo real
   useEffect(() => {
@@ -175,6 +204,15 @@ export function CyclesDashboard() {
                           {timeRemaining.text}
                         </div>
                       </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleExportPDF(cycle.id)}
+                        title="Exportar PDF de Ingeniería CAELION"
+                        disabled={generatePDF.isPending}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent>
