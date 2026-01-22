@@ -64,6 +64,11 @@ export default function Home() {
                   Ciclos COM-72
                 </Button>
               </Link>
+              <Link href="/health">
+                <Button variant="outline" size="lg">
+                  Salud del Sistema
+                </Button>
+              </Link>
               <Link href="/simulator">
                 <Button size="lg">
                   Acceder al Instrumento

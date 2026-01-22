@@ -1293,3 +1293,23 @@
 - [x] Crear checkpoint del proyecto
 
 **Estado:** Infraestructura avanzada CAELION v1.0.5 operativa. Sistema de métricas, Outbox Pattern con reintentos, FOR UPDATE con timeout, y endpoints de salud funcionando correctamente.
+
+
+## Dashboard de Salud del Sistema ✅
+
+### Fase 1: Componente UI
+- [x] Crear página SystemHealth.tsx con visualización de métricas
+- [x] Implementar tarjetas de estado de componentes (outbox, metrics, cycles)
+- [x] Agregar visualización de alertas activas
+- [x] Mostrar contadores de comandos y violaciones
+- [x] Implementar auto-refresh cada 5 segundos con toggle ON/OFF
+
+### Fase 2: Integración
+- [x] Agregar ruta /health en App.tsx
+- [x] Agregar enlace en navegación principal (Home.tsx)
+- [x] Probar funcionalidad completa (estado Saludable, 1 ciclo activo, 0 alertas)
+
+### Fase 3: Checkpoint
+- [x] Crear checkpoint del proyecto
+
+**Estado:** Dashboard de Salud del Sistema operativo. Monitoreo en tiempo real de componentes CAELION con visualización de métricas, estados y alertas.
