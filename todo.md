@@ -1425,3 +1425,30 @@
 - [x] Crear checkpoint del proyecto
 
 **Estado:** Core UI Starter v1.0.0 implementado. Dashboard minimalista, estático, sin dopamina, con componentes DeepCard, StateMetric, InterpretationTooltip, PhaseTimeline, ArgosMonitor y EthicalStatus.
+
+
+## Conexión de Core Dashboard a Datos Reales ✅
+
+### Fase 1: Análisis de Endpoints
+- [x] Revisar endpoints tRPC disponibles (cycles, health, metrics)
+- [x] Identificar datos necesarios para cada componente
+- [x] Mapear estructura de datos de endpoints a props de componentes
+
+### Fase 2: Helpers de Transformación
+- [x] Crear helpers para calcular estados del sistema (NOMINAL/DRIFT/CRITICAL)
+- [x] Crear helpers para generar sparklines desde series temporales
+- [x] Crear helpers para formatear datos de costos ARGOS
+
+### Fase 3: Actualización de CoreDashboard
+- [x] Conectar PhaseTimeline a cycles.listActive
+- [x] Conectar StateMetric (Ω, V(e)) a metrics.getSessionMetrics
+- [x] Conectar ArgosMonitor a health.metrics (comandos totales)
+- [x] Conectar EthicalStatus a health.summary (violaciones éticas)
+- [x] Implementar auto-refresh cada 5 segundos con toggle ON/OFF
+
+### Fase 4: Pruebas
+- [x] Probar con servidor activo (sin errores TypeScript)
+- [x] Verificar actualización en tiempo real
+- [x] Crear checkpoint del proyecto
+
+**Estado:** Core Dashboard conectado a datos reales del sistema CAELION. Visualización en tiempo real de ciclos COM-72, métricas ARESK, costos ARGOS y estado ético ETH-01.

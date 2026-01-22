@@ -6,6 +6,15 @@ import { InterpretationTooltip } from '../components/core/InterpretationTooltip'
 import { PhaseTimeline, CyclePhase } from '../components/core/PhaseTimeline';
 import { ArgosMonitor } from '../components/core/ArgosMonitor';
 import { EthicalStatus } from '../components/core/EthicalStatus';
+import {
+  getOmegaStatus,
+  getLyapunovStatus,
+  getArgosCostStatus,
+  getEthicalStatus,
+  generateSparkline,
+  calculateTimeRemaining,
+  getLastNMetrics,
+} from '../lib/dashboardHelpers';
 
 /**
  * CoreDashboard - Dashboard Grid Maestro
@@ -17,18 +26,33 @@ import { EthicalStatus } from '../components/core/EthicalStatus';
  * - Columna 3: Economía & Ética (ARGOS/ETH)
  */
 export function CoreDashboard() {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
-  // Consultas tRPC
-  const { data: cycleData } = trpc.cycles.listActive.useQuery();
-  const { data: metricsData } = trpc.health.metrics.useQuery();
-  const { data: ethicalLogs } = trpc.health.summary.useQuery();
+  // Consultas tRPC con auto-refresh
+  const { data: cycleData, refetch: refetchCycles } = trpc.cycles.listActive.useQuery();
+  const { data: healthSummary, refetch: refetchHealth } = trpc.health.summary.useQuery();
+  const { data: metricsData, refetch: refetchMetrics } = trpc.health.metrics.useQuery();
+  
+  // Obtener sesión activa más reciente para métricas ARESK
+  const { data: userSessions } = trpc.session.list.useQuery();
+  const activeSession = userSessions?.[0];
+  const { data: sessionMetrics } = trpc.metrics.getSessionMetrics.useQuery(
+    { sessionId: activeSession?.id || 0 },
+    { enabled: !!activeSession }
+  );
 
-  // Actualizar tiempo cada segundo
+  // Auto-refresh cada 5 segundos
   useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(new Date()), 1000);
+    if (!autoRefresh) return;
+    
+    const interval = setInterval(() => {
+      refetchCycles();
+      refetchHealth();
+      refetchMetrics();
+    }, 5000);
+    
     return () => clearInterval(interval);
-  }, []);
+  }, [autoRefresh, refetchCycles, refetchHealth, refetchMetrics]);
 
   // Datos del ciclo activo
   const activeCycle = cycleData?.[0];
@@ -37,25 +61,56 @@ export function CoreDashboard() {
     ? calculateTimeRemaining(new Date(activeCycle.scheduledEndAt))
     : 'N/A';
 
-  // Métricas de estabilidad (simuladas por ahora)
-  const omega = 0.892;
-  const ve = 0.124;
-  const omegaStatus: SystemState = omega > 0.85 ? 'NOMINAL' : omega > 0.6 ? 'DRIFT' : 'CRITICAL';
-  const veStatus: SystemState = ve < 0.2 ? 'NOMINAL' : ve < 0.5 ? 'DRIFT' : 'CRITICAL';
+  // Métricas de estabilidad ARESK
+  const lastMetrics = sessionMetrics?.slice(-6) || [];
+  const omegaValues = lastMetrics.map((m: any) => m.coherenciaObservable || 0);
+  const veValues = lastMetrics.map((m: any) => m.funcionLyapunov || 0);
+  
+  const currentOmega = omegaValues[omegaValues.length - 1] || 0;
+  const currentVe = veValues[veValues.length - 1] || 0;
+  
+  const omegaStatus = getOmegaStatus(currentOmega);
+  const veStatus = getLyapunovStatus(currentVe);
+  
+  const omegaSparkline = generateSparkline(omegaValues);
+  const veSparkline = generateSparkline(veValues);
 
-  // Datos de costos
+  // Datos de costos ARGOS
+  const totalCommands = metricsData?.commands.total || 0;
+  const avgCostPerMessage = 0.000042; // Placeholder - necesita endpoint de argosCosts
   const argosCost = {
-    totalCost: metricsData?.commands.total ? metricsData.commands.total * 0.0001 : 0,
-    avgCostPerMessage: 0.000042,
-    status: 'NOMINAL' as SystemState,
+    totalCost: totalCommands * avgCostPerMessage,
+    avgCostPerMessage,
+    status: getArgosCostStatus(avgCostPerMessage),
   };
 
   // Estado ético
-  const ethicalStatus: SystemState = 
-    ethicalLogs?.alerts && ethicalLogs.alerts.length > 0 ? 'CRITICAL' : 'NOMINAL';
+  const ethicalViolations = metricsData?.counters['ethical.violations']?.count || 0;
+  const ethicalStatus = getEthicalStatus(ethicalViolations, 0);
 
   return (
     <div className="min-h-screen bg-void p-6 font-mono text-gray-400">
+      {/* Header con controles */}
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-verdict text-2xl text-gray-300">CORE DASHBOARD</h1>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className={`
+              px-4 py-2 rounded border text-xs font-mono
+              ${autoRefresh 
+                ? 'border-state-nominal text-state-nominal' 
+                : 'border-gray-600 text-gray-600'}
+            `}
+          >
+            AUTO-REFRESH: {autoRefresh ? 'ON' : 'OFF'}
+          </button>
+          <span className="text-technical">
+            {new Date().toLocaleTimeString('es-ES')}
+          </span>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* COLUMNA 1: GOBERNANZA TEMPORAL (COM-72) */}
         <section className="flex flex-col gap-4">
@@ -75,7 +130,19 @@ export function CoreDashboard() {
 
           <DeepCard title="LOGS DE VIOLACIÓN TEMPORAL">
             <div className="text-technical text-center py-4">
-              Sin violaciones COM-72 registradas
+              {healthSummary?.alerts && healthSummary.alerts.length > 0 ? (
+                <div className="space-y-2">
+                  {healthSummary.alerts
+                    .filter(a => a.includes('COM-72'))
+                    .map((alert, idx) => (
+                      <div key={idx} className="text-left text-state-drift">
+                        {alert}
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                'Sin violaciones COM-72 registradas'
+              )}
             </div>
           </DeepCard>
         </section>
@@ -84,35 +151,41 @@ export function CoreDashboard() {
         <section className="flex flex-col gap-4">
           <InterpretationTooltip
             law="ARESK Coherencia (Ω)"
-            value={omega.toFixed(3)}
+            value={currentOmega.toFixed(3)}
             interpretation="La coherencia Ω mide la estabilidad narrativa del sistema. Valores >0.85 indican operación nominal. Valores <0.6 señalan deriva semántica crítica que requiere intervención."
           >
             <DeepCard title="COHERENCIA (Ω)">
               <StateMetric
-                value={omega}
+                value={currentOmega}
                 type="STABILITY"
                 status={omegaStatus}
                 unit="Ω"
-                sparkline={[0.85, 0.87, 0.89, 0.88, 0.89, 0.892]}
+                sparkline={omegaSparkline}
               />
             </DeepCard>
           </InterpretationTooltip>
 
           <InterpretationTooltip
             law="ARESK Resiliencia V(e)"
-            value={ve.toFixed(3)}
+            value={currentVe.toFixed(3)}
             interpretation="La función de Lyapunov V(e) cuantifica el coste de estabilidad. Valores <0.2 indican control efectivo. Valores >0.5 señalan crisis de estabilidad con alto coste energético."
           >
             <DeepCard title="RESILIENCIA (V(e))">
               <StateMetric
-                value={ve}
+                value={currentVe}
                 type="RESISTANCE"
                 status={veStatus}
                 unit="V(e)"
-                sparkline={[0.15, 0.13, 0.12, 0.11, 0.12, 0.124]}
+                sparkline={veSparkline}
               />
             </DeepCard>
           </InterpretationTooltip>
+
+          {!activeSession && (
+            <div className="text-technical text-center py-4 border border-subtle rounded">
+              No hay sesión activa. Inicia una sesión en el Simulador para ver métricas ARESK.
+            </div>
+          )}
         </section>
 
         {/* COLUMNA 3: ECONOMÍA & ÉTICA (ARGOS/ETH) */}
@@ -143,19 +216,4 @@ export function CoreDashboard() {
       </div>
     </div>
   );
-}
-
-function calculateTimeRemaining(endDate: Date): string {
-  const now = new Date();
-  const diff = endDate.getTime() - now.getTime();
-  
-  if (diff <= 0) return 'Expirado';
-  
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  
-  if (days > 0) return `${days}d ${hours}h`;
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  return `${minutes}m`;
 }
