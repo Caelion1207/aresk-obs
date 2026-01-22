@@ -37,6 +37,7 @@ import { cyclesRouter } from "./routers/cycles";
 import { healthRouter } from "./routers/health";
 import { pdfRouter } from "./routers/pdf";
 import { argosRouter } from "./routers/argos";
+import { SystemEvents, EVENTS } from "./infra/events";
 
 // Procedimientos con auditoría y rate limiting
 const auditedProcedure = protectedProcedure.use(auditMiddleware).use(rateLimitMiddleware());
@@ -612,9 +613,15 @@ export const appRouter = router({
         });
         
         // Invocar el LLM (respuesta sin control)
+        const startTime = Date.now();
         const response = await invokeLLM({ messages });
+        const latencyMs = Date.now() - startTime;
+        
         const messageContent = response.choices[0]?.message?.content;
         let assistantContent = typeof messageContent === 'string' ? messageContent : "Error al generar respuesta";
+        
+        // Capturar uso de tokens
+        const tokenCount = response.usage?.total_tokens || 0;
         
         // Calcular métricas preliminares usando el puente semántico
         const referenceText = `Propósito: ${session.purpose}\nLímites: ${session.limits}\nÉtica: ${session.ethics}`;
@@ -708,6 +715,13 @@ export const appRouter = router({
           signoSemantico: sigmaSem,
           campoEfectivo: epsilonEff,
           funcionLyapunovModificada: vModifiedNormalized,
+        });
+        
+        // Emitir evento MESSAGE_CREATED para observador ARGOS
+        SystemEvents.emit(EVENTS.MESSAGE_CREATED, {
+          messageId: assistantMessageId,
+          tokenCount,
+          latencyMs,
         });
         
         // Actualizar TPR (Tiempo de Permanencia en Régimen)

@@ -1586,4 +1586,20 @@
 
 ### Fase 4: Pruebas
 - [x] Verificar servidor arranca sin errores
+- [x] Crear checkpoint del proyecto
+
+
+## Activación Observador ARGOS
+
+### Fase 1: Revisar Observador
+- [x] Leer implementación actual de server/observers/argos.ts
+- [x] Verificar función de registro de costos
+
+### Fase 2: Integración
+- [x] Integrar observador ARGOS en endpoint sendMessage
+- [x] Registrar costos después de cada respuesta generada
+- [x] Capturar tokens, latencia, stabilityCost, coherence
+
+### Fase 3: Validación
+- [ ] Probar envío de mensaje y verificar registro en argosCosts
 - [ ] Crear checkpoint del proyecto

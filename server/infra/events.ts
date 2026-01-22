@@ -16,6 +16,8 @@ export const EVENTS = {
 export type EventMap = {
   [EVENTS.MESSAGE_CREATED]: {
     messageId: number;
+    tokenCount?: number;
+    latencyMs?: number;
   };
   [EVENTS.COST_RECORDED]: {
     messageId: number;

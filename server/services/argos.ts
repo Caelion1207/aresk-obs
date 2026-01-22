@@ -1,6 +1,6 @@
 import { SystemEvents, EVENTS } from '../infra/events';
 import { getDb } from '../db';
-import { messages, argosCosts } from '../../drizzle/schema';
+import { messages, metrics, argosCosts } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
 let isRunning = false;
@@ -11,29 +11,35 @@ export function startArgosObserver() {
 
   console.log('💰 ARGOS-SIDECAR: Online. Cost observer active.');
 
-  SystemEvents.on(EVENTS.MESSAGE_CREATED, ({ messageId }: { messageId: number }) => {
+  SystemEvents.on(EVENTS.MESSAGE_CREATED, ({ messageId, tokenCount, latencyMs }: { messageId: number; tokenCount?: number; latencyMs?: number }) => {
     setImmediate(async () => {
       try {
         const db = await getDb();
         if (!db) return;
         
-        const result = await db.select().from(messages).where(eq(messages.id, messageId)).limit(1);
-        const msg = result.length > 0 ? result[0] : null;
-
+        // Verificar que el mensaje existe
+        const msgResult = await db.select().from(messages).where(eq(messages.id, messageId)).limit(1);
+        const msg = msgResult.length > 0 ? msgResult[0] : null;
         if (!msg) return;
+
+        // Consultar métricas asociadas al mensaje
+        const metricsResult = await db.select().from(metrics).where(eq(metrics.messageId, messageId)).limit(1);
+        const metric = metricsResult.length > 0 ? metricsResult[0] : null;
 
         // Normalización de costos
         const costData = {
           messageId,
-          tokenCount: (msg as any).tokenCount || 0,
-          latencyMs: (msg as any).latencyMs || 0,
-          // Lectura de métricas crudas desde el mensaje
-          stabilityCost: (msg as any).v_e || 0.0, 
-          coherence: (msg as any).omega || 1.0,
+          tokenCount: tokenCount || 0,
+          latencyMs: latencyMs || 0,
+          // Lectura de métricas desde tabla metrics
+          stabilityCost: metric?.funcionLyapunov || 0.0, 
+          coherence: metric?.coherenciaObservable || 1.0,
         };
 
         // Persistir Costo (MySQL)
         await db.insert(argosCosts).values(costData);
+
+        console.log(`💰 ARGOS: Cost recorded for message #${messageId} - tokens: ${costData.tokenCount}, latency: ${costData.latencyMs}ms, V(e): ${costData.stabilityCost.toFixed(3)}, Ω: ${costData.coherence.toFixed(3)}`);
 
         // Emitir evento reservado
         SystemEvents.emit(EVENTS.COST_RECORDED, {
