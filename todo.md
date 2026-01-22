@@ -1533,3 +1533,25 @@
 - [x] Crear checkpoint v1.0.5-FINAL certificado
 
 **Estado:** 🧊 PAQUETE MAESTRO VERIFICADO. El sistema cumple con todos los puntos del Golden Master v1.0.5-FINAL. Invariantes activos, documentación actualizada y cortafuegos semántico aplicado.
+
+
+## Exportación de Gráficas LAB en PDFs v2.0 ✅
+
+### Fase 1: Captura de Gráficas en Frontend
+- [x] Crear función captureCharts() para extraer imágenes base64
+- [x] Usar querySelector('.recharts-surface') para capturar SVGs
+- [x] Convertir SVG a PNG usando canvas
+- [x] Manejar caso cuando gráficas no están renderizadas
+
+### Fase 2: Botón de Exportar PDF con Gráficas
+- [x] Agregar botón "Exportar PDF con Gráficas" en página LAB
+- [x] Llamar a trpc.pdf.generateCycleReport con charts
+- [x] Descargar PDF generado con gráficas incrustadas
+- [x] Mostrar estado de carga durante exportación
+
+### Fase 3: Pruebas
+- [x] Servidor arrancado sin errores TypeScript
+- [x] Botón visible en página LAB
+- [x] Crear checkpoint del proyecto
+
+**Estado:** Exportación de gráficas LAB implementada. Botón disponible en página LAB para capturar las 4 visualizaciones (Phase Portrait, Lyapunov Energy, Error Dynamics, Control Effort) e incluirlas en PDFs de ciclo COM-72.

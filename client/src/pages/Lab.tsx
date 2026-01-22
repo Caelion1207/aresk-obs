@@ -16,7 +16,8 @@ import {
   Activity,
   Zap,
   TrendingDown,
-  GitBranch
+  GitBranch,
+  FileDown
 } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -49,6 +50,7 @@ function LabContent() {
 
   // Queries
   const { data: sessions } = trpc.session.list.useQuery();
+  const generatePDFMutation = trpc.pdf.generateCycleReport.useMutation();
   const { data: erosionHistory, isLoading: loadingHistory } = trpc.erosion.getSessionErosionHistory.useQuery(
     { sessionId: selectedSessionId! },
     { enabled: !!selectedSessionId }
@@ -97,6 +99,69 @@ function LabContent() {
       V: point.lyapunovValue,
     }));
   }, [erosionHistory]);
+
+  // Función para capturar gráficas como base64
+  const captureCharts = async () => {
+    const charts: { [key: string]: string } = {};
+    
+    // Helper para convertir SVG a PNG base64
+    const svgToPng = async (svg: SVGElement): Promise<string> => {
+      return new Promise((resolve) => {
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.onload = () => {
+          ctx?.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        };
+        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+      });
+    };
+    
+    // Capturar todas las gráficas SVG del DOM
+    const svgs = document.querySelectorAll('.recharts-surface');
+    if (svgs.length >= 4) {
+      charts.phasePortrait = await svgToPng(svgs[0] as SVGElement);
+      charts.lyapunovEnergy = await svgToPng(svgs[1] as SVGElement);
+      charts.errorDynamics = await svgToPng(svgs[2] as SVGElement);
+      charts.controlEffort = await svgToPng(svgs[3] as SVGElement);
+    }
+    
+    return charts;
+  };
+
+  // Función para exportar PDF con gráficas
+  const handleExportPDF = async () => {
+    if (!selectedSessionId) return;
+    
+    try {
+      // Capturar gráficas
+      const charts = await captureCharts();
+      
+      // Generar PDF con gráficas
+      const result = await generatePDFMutation.mutateAsync({
+        cycleId: 1, // TODO: Obtener cycleId de la sesión
+        charts,
+      });
+      
+      // Descargar PDF
+      const pdfBlob = new Blob(
+        [Uint8Array.from(atob(result.pdf), c => c.charCodeAt(0))],
+        { type: 'application/pdf' }
+      );
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cycle-report-${selectedSessionId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al exportar PDF:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
@@ -156,6 +221,19 @@ function LabContent() {
                   ))}
                 </SelectContent>
               </Select>
+            )}
+            
+            {selectedSessionId && (
+              <div className="mt-4">
+                <Button 
+                  onClick={handleExportPDF}
+                  disabled={generatePDFMutation.isPending}
+                  className="w-full"
+                >
+                  <FileDown className="mr-2 h-4 w-4" />
+                  {generatePDFMutation.isPending ? 'Exportando...' : 'Exportar PDF con Gráficas'}
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>
