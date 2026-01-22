@@ -1335,3 +1335,30 @@
 - [x] Crear tag git v1.0.5-FINAL
 
 **Estado:** 🧊 SISTEMA CONGELADO. Las 6 verificaciones pasaron exitosamente. El sistema obedece las leyes físicas CAELION.
+
+
+## Marco de Violaciones ETH-01 ✅
+
+### Fase 1: Documentación
+- [x] Crear documento ETH01_VIOLATIONS_FRAMEWORK.md
+- [x] Definir qué constituye violación ETH-01 (3 leyes: E2, E3, E5)
+- [x] Especificar cómo se registra durante COM-72 (vinculación por cycleId)
+- [x] Documentar campos y severidad (CRITICAL, HIGH, MEDIUM, LOW)
+
+### Fase 2: Esquema de Base de Datos
+- [x] Actualizar schema ethicalLogs con campo severity
+- [x] Agregar campo cycleId para vincular a COM-72
+- [x] Agregar campo actorId para trazabilidad
+- [x] Aplicar migración (0014_calm_chimera.sql)
+
+### Fase 3: Guardián ETH-01
+- [x] Actualizar assertEthicalAlignment con clasificación de severidad
+- [x] Implementar lógica de registro durante ciclo COM-72
+- [x] Vincular violaciones a ciclo activo automáticamente
+- [x] Actualizar CMD-01 para pasar actorId
+
+### Fase 4: Checkpoint
+- [x] Crear checkpoint del marco ETH-01
+- [x] Verificar con auditoría (EXIT CODE 0 ✅)
+
+**Estado:** Marco de Violaciones ETH-01 v1.0.0 definido y operativo. Sistema registra violaciones con severidad y vincula a ciclos COM-72.

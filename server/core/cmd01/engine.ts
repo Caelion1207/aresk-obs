@@ -63,7 +63,8 @@ export class CmdEngine {
       await assertEthicalAlignment(
         input.actor.role, 
         ethicalAction, 
-        `CMD: ${text.substring(0, 100)}`
+        `CMD: ${text.substring(0, 100)}`,
+        input.actor.id
       );
     } catch (error: any) {
       return {
