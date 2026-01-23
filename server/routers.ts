@@ -22,7 +22,8 @@ import {
   getUserAlerts,
   getSessionAlerts,
   dismissAlert,
-  detectAnomalies
+  detectAnomalies,
+  getDb
 } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { calculateMetricsSimplified } from "./semantic_bridge";
@@ -37,6 +38,8 @@ import { cyclesRouter } from "./routers/cycles";
 import { healthRouter } from "./routers/health";
 import { pdfRouter } from "./routers/pdf";
 import { argosRouter } from "./routers/argos";
+import { protocolRouter } from "./routers/protocol";
+import { protocolEvents } from "../drizzle/schema";
 import { SystemEvents, EVENTS } from "./infra/events";
 
 // Procedimientos con auditoría y rate limiting
@@ -723,6 +726,88 @@ export const appRouter = router({
           tokenCount,
           latencyMs,
         });
+        
+        // Ejecutar protocolo COM-72: Verificar coherencia
+        try {
+          const db = await getDb();
+          if (db) {
+            const coherenceScore = metrics.coherenciaObservable;
+            const stabilityScore = metrics.funcionLyapunov;
+            
+            let status: 'PASS' | 'FAIL' | 'WARNING' = 'PASS';
+            let severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'LOW';
+            
+            if (coherenceScore < 0.3) {
+              status = 'FAIL';
+              severity = 'CRITICAL';
+            } else if (coherenceScore < 0.6) {
+              status = 'WARNING';
+              severity = 'MEDIUM';
+            }
+            
+            const eventData = {
+              coherence: coherenceScore,
+              stability: stabilityScore,
+              threshold: { critical: 0.3, warning: 0.6, nominal: 0.6 },
+              timestamp: new Date().toISOString()
+            };
+            
+            await db.insert(protocolEvents).values({
+              protocol: 'COM-72',
+              eventType: 'coherence_check',
+              sessionId: input.sessionId,
+              messageId: assistantMessageId,
+              eventData: JSON.stringify(eventData),
+              coherenceScore: coherenceScore.toString(),
+              stabilityScore: stabilityScore.toString(),
+              status,
+              severity,
+              timestamp: new Date(),
+            });
+          }
+        } catch (error) {
+          console.error('[COM-72] Error al registrar evento de coherencia:', error);
+        }
+        
+        // Ejecutar protocolo ETH-01: Evaluación ética
+        try {
+          const db = await getDb();
+          if (db) {
+            const errorNorm = metrics.errorCognitivoMagnitud;
+            
+            let status: 'PASS' | 'FAIL' | 'WARNING' = 'PASS';
+            let severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'LOW';
+            
+            if (errorNorm > 0.7) {
+              status = 'FAIL';
+              severity = 'CRITICAL';
+            } else if (errorNorm > 0.5) {
+              status = 'WARNING';
+              severity = 'MEDIUM';
+            }
+            
+            const eventData = {
+              errorNorm,
+              bucefaloEthics: session.ethics.substring(0, 100),
+              threshold: { critical: 0.7, warning: 0.5, nominal: 0.5 },
+              timestamp: new Date().toISOString()
+            };
+            
+            await db.insert(protocolEvents).values({
+              protocol: 'ETH-01',
+              eventType: 'ethical_evaluation',
+              sessionId: input.sessionId,
+              messageId: assistantMessageId,
+              eventData: JSON.stringify(eventData),
+              ethicalScore: errorNorm.toString(),
+              status,
+              severity,
+              timestamp: new Date(),
+            });
+          }
+        } catch (error) {
+          console.error('[ETH-01] Error al registrar evaluación ética:', error);
+        }
         
         // Actualizar TPR (Tiempo de Permanencia en Régimen)
         await updateTPR(
@@ -2240,6 +2325,7 @@ export const appRouter = router({
   health: healthRouter,
   pdf: pdfRouter,
   argos: argosRouter,
+  protocol: protocolRouter,
 });
 
 

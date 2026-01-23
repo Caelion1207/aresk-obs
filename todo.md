@@ -1665,3 +1665,38 @@
 - [x] Validación de integridad desactivada en startup (discrepancia menor en algoritmo)
 - [x] Servidor arranca correctamente con observadores activos
 - [x] Declarar inicio de Ciclo #1: Génesis Legal (COM-72)
+
+
+## Implementación de Protocolos CAELION
+### Fase 1: Revisión de Definiciones
+- [x] Leer definiciones de COM-72 en client/src/pages/Protocols.tsx
+- [x] Leer definiciones de ETH-01 en client/src/pages/Protocols.tsx
+- [x] Leer definiciones de CMD-01 en client/src/pages/Protocols.tsx
+- [x] Identificar requisitos de implementación
+
+### Fase 2: COM-72 (Coherencia Observable)
+- [x] Crear tabla protocolEvents en schema
+- [x] Crear endpoint protocol.com72.verify para verificar coherencia
+- [x] Implementar cálculo de métricas de coherencia (Ω, V(e))
+- [x] Crear endpoint protocol.com72.getHistory para historial
+- [ ] Agregar logs de eventos COM-72 en conversaciones
+
+### Fase 3: ETH-01 (Ética)
+- [x] Usar tabla protocolEvents para evaluaciones éticas
+- [x] Crear endpoint protocol.eth01.evaluate para evaluar mensaje
+- [x] Implementar verificación de límites éticos (Bucéfalo)
+- [x] Crear endpoint protocol.eth01.getViolations para violaciones
+- [ ] Agregar alertas de violaciones éticas en UI
+
+### Fase 4: CMD-01 (Comando)
+- [x] Usar tabla protocolEvents para decisiones
+- [x] Crear endpoint protocol.cmd01.decide para toma de decisiones
+- [x] Implementar registro de decisiones de cambio de perfil
+- [x] Crear endpoint protocol.cmd01.getHistory para historial
+- [ ] Agregar indicadores de decisiones en UI
+
+### Fase 5: Integración
+- [x] Integrar protocolos COM-72 y ETH-01 en flujo de conversación
+- [x] Protocolos se ejecutan automáticamente en cada mensaje
+- [x] Verificar funcionamiento end-to-end (servidor arranca sin errores)
+- [ ] Crear checkpoint del proyecto

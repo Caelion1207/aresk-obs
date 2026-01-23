@@ -158,3 +158,6 @@ export type InsertErosionAlert = typeof erosionAlerts.$inferInsert;
 
 // Exportar auditLogs desde archivo separado
 export { auditLogs, type AuditLog, type InsertAuditLog } from "./auditLogs";
+
+// Exportar protocolEvents desde archivo separado
+export { protocolEvents, type ProtocolEvent, type InsertProtocolEvent } from "./schema/protocolEvents";
