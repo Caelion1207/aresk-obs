@@ -1917,3 +1917,13 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Agregar gráficas de resultados experimentales (Regímen A-1)
 - [x] Incluir verificaciones del campo con citas de 6 expertos
 - [x] Exportar como documento Markdown (INFORME-SISTEMA-COMPLETO.md)
+
+
+## Diagrama Interactivo de Arquitectura
+- [x] Crear página `/sistema/flujo` con diagrama de flujo de datos
+- [x] Implementar visualización con SVG interactivo
+- [x] Mostrar 8 componentes: usuario, LLM, semantic bridge, embeddings, caché, database, auditoría, dashboard
+- [x] Agregar hover interactivo con descripciones de cada componente
+- [x] Incluir flechas de flujo de datos (primario y secundario)
+- [x] Agregar tarjetas descriptivas para cada componente
+- [x] Incluir enlace desde Home

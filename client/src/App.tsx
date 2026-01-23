@@ -19,7 +19,8 @@ import { CyclesDashboard } from "./pages/CyclesDashboard";
 import { SystemHealth } from "./pages/SystemHealth";
 import { CoreDashboard } from "./pages/CoreDashboard";
 import ExperimentoEstabilidad from "./pages/ExperimentoEstabilidad";
-import ExperimentoComparar from "./pages/ExperimentoComparar";
+import ExperimentoComparar from './pages/ExperimentoComparar';
+import SystemFlow from './pages/SystemFlow';
 
 function Router() {
   return (
@@ -39,7 +40,8 @@ function Router() {
       <Route path={"/health"} component={SystemHealth} />
       <Route path={"/core"} component={CoreDashboard} />
       <Route path={"/experimento/estabilidad"} component={ExperimentoEstabilidad} />
-      <Route path={"/experimento/comparar"} component={ExperimentoComparar} />
+        <Route path="/experimento/comparar" component={ExperimentoComparar} />
+        <Route path="/sistema/flujo" component={SystemFlow} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
