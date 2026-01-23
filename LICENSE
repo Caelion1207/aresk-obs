@@ -1,17 +1,6 @@
-⚠️ LICENSE NOTICE
-
-ARESK-OBS is released for research and educational purposes only.
-
-Commercial use, monetization, SaaS deployment, or incorporation into
-for-profit systems is explicitly prohibited.
-
-If you want to use this system commercially, you must contact the author
-for a separate license.
-
-
 Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)
 
-Copyright (c) 2025 Everardo Peraza
+Copyright (c) 2026 Everardo Peraza
 
 This work is licensed under the Creative Commons Attribution–NonCommercial 4.0 International License.
 
@@ -20,16 +9,18 @@ You are free to:
 - Adapt — remix, transform, and build upon the material
 
 Under the following terms:
-- Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
-- NonCommercial — You may not use the material for commercial purposes.
+- Attribution — You must give appropriate credit to the author.
+- NonCommercial — You may NOT use the material or derivatives for commercial purposes, directly or indirectly.
 
-Commercial use includes, but is not limited to:
-- Selling the software or derivatives
-- Offering it as a paid service (SaaS)
-- Using it internally within a for-profit organization
-- Integrating it into commercial products or platforms
-- Consulting, licensing, or monetizing derived work
+Commercial use, including but not limited to:
+- selling derivative works,
+- integrating into for-profit products or services,
+- offering paid access or licensing,
+- monetizing research outputs based on this work,
 
-For commercial licensing inquiries, contact the author.
+is strictly prohibited without explicit written authorization from the author.
 
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND.
+To view a copy of this license, visit:
+https://creativecommons.org/licenses/by-nc/4.0/
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
