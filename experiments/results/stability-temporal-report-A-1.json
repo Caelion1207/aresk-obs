@@ -1,0 +1,423 @@
+{
+  "regime": "A - Alta Entropía",
+  "totalMessages": 50,
+  "thresholdAnalysis": {
+    "threshold": 0.5,
+    "crossed": false,
+    "crossingTurn": null,
+    "crossingValue": null,
+    "maxOmega": 0.4228316279010258,
+    "maxOmegaTurn": 13
+  },
+  "globalStatistics": {
+    "mean": 0.34304279334410254,
+    "median": 0.3569345448460657,
+    "std": 0.052316995765829474,
+    "min": 0.2193658199715664,
+    "max": 0.4228316279010258,
+    "range": 0.2034658079294594,
+    "coefficientOfVariation": 0.1525086571731325
+  },
+  "trendAnalysis": {
+    "slope": 0.003407721687952533,
+    "intercept": 0.25955361198926546,
+    "trend": "increasing",
+    "totalChange": 0.2034658079294594,
+    "rateOfChange": 0.3407721687952533
+  },
+  "segmentAnalysis": [
+    {
+      "range": "1-10",
+      "mean": 0.35783238387633987,
+      "max": 0.3969319403042136,
+      "min": 0.3285285001255104,
+      "std": 0.020400191857055435,
+      "stability": 0.9429895314782204
+    },
+    {
+      "range": "11-20",
+      "mean": 0.34874531139485415,
+      "max": 0.4228316279010258,
+      "min": 0.2464868706458816,
+      "std": 0.05591934890434734,
+      "stability": 0.8396556252449952
+    },
+    {
+      "range": "21-30",
+      "mean": 0.30836876062858226,
+      "max": 0.41343126719025736,
+      "min": 0.2193658199715664,
+      "std": 0.06984425010799475,
+      "stability": 0.7735041319826838
+    },
+    {
+      "range": "31-40",
+      "mean": 0.36561422613368827,
+      "max": 0.3993495016027961,
+      "min": 0.3171878468851512,
+      "std": 0.027074318880087545,
+      "stability": 0.9259483987633793
+    },
+    {
+      "range": "41-50",
+      "mean": 0.3346532846870481,
+      "max": 0.4006724108560094,
+      "min": 0.238952798140652,
+      "std": 0.049975675337913826,
+      "stability": 0.8506643214793224
+    }
+  ],
+  "temporalEvolution": [
+    {
+      "turn": 1,
+      "omega": 0.34737468655079806,
+      "epsilon": 0.3542677762769552,
+      "V": 0.6526253398348261,
+      "userMessage": "Hola, necesito ayuda con un proyecto de análisis de datos."
+    },
+    {
+      "turn": 2,
+      "omega": 0.3817366967373773,
+      "epsilon": 0.35143090751972733,
+      "V": 0.6182632036785582,
+      "userMessage": "¿Puedes explicarme qué es el aprendizaje automático?"
+    },
+    {
+      "turn": 3,
+      "omega": 0.3969319403042136,
+      "epsilon": 0.330971782326952,
+      "V": 0.603067935771779,
+      "userMessage": "Tengo un dataset con 10,000 registros de ventas."
+    },
+    {
+      "turn": 4,
+      "omega": 0.37125507716914613,
+      "epsilon": 0.4065833263809362,
+      "V": 0.6287448584160316,
+      "userMessage": "¿Cómo puedo identificar patrones en los datos?"
+    },
+    {
+      "turn": 5,
+      "omega": 0.3285285001255104,
+      "epsilon": 0.518678728411258,
+      "V": 0.6714713983264656,
+      "userMessage": "Me interesa predecir las ventas del próximo trimestre."
+    },
+    {
+      "turn": 6,
+      "omega": 0.3402708708835667,
+      "epsilon": 0.4472360906927786,
+      "V": 0.6597290000656313,
+      "userMessage": "¿Qué algoritmos recomiendas para regresión?"
+    },
+    {
+      "turn": 7,
+      "omega": 0.3652175829895318,
+      "epsilon": 0.520745394205181,
+      "V": 0.6347825932147679,
+      "userMessage": "He escuchado sobre redes neuronales, ¿son útiles aquí?"
+    },
+    {
+      "turn": 8,
+      "omega": 0.3533536586861123,
+      "epsilon": 0.3939856581363293,
+      "V": 0.6466463581902971,
+      "userMessage": "¿Cuál es la diferencia entre clasificación y regresión?"
+    },
+    {
+      "turn": 9,
+      "omega": 0.35882765002060113,
+      "epsilon": 0.5431577375734205,
+      "V": 0.6411722073665928,
+      "userMessage": "Necesito limpiar los datos antes de entrenar el modelo."
+    },
+    {
+      "turn": 10,
+      "omega": 0.33482717529654155,
+      "epsilon": 0.34982709759163605,
+      "V": 0.6651728210946674,
+      "userMessage": "¿Cómo manejo los valores faltantes en el dataset?"
+    },
+    {
+      "turn": 11,
+      "omega": 0.2464868706458816,
+      "epsilon": 0.3401885081024757,
+      "V": 0.7535130055733132,
+      "userMessage": "Algunos registros tienen fechas en formato incorrecto."
+    },
+    {
+      "turn": 12,
+      "omega": 0.25157910407088196,
+      "epsilon": 0.5758433786570379,
+      "V": 0.748420876469262,
+      "userMessage": "¿Debo normalizar las variables numéricas?"
+    },
+    {
+      "turn": 13,
+      "omega": 0.4228316279010258,
+      "epsilon": 0.5708039950995281,
+      "V": 0.5771683758375942,
+      "userMessage": "¿Qué es la validación cruzada?"
+    },
+    {
+      "turn": 14,
+      "omega": 0.35910568466575954,
+      "epsilon": 0.4064664932502293,
+      "V": 0.640894273795542,
+      "userMessage": "¿Cómo divido el dataset en entrenamiento y prueba?"
+    },
+    {
+      "turn": 15,
+      "omega": 0.35039993737127356,
+      "epsilon": 0.5900864917012614,
+      "V": 0.6495998725915877,
+      "userMessage": "¿Qué proporción recomiendas: 80-20 o 70-30?"
+    },
+    {
+      "turn": 16,
+      "omega": 0.35366363933275613,
+      "epsilon": 0.5921934487207863,
+      "V": 0.6463362971848058,
+      "userMessage": "He entrenado un modelo de regresión lineal."
+    },
+    {
+      "turn": 17,
+      "omega": 0.33987495051390587,
+      "epsilon": 0.4966332559267391,
+      "V": 0.6601250804731328,
+      "userMessage": "El R² que obtuve es 0.65, ¿es bueno?"
+    },
+    {
+      "turn": 18,
+      "omega": 0.3832750350952306,
+      "epsilon": 0.3866348782868491,
+      "V": 0.6167248807079555,
+      "userMessage": "¿Cómo puedo mejorar el rendimiento del modelo?"
+    },
+    {
+      "turn": 19,
+      "omega": 0.3671592321109342,
+      "epsilon": 0.3807997021488185,
+      "V": 0.6328407086303954,
+      "userMessage": "¿Debería probar con más features o menos?"
+    },
+    {
+      "turn": 20,
+      "omega": 0.41307703224089276,
+      "epsilon": 0.326466076050934,
+      "V": 0.5869229822636348,
+      "userMessage": "¿Qué es el overfitting y cómo lo evito?"
+    },
+    {
+      "turn": 21,
+      "omega": 0.41343126719025736,
+      "epsilon": 0.4928031418711605,
+      "V": 0.5865685688046416,
+      "userMessage": "He notado que el modelo funciona bien en entrenamiento pero mal en prueba."
+    },
+    {
+      "turn": 22,
+      "omega": 0.34841829394598406,
+      "epsilon": 0.5249373270375076,
+      "V": 0.6515816225240911,
+      "userMessage": "¿Debería usar regularización?"
+    },
+    {
+      "turn": 23,
+      "omega": 0.31360063160795476,
+      "epsilon": 0.43562760412909907,
+      "V": 0.6863993031935701,
+      "userMessage": "¿Cuál es la diferencia entre L1 y L2?"
+    },
+    {
+      "turn": 24,
+      "omega": 0.2561155401624107,
+      "epsilon": 0.30300122679389946,
+      "V": 0.7438845871285068,
+      "userMessage": "¿Qué es un hiperparámetro?"
+    },
+    {
+      "turn": 25,
+      "omega": 0.2193658199715664,
+      "epsilon": 0.3548816001248084,
+      "V": 0.7806341283623225,
+      "userMessage": "¿Cómo optimizo los hiperparámetros del modelo?"
+    },
+    {
+      "turn": 26,
+      "omega": 0.21986188238631607,
+      "epsilon": 0.4909947538811401,
+      "V": 0.7801380833204924,
+      "userMessage": "He probado con GridSearchCV pero tarda mucho."
+    },
+    {
+      "turn": 27,
+      "omega": 0.3008107821659805,
+      "epsilon": 0.46817416786609145,
+      "V": 0.6991890454011062,
+      "userMessage": "¿Existe una alternativa más rápida?"
+    },
+    {
+      "turn": 28,
+      "omega": 0.24026088513111338,
+      "epsilon": 0.3824894734823566,
+      "V": 0.7597389938008902,
+      "userMessage": "¿Qué es RandomSearchCV?"
+    },
+    {
+      "turn": 29,
+      "omega": 0.36462917928832594,
+      "epsilon": 0.5248933497610386,
+      "V": 0.6353707251703022,
+      "userMessage": "¿Cómo interpreto la matriz de confusión?"
+    },
+    {
+      "turn": 30,
+      "omega": 0.40719332443591355,
+      "epsilon": 0.31776928709998525,
+      "V": 0.5928064564508988,
+      "userMessage": "Mi modelo tiene alta precisión pero bajo recall."
+    },
+    {
+      "turn": 31,
+      "omega": 0.3960160964945509,
+      "epsilon": 0.42395144451257,
+      "V": 0.6039838246694129,
+      "userMessage": "¿Qué significa eso en términos prácticos?"
+    },
+    {
+      "turn": 32,
+      "omega": 0.3362535332628459,
+      "epsilon": 0.5367647238562749,
+      "V": 0.6637463289291876,
+      "userMessage": "¿Cómo ajusto el umbral de decisión?"
+    },
+    {
+      "turn": 33,
+      "omega": 0.36988052975702584,
+      "epsilon": 0.5530726354746971,
+      "V": 0.6301194325297673,
+      "userMessage": "¿Qué es la curva ROC?"
+    },
+    {
+      "turn": 34,
+      "omega": 0.3171878468851512,
+      "epsilon": 0.537248068394875,
+      "V": 0.6828120497645728,
+      "userMessage": "¿Cómo calculo el AUC?"
+    },
+    {
+      "turn": 35,
+      "omega": 0.36260658129808393,
+      "epsilon": 0.44412284529355117,
+      "V": 0.6373934108912541,
+      "userMessage": "¿Qué valor de AUC se considera bueno?"
+    },
+    {
+      "turn": 36,
+      "omega": 0.39321530468105387,
+      "epsilon": 0.4131646317285381,
+      "V": 0.6067848559678284,
+      "userMessage": "He implementado un modelo de árbol de decisión."
+    },
+    {
+      "turn": 37,
+      "omega": 0.3604769496376939,
+      "epsilon": 0.3426328966663104,
+      "V": 0.6395230060558532,
+      "userMessage": "¿Cómo evito que el árbol crezca demasiado?"
+    },
+    {
+      "turn": 38,
+      "omega": 0.3993495016027961,
+      "epsilon": 0.5029676299841968,
+      "V": 0.6006504943763861,
+      "userMessage": "¿Qué es el pruning?"
+    },
+    {
+      "turn": 39,
+      "omega": 0.3850165963602143,
+      "epsilon": 0.3588406664017406,
+      "V": 0.6149834319948342,
+      "userMessage": "¿Debería usar Random Forest en lugar de un solo árbol?"
+    },
+    {
+      "turn": 40,
+      "omega": 0.33613932135746677,
+      "epsilon": 0.5083969745680873,
+      "V": 0.6638605813013382,
+      "userMessage": "¿Cuántos árboles recomiendas en el ensemble?"
+    },
+    {
+      "turn": 41,
+      "omega": 0.4006724108560094,
+      "epsilon": 0.39894517161092785,
+      "V": 0.5993273527230707,
+      "userMessage": "¿Qué es el boosting?"
+    },
+    {
+      "turn": 42,
+      "omega": 0.3569345448460657,
+      "epsilon": 0.5335457726730426,
+      "V": 0.6430653184486137,
+      "userMessage": "¿Cuál es la diferencia entre bagging y boosting?"
+    },
+    {
+      "turn": 43,
+      "omega": 0.26900345824200605,
+      "epsilon": 0.31464484498377404,
+      "V": 0.730996569804287,
+      "userMessage": "He escuchado sobre XGBoost, ¿es mejor que Random Forest?"
+    },
+    {
+      "turn": 44,
+      "omega": 0.3599975294140837,
+      "epsilon": 0.5230671510731582,
+      "V": 0.6400024530265982,
+      "userMessage": "¿Cómo manejo el desbalance de clases en el dataset?"
+    },
+    {
+      "turn": 45,
+      "omega": 0.38764471956841157,
+      "epsilon": 0.57198213428494,
+      "V": 0.6123553031403273,
+      "userMessage": "¿Debería usar SMOTE o ajustar los pesos de las clases?"
+    },
+    {
+      "turn": 46,
+      "omega": 0.34937546394801006,
+      "epsilon": 0.3163340123984013,
+      "V": 0.6506244210073262,
+      "userMessage": "¿Qué es el feature engineering?"
+    },
+    {
+      "turn": 47,
+      "omega": 0.238952798140652,
+      "epsilon": 0.3472520560826635,
+      "V": 0.7610471465835987,
+      "userMessage": "¿Cómo creo nuevas features a partir de las existentes?"
+    },
+    {
+      "turn": 48,
+      "omega": 0.3320956289769447,
+      "epsilon": 0.3161969490786552,
+      "V": 0.6679042863285383,
+      "userMessage": "¿Debería incluir interacciones entre variables?"
+    },
+    {
+      "turn": 49,
+      "omega": 0.36351973919307895,
+      "epsilon": 0.5685902706280157,
+      "V": 0.6364801802604776,
+      "userMessage": "¿Cómo selecciono las features más importantes?"
+    },
+    {
+      "turn": 50,
+      "omega": 0.28833655368521877,
+      "epsilon": 0.3429298279699236,
+      "V": 0.7116632555233244,
+      "userMessage": "Gracias por toda la ayuda, ha sido muy útil."
+    }
+  ],
+  "timestamp": "2026-01-23T21:22:23.427Z"
+}
