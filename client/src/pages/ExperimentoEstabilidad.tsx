@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download, GitCompare } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 // Registrar componentes de Chart.js
@@ -291,14 +291,23 @@ export default function ExperimentoEstabilidad() {
       <div className="container mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => setLocation('/')}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver al inicio
-          </Button>
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="ghost"
+              onClick={() => setLocation('/')}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Volver al inicio
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setLocation('/experimento/comparar')}
+              className="border-purple-500/50 text-purple-500 hover:bg-purple-500/10"
+            >
+              <GitCompare className="mr-2 h-4 w-4" />
+              Comparar con otros regímenes
+            </Button>
+          </div>
           
           <h1 className="text-4xl font-bold mb-2">Análisis de Estabilidad Temporal</h1>
           <p className="text-muted-foreground text-lg">

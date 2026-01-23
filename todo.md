@@ -1895,3 +1895,9 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Agregar ruta en App.tsx
 - [x] Incluir tarjetas descriptivas de cada régimen con estadísticas
 - [x] Agregar alerta sobre datos parciales (A real, B y C simulados)
+
+
+## Enlace a Comparación desde Estabilidad
+- [x] Agregar botón "Comparar con otros regímenes" en ExperimentoEstabilidad
+- [x] Enlazar a /experimento/comparar con estilo morado destacado
+- [x] Posicionar botón en header junto a "Volver al inicio"
