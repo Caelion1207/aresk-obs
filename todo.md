@@ -1901,3 +1901,11 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Agregar botón "Comparar con otros regímenes" en ExperimentoEstabilidad
 - [x] Enlazar a /experimento/comparar con estilo morado destacado
 - [x] Posicionar botón en header junto a "Volver al inicio"
+
+
+## Tabla de Datos Expandible en Estabilidad
+- [x] Agregar sección colapsable debajo de la gráfica
+- [x] Implementar tabla con 50 turnos y métricas Ω, ε, V
+- [x] Agregar ordenamiento por columna (asc/desc)
+- [x] Incluir botón de expansión/colapso con iconos ChevronUp/Down
+- [x] Destacar turno 13 (máximo Ω) en color amber

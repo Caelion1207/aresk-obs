@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Download, GitCompare } from 'lucide-react';
+import { ArrowLeft, Download, GitCompare, ChevronDown, ChevronUp, ArrowUpDown } from 'lucide-react';
 import { useLocation } from 'wouter';
 
 // Registrar componentes de Chart.js
@@ -74,6 +74,9 @@ export default function ExperimentoEstabilidad() {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<'omega' | 'epsilon' | 'V'>('omega');
+  const [showTable, setShowTable] = useState(false);
+  const [sortColumn, setSortColumn] = useState<'turn' | 'omega' | 'epsilon' | 'V'>('turn');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -447,6 +450,148 @@ export default function ExperimentoEstabilidad() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Tabla de datos expandible */}
+        <Card className="mt-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Datos Detallados por Turno</CardTitle>
+                <CardDescription>
+                  Tabla completa de métricas para los 50 turnos analizados
+                </CardDescription>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowTable(!showTable)}
+              >
+                {showTable ? (
+                  <>
+                    <ChevronUp className="mr-2 h-4 w-4" />
+                    Ocultar tabla
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="mr-2 h-4 w-4" />
+                    Mostrar tabla
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+          {showTable && (
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (sortColumn === 'turn') {
+                              setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                            } else {
+                              setSortColumn('turn');
+                              setSortDirection('asc');
+                            }
+                          }}
+                          className="h-8 px-2"
+                        >
+                          Turno
+                          <ArrowUpDown className="ml-2 h-3 w-3" />
+                        </Button>
+                      </th>
+                      <th className="text-left p-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (sortColumn === 'omega') {
+                              setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                            } else {
+                              setSortColumn('omega');
+                              setSortDirection('desc');
+                            }
+                          }}
+                          className="h-8 px-2"
+                        >
+                          Ω (Coste de Control)
+                          <ArrowUpDown className="ml-2 h-3 w-3" />
+                        </Button>
+                      </th>
+                      <th className="text-left p-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (sortColumn === 'epsilon') {
+                              setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                            } else {
+                              setSortColumn('epsilon');
+                              setSortDirection('desc');
+                            }
+                          }}
+                          className="h-8 px-2"
+                        >
+                          ε (Entropía Semántica)
+                          <ArrowUpDown className="ml-2 h-3 w-3" />
+                        </Button>
+                      </th>
+                      <th className="text-left p-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (sortColumn === 'V') {
+                              setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+                            } else {
+                              setSortColumn('V');
+                              setSortDirection('desc');
+                            }
+                          }}
+                          className="h-8 px-2"
+                        >
+                          V (Lyapunov)
+                          <ArrowUpDown className="ml-2 h-3 w-3" />
+                        </Button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...STABILITY_DATA.data]
+                      .sort((a, b) => {
+                        const aVal = a[sortColumn];
+                        const bVal = b[sortColumn];
+                        if (sortDirection === 'asc') {
+                          return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+                        } else {
+                          return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
+                        }
+                      })
+                      .map((row) => (
+                        <tr
+                          key={row.turn}
+                          className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                        >
+                          <td className="p-3 font-mono">{row.turn}</td>
+                          <td className="p-3 font-mono">
+                            <span className={row.omega === STABILITY_DATA.maxOmega ? 'text-amber-500 font-bold' : ''}>
+                              {row.omega.toFixed(4)}
+                            </span>
+                          </td>
+                          <td className="p-3 font-mono">{row.epsilon.toFixed(4)}</td>
+                          <td className="p-3 font-mono">{row.V.toFixed(4)}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          )}
+        </Card>
       </div>
     </div>
   );
