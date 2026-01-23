@@ -1909,3 +1909,11 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Agregar ordenamiento por columna (asc/desc)
 - [x] Incluir botón de expansión/colapso con iconos ChevronUp/Down
 - [x] Destacar turno 13 (máximo Ω) en color amber
+
+
+## Informe Completo del Sistema
+- [x] Generar informe técnico con arquitectura del sistema
+- [x] Incluir análisis de métricas implementadas (ε, Ω, V)
+- [x] Agregar gráficas de resultados experimentales (Regímen A-1)
+- [x] Incluir verificaciones del campo con citas de 6 expertos
+- [x] Exportar como documento Markdown (INFORME-SISTEMA-COMPLETO.md)
