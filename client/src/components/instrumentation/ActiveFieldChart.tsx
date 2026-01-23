@@ -15,9 +15,9 @@ export const ActiveFieldChart: React.FC<ActiveFieldProps> = ({ data, label, law 
 
   // 2. MAPEO DE ESTADO A COLOR (Solo presentación)
   const stateColor = {
-    'NOMINAL': '#00F0FF', // Cian Eléctrico
-    'DRIFT':   '#FFD600', // Ámbar Industrial
-    'CRITICAL':'#FF003C'  // Rojo Radiación
+    'NOMINAL': '#22C55E', // Verde esmeralda (coherencia/estabilidad)
+    'DRIFT':   '#FBBF24', // Amarillo ámbar (advertencia)
+    'CRITICAL':'#EF4444'  // Rojo intenso (peligro)
   }[currentState];
 
   return (
@@ -43,11 +43,11 @@ export const ActiveFieldChart: React.FC<ActiveFieldProps> = ({ data, label, law 
       {/* Estas zonas son invariantes. El gráfico vive dentro de ellas. */}
       <div className="absolute inset-0 flex flex-col z-20 pointer-events-none">
          {/* Zona de Veto (Invariante ETH-01) - V(e) > 4ε² */}
-         <div className="h-[15%] w-full bg-gradient-to-b from-[#FF003C]/[0.08] to-[#FF003C]/[0.02] border-b border-[#FF003C]/20" />
+         <div className="h-[15%] w-full bg-gradient-to-b from-[#EF4444]/[0.12] to-[#EF4444]/[0.03] border-b border-[#EF4444]/30" />
          {/* Zona de Deriva (Tolerancia) - ε² < V(e) < 4ε² */}
-         <div className="h-[25%] w-full bg-gradient-to-b from-[#FFD600]/[0.05] to-[#FFD600]/[0.01] border-b border-[#FFD600]/15" />
+         <div className="h-[25%] w-full bg-gradient-to-b from-[#FBBF24]/[0.08] to-[#FBBF24]/[0.02] border-b border-[#FBBF24]/25" />
          {/* Zona Nominal (Espacio Seguro) - V(e) ≤ ε² */}
-         <div className="flex-1 w-full bg-gradient-to-b from-transparent to-[#00F0FF]/[0.01]" />
+         <div className="flex-1 w-full bg-gradient-to-b from-transparent to-[#22C55E]/[0.02]" />
       </div>
 
       {/* CAPA 4: LA DINÁMICA (Datos) */}
@@ -84,11 +84,11 @@ export const ActiveFieldChart: React.FC<ActiveFieldProps> = ({ data, label, law 
 
       {/* CAPA 6: HUD (Heads-Up Display) con transiciones suaves */}
       <div className="absolute top-3 right-4 z-50 text-right transition-all duration-300">
-        <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{label}</div>
-        <div className="text-sm font-bold tracking-tighter transition-colors duration-300" style={{ color: stateColor }}>
-          {currentState} <span className="text-xs opacity-60 ml-1">[{currentFrame.value.toFixed(3)}]</span>
+        <div className="text-[11px] font-mono text-gray-400 uppercase tracking-wider">{label}</div>
+        <div className="text-lg font-bold tracking-tight transition-colors duration-300" style={{ color: stateColor, textShadow: `0 0 10px ${stateColor}40` }}>
+          {currentState} <span className="text-sm opacity-70 ml-1">[{currentFrame.value.toFixed(3)}]</span>
         </div>
-        <div className="text-[9px] text-gray-600 mt-1 font-mono">{law}</div>
+        <div className="text-[10px] text-gray-500 mt-1 font-mono">{law}</div>
       </div>
       
       {/* PUNTO DE PRESENCIA (Beacon) */}

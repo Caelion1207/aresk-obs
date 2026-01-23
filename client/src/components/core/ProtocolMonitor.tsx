@@ -36,11 +36,11 @@ export function ProtocolMonitor({ sessionId }: { sessionId: number }) {
   const getStatusColor = (status: 'PASS' | 'WARNING' | 'FAIL') => {
     switch (status) {
       case 'PASS':
-        return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50';
+        return 'bg-green-500/25 text-green-400 border-green-500/60';
       case 'WARNING':
-        return 'bg-amber-500/20 text-amber-400 border-amber-500/50';
+        return 'bg-amber-500/25 text-amber-400 border-amber-500/60';
       case 'FAIL':
-        return 'bg-red-500/20 text-red-400 border-red-500/50';
+        return 'bg-red-500/25 text-red-400 border-red-500/60';
       default:
         return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
     }
@@ -63,13 +63,13 @@ export function ProtocolMonitor({ sessionId }: { sessionId: number }) {
   // Función para obtener badge de severidad
   const getSeverityBadge = (severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL') => {
     const colors = {
-      LOW: 'bg-blue-500/20 text-blue-400',
-      MEDIUM: 'bg-yellow-500/20 text-yellow-400',
-      HIGH: 'bg-orange-500/20 text-orange-400',
-      CRITICAL: 'bg-red-500/20 text-red-400'
+      LOW: 'bg-blue-500/25 text-blue-300 border-blue-500/50',
+      MEDIUM: 'bg-yellow-500/25 text-yellow-300 border-yellow-500/50',
+      HIGH: 'bg-orange-500/25 text-orange-300 border-orange-500/50',
+      CRITICAL: 'bg-red-500/30 text-red-300 border-red-500/60 font-bold'
     };
     return (
-      <Badge variant="outline" className={`${colors[severity]} text-xs`}>
+      <Badge variant="outline" className={`${colors[severity]} text-[10px] px-1.5 py-0.5`}>
         {severity}
       </Badge>
     );
@@ -94,24 +94,24 @@ export function ProtocolMonitor({ sessionId }: { sessionId: number }) {
               com72Events.map((event) => (
                 <div
                   key={event.id}
-                  className="flex items-center justify-between p-2 rounded bg-black/20 border border-structure/50"
+                  className="flex items-center justify-between p-3 rounded bg-black/30 border border-structure/50 hover:border-structure/80 transition-colors"
                 >
-                  <div className="flex items-center gap-2 flex-1">
+                  <div className="flex items-center gap-3 flex-1">
                     {getStatusIcon(event.status as 'PASS' | 'WARNING' | 'FAIL')}
-                    <div className="flex flex-col flex-1 min-w-0">
-                      <span className="text-xs text-gray-400 truncate">
+                    <div className="flex flex-col flex-1 min-w-0 gap-1">
+                      <span className="text-sm text-gray-300 truncate font-mono">
                         Ω={event.coherenceScore.toFixed(3)} V(e)={event.stabilityScore.toFixed(3)}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-[10px] text-gray-500 font-mono">
                         {new Date(event.timestamp).toLocaleTimeString()}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {event.severity && getSeverityBadge(event.severity as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL')}
                     <Badge
                       variant="outline"
-                      className={`${getStatusColor(event.status as 'PASS' | 'WARNING' | 'FAIL')} text-xs`}
+                      className={`${getStatusColor(event.status as 'PASS' | 'WARNING' | 'FAIL')} text-[10px] px-2 py-0.5 font-semibold`}
                     >
                       {event.status}
                     </Badge>
@@ -148,20 +148,20 @@ export function ProtocolMonitor({ sessionId }: { sessionId: number }) {
               eth01Events.map((event) => (
                 <div
                   key={event.id}
-                  className="flex items-center justify-between p-2 rounded bg-black/20 border border-red-500/30"
+                  className="flex items-center justify-between p-3 rounded bg-black/30 border border-red-500/40 hover:border-red-500/70 transition-colors"
                 >
-                  <div className="flex items-center gap-2 flex-1">
-                    <AlertCircle className="w-4 h-4 text-red-400" />
-                    <div className="flex flex-col flex-1 min-w-0">
-                      <span className="text-xs text-gray-400 truncate">
+                  <div className="flex items-center gap-3 flex-1">
+                    <AlertCircle className="w-5 h-5 text-red-400" />
+                    <div className="flex flex-col flex-1 min-w-0 gap-1">
+                      <span className="text-sm text-gray-300 truncate font-mono">
                         Error Norm={event.ethicalScore.toFixed(3)}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-[10px] text-gray-500 font-mono">
                         {new Date(event.timestamp).toLocaleTimeString()}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {event.severity && getSeverityBadge(event.severity as 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL')}
                   </div>
                 </div>
@@ -194,15 +194,15 @@ export function ProtocolMonitor({ sessionId }: { sessionId: number }) {
                 return (
                   <div
                     key={event.id}
-                    className="flex items-center justify-between p-2 rounded bg-black/20 border border-structure/50"
+                    className="flex items-center justify-between p-3 rounded bg-black/30 border border-structure/50 hover:border-amber-500/60 transition-colors"
                   >
-                    <div className="flex items-center gap-2 flex-1">
-                      <Command className="w-4 h-4 text-amber-400" />
-                      <div className="flex flex-col flex-1 min-w-0">
-                        <span className="text-xs text-gray-400 truncate">
+                    <div className="flex items-center gap-3 flex-1">
+                      <Command className="w-5 h-5 text-amber-400" />
+                      <div className="flex flex-col flex-1 min-w-0 gap-1">
+                        <span className="text-sm text-gray-300 truncate font-mono">
                           {eventData.fromProfile} → {eventData.toProfile}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-[10px] text-gray-500 font-mono">
                           {new Date(event.timestamp).toLocaleTimeString()}
                         </span>
                       </div>

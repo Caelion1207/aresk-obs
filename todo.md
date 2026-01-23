@@ -1718,4 +1718,22 @@
 ### Fase 3: Integración
 - [x] Integrar ProtocolMonitor en Core Dashboard
 - [x] Verificar visualización en tiempo real (servidor arranca sin errores)
+- [x] Crear checkpoint del proyecto
+
+
+## Mejora Visual de Gráficas
+### Fase 1: ActiveFieldChart
+- [x] Mejorar legibilidad de texto en HUD (tamaño 11px/lg, text-shadow)
+- [x] Ajustar colores para representar correctamente estados (verde=#22C55E, amarillo=#FBBF24, rojo=#EF4444)
+- [x] Mejorar contraste de regiones de ley en fondo (opacidades aumentadas)
+
+### Fase 2: ProtocolMonitor y Dashboard
+- [x] Mejorar acomodo de texto en tarjetas de eventos (p-3, gap-3, text-sm)
+- [x] Ajustar colores de badges (PASS=verde, WARNING=amarillo, FAIL=rojo)
+- [x] Mejorar espaciado y legibilidad de métricas (font-mono, gap-1)
+- [x] Verificar que colores sean consistentes en todo el dashboard
+
+### Fase 3: Verificación
+- [x] Revisar visualización en Core Dashboard (servidor arranca sin errores)
+- [x] Revisar visualización en LAB (ActiveFieldChart con colores mejorados)
 - [ ] Crear checkpoint del proyecto
