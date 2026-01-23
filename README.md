@@ -118,3 +118,11 @@ ARESK-OBS es un instrumento de medición.
 Mide costes.  
 Habilita decisiones.  
 No piensa por ti.
+
+---
+
+## Repository Status
+
+**This repository is frozen at v1.0.0-AUDIT-CLOSED.**
+
+Any further development will occur in a separate branch or project.
