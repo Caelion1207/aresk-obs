@@ -1736,4 +1736,32 @@
 ### Fase 3: Verificación
 - [x] Revisar visualización en Core Dashboard (servidor arranca sin errores)
 - [x] Revisar visualización en LAB (ActiveFieldChart con colores mejorados)
+- [x] Crear checkpoint del proyecto
+
+
+## Investigación CAELION: Tesis de Teoría de Control
+### Fase 1: Investigación de Fundamentos
+- [x] Buscar fundamentos de teoría de control en sistemas cognitivos
+- [x] Investigar control de Lyapunov en sistemas no lineales (Ames, Romdlony)
+- [x] Buscar literatura sobre control de estabilidad en LLMs (Kong, CBF-LLM)
+- [x] Investigar funciones de barrera y regiones de veto (CBF, CLBF)
+- [x] Guardar hallazgos clave en archivo de investigación
+
+### Fase 2: Análisis de Arquitectura CAELION
+- [x] Revisar implementación de V(e) (Lyapunov Energy)
+- [x] Analizar implementación de Ω (Coherencia Observable)
+- [x] Revisar protocolos COM-72, ETH-01, CMD-01
+- [x] Identificar componentes de control en código
+- [x] Documentar arquitectura de control implementada
+
+### Fase 3: Redacción de Tesis
+- [x] Redactar introducción y contexto
+- [x] Desarrollar marco teórico de control (CLF, CBF, unificación)
+- [x] Documentar implementación CAELION (arquitectura, protocolos)
+- [x] Escribir análisis de estabilidad (teoremas, demostraciones)
+- [x] Agregar conclusiones y trabajo futuro
+
+### Fase 4: Validación
+- [x] Validar tesis contra implementación (todos los componentes PASS)
+- [x] Verificar coherencia teórica (sin discrepancias mayores)
 - [ ] Crear checkpoint del proyecto
