@@ -1874,3 +1874,10 @@ El bloque GENESIS es no validable (axioma por definición).
 - [ ] Crear tablas comparativas por régimen (pendiente datos B y C)
 - [ ] Generar gráficas superpuestas por métrica (pendiente datos B y C)
 - [ ] Entregar dataset completo y resultados (pausado por límite de API)
+
+
+## Visualización de Estabilidad Temporal
+- [x] Crear página `/experimento/estabilidad` con gráfica de evolución de Ω
+- [x] Implementar gráfica Chart.js con línea de umbral 0.5
+- [x] Marcar turno 13 (máximo Ω) con punto destacado
+- [x] Agregar ruta en App.tsx

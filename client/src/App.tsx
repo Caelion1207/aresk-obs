@@ -18,6 +18,7 @@ import ErosionDashboard from "./pages/ErosionDashboard";
 import { CyclesDashboard } from "./pages/CyclesDashboard";
 import { SystemHealth } from "./pages/SystemHealth";
 import { CoreDashboard } from "./pages/CoreDashboard";
+import ExperimentoEstabilidad from "./pages/ExperimentoEstabilidad";
 
 function Router() {
   return (
@@ -36,6 +37,7 @@ function Router() {
       <Route path={"/cycles"} component={CyclesDashboard} />
       <Route path={"/health"} component={SystemHealth} />
       <Route path={"/core"} component={CoreDashboard} />
+      <Route path={"/experimento/estabilidad"} component={ExperimentoEstabilidad} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
