@@ -1764,4 +1764,30 @@
 ### Fase 4: Validación
 - [x] Validar tesis contra implementación (todos los componentes PASS)
 - [x] Verificar coherencia teórica (sin discrepancias mayores)
+- [x] Crear checkpoint del proyecto
+
+
+## Extracción y Aplicación de Mejoras CAELION
+
+### Fase 1: Extracción de Especificaciones
+- [x] Leer CAELION_Documento_Maestro_Consolidado.pdf
+- [x] Leer CAELION_Nucleo_Matematico.pdf
+- [x] Leer Ecuaciones_metodologia.docx
+- [x] Extraer ecuaciones exactas de V(e), Ω, ε_eff
+- [x] Identificar parámetros y umbrales definidos
+
+### Fase 2: Identificación de Mejoras
+- [x] Comparar ecuaciones documentadas vs implementadas
+- [x] Identificar discrepancias en cálculos (V(e), Ω, e(t), u(t))
+- [x] Priorizar mejoras por impacto (3 mejoras críticas identificadas)
+- [x] Documentar mejoras aplicables (MEJORAS-PRIORITARIAS.md)### Fase 3: Implementación de Mejoras
+- [x] Actualizar cálculo de V(e) según especificación (embeddings reales)
+- [x] Actualizar cálculo de Ω según especificación (similitud de coseno)
+- [x] Actualizar cálculo de e(t) según especificación (x(t) - x_ref)
+- [x] Implementar embeddings reales con @xenova/transformers
+- ⚠️ Tests bloqueados por problema de Sharp (no relacionado con embeddings)
+
+### Fase 4: Verificación
+- [ ] Probar sistema con mejoras aplicadas
+- [ ] Verificar que métricas son más precisas
 - [ ] Crear checkpoint del proyecto
