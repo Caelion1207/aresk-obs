@@ -1862,3 +1862,15 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Agregar panel de auditoría en Core Dashboard
 - [x] Mostrar estado, génesis hash, número de logs, última verificación
 - [x] Crear tests para endpoint de health check (6/6 pasados)
+
+
+## Experimento Comparativo Controlado
+- [x] Generar dataset de 50 mensajes de control (mismo contenido para todos los regímenes)
+- [ ] Ejecutar 3 conversaciones en régimen A (Alta entropía) - 1/3 completada, 2/3 pausada
+- [ ] Ejecutar 3 conversaciones en régimen B (Ruido medio) - pausado
+- [ ] Ejecutar 3 conversaciones en régimen C (CAELION activo) - pausado
+- [x] Registrar métricas ε, Ω, V, estabilidad temporal por turno (59/450 completados)
+- [x] Generar análisis parcial de baseline Régimen A-1
+- [ ] Crear tablas comparativas por régimen (pendiente datos B y C)
+- [ ] Generar gráficas superpuestas por métrica (pendiente datos B y C)
+- [ ] Entregar dataset completo y resultados (pausado por límite de API)
