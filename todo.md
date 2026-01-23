@@ -1927,3 +1927,13 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Incluir flechas de flujo de datos (primario y secundario)
 - [x] Agregar tarjetas descriptivas para cada componente
 - [x] Incluir enlace desde Home
+
+
+## Documentación Técnica Detallada por Componente
+- [x] Crear modal de documentación técnica para cada componente (Dialog de shadcn/ui)
+- [x] Implementar onClick en componentes del diagrama SVG
+- [x] Agregar documentación detallada con especificaciones técnicas (8 componentes)
+- [x] Incluir ejemplos de código TypeScript para cada componente
+- [x] Agregar métricas de rendimiento por componente (latencia, throughput)
+- [x] Incluir dependencias y tecnologías utilizadas
+- [x] Hacer tarjetas de componentes clicables para abrir modal
