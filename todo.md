@@ -1881,3 +1881,8 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Implementar gráfica Chart.js con línea de umbral 0.5
 - [x] Marcar turno 13 (máximo Ω) con punto destacado
 - [x] Agregar ruta en App.tsx
+
+
+## Enlace a Experimento desde Home
+- [x] Agregar botón "Experimento de Estabilidad" en header de Home
+- [x] Enlazar a /experimento/estabilidad con estilo destacado (amber)
