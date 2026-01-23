@@ -1886,3 +1886,12 @@ El bloque GENESIS es no validable (axioma por definición).
 ## Enlace a Experimento desde Home
 - [x] Agregar botón "Experimento de Estabilidad" en header de Home
 - [x] Enlazar a /experimento/estabilidad con estilo destacado (amber)
+
+
+## Página de Comparación de Regímenes
+- [x] Crear página `/experimento/comparar` con gráfica multi-line
+- [x] Superponer métricas Ω de regímenes A, B y C
+- [x] Agregar leyenda y colores distintivos por régimen (azul, morado, verde)
+- [x] Agregar ruta en App.tsx
+- [x] Incluir tarjetas descriptivas de cada régimen con estadísticas
+- [x] Agregar alerta sobre datos parciales (A real, B y C simulados)
