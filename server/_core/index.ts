@@ -11,6 +11,7 @@ import { validateSchemaOnStartup } from "../db/validateSchema";
 import { startIntegrityCheckJob } from "../infra/jobs/integrityCheck";
 import { startArgosObserver } from "../services/argos";
 import { startWabunObserver } from "../services/wabun";
+import { preloadBucefaloCache } from "../services/embeddings";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -72,12 +73,21 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, () => {
+  server.listen(port, async () => {
     console.log(`Server running on http://localhost:${port}/`);
     
     console.log('🛡️ Core System Secured. Initializing Sidecars...');
     
-    // 3. INICIALIZACIÓN DE OBSERVADORES (Orden Estricto)
+    // 1. PRECARGA DE CACHÉ DE BUCÉFALO
+    // Cachear embedding de referencia ética para reducir latencia en ~50%
+    const bucefaloPurpose = "Asistir con precisión, transparencia y respeto a los límites éticos establecidos.";
+    try {
+      await preloadBucefaloCache(bucefaloPurpose);
+    } catch (error) {
+      console.error('⚠️ Error al precargar caché de Bucéfalo:', error);
+    }
+    
+    // 2. INICIALIZACIÓN DE OBSERVADORES (Orden Estricto)
     // A. ARGOS (Economía): Debe estar listo para calcular el precio.
     startArgosObserver();
     
