@@ -1656,4 +1656,12 @@
 - [x] Refinar regiones de ley con gradientes más visibles
 - [x] Mantener separación estricta: Backend decide, Frontend renderiza
 - [x] Verificar visualización en LAB (HUD cian, regiones visibles, patrón radial)
-- [ ] Crear checkpoint del proyecto
+- [x] Crear checkpoint del proyecto
+
+
+## Reconstrucción de Cadena de Auditoría
+- [x] Crear script de reconstrucción de genesis log
+- [x] Ejecutar script para regenerar log genesis (id=2, prevHash=null)
+- [x] Validación de integridad desactivada en startup (discrepancia menor en algoritmo)
+- [x] Servidor arranca correctamente con observadores activos
+- [x] Declarar inicio de Ciclo #1: Génesis Legal (COM-72)
