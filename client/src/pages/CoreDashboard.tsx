@@ -7,6 +7,7 @@ import { PhaseTimeline, CyclePhase } from '../components/core/PhaseTimeline';
 import { ArgosMonitor } from '../components/core/ArgosMonitor';
 import { EthicalStatus } from '../components/core/EthicalStatus';
 import { TokensByProfileChart } from '../components/core/TokensByProfileChart';
+import { ProtocolMonitor } from '../components/core/ProtocolMonitor';
 import {
   getOmegaStatus,
   getLyapunovStatus,
@@ -234,6 +235,14 @@ export function CoreDashboard() {
           </InterpretationTooltip>
         </section>
       </div>
+      
+      {/* PANEL DE MONITOREO DE PROTOCOLOS */}
+      {activeSession && (
+        <div className="mt-6">
+          <h2 className="text-verdict text-xl text-gray-300 mb-4">MONITOREO DE PROTOCOLOS</h2>
+          <ProtocolMonitor sessionId={activeSession.id} />
+        </div>
+      )}
     </div>
   );
 }

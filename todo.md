@@ -1699,4 +1699,23 @@
 - [x] Integrar protocolos COM-72 y ETH-01 en flujo de conversación
 - [x] Protocolos se ejecutan automáticamente en cada mensaje
 - [x] Verificar funcionamiento end-to-end (servidor arranca sin errores)
+- [x] Crear checkpoint del proyecto
+
+
+## Panel de Monitoreo de Protocolos
+### Fase 1: Componente ProtocolMonitor
+- [x] Crear client/src/components/core/ProtocolMonitor.tsx
+- [x] Implementar visualización de últimos 10 eventos de protocolos
+- [x] Mostrar estados (PASS/WARNING/FAIL) con colores distintivos
+- [x] Agregar indicadores de severidad (LOW/MEDIUM/HIGH/CRITICAL)
+- [x] Implementar auto-refresh cada 5 segundos
+
+### Fase 2: Documentación ETH-01
+- [x] Agregar documentación clara: "ETH-01 es portero de intención, no IDS completo"
+- [x] Explicar que ETH-01 valida distancia a referencia ética (Bucéfalo)
+- [x] Aclarar que no es sistema de detección de intrusiones ni firewall semántico
+
+### Fase 3: Integración
+- [x] Integrar ProtocolMonitor en Core Dashboard
+- [x] Verificar visualización en tiempo real (servidor arranca sin errores)
 - [ ] Crear checkpoint del proyecto
