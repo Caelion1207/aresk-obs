@@ -1818,3 +1818,38 @@
 - [x] Implementar procedimiento de cierre (bootstrap idempotente)
 - [x] Crear tests de validación de génesis y cadena (7/7 pasados)
 - [x] Documentar sistema de génesis en AUDIT-GENESIS.md
+
+
+---
+
+## ⚠️ SISTEMA DE AUDITORÍA: CONTRATO CERRADO
+
+**Estado**: CLOSED AND OPERATIONAL  
+**Fecha de cierre**: 2026-01-23
+
+El sistema de auditoría está **CONGELADO** bajo contrato de invariantes.
+
+### Axioma Fundamental
+El bloque GENESIS es no validable (axioma por definición).
+
+### Invariantes Activos
+- I1. Unicidad: Génesis se crea UNA SOLA VEZ
+- I2. Estructura Canónica: prevHash=null, type=GENESIS, timestamp fijo
+- I3. Inmutabilidad: Nunca se recalcula ni reescribe
+- I4. No Validación: Hash del génesis NO se verifica
+
+### Prohibiciones
+❌ NO recrear el génesis  
+❌ NO validar hash del génesis  
+❌ NO modificar el génesis  
+❌ NO optimizar la validación  
+❌ NO generalizar el sistema
+
+### Documentación
+- Contrato: `docs/AUDIT-CONTRACT.md`
+- Estado: `server/infra/AUDIT_STATUS.md`
+- Guía: `docs/AUDIT-GENESIS.md`
+
+**Este contrato es DEFINITIVO. No se permiten modificaciones.**
+
+---

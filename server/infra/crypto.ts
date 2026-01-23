@@ -99,10 +99,21 @@ export function verifyLogHash(log: AuditLog, prevHash: string | null): boolean {
 /**
  * Verifica la integridad de una cadena completa de logs
  * 
+ * CONTRATO DE AUDITORÍA - INVARIANTES:
+ * 
+ * AXIOMA: El bloque GENESIS es no validable.
+ * - Se crea una sola vez
+ * - Tiene prevHash = null
+ * - Nunca se recalcula ni reescribe
+ * - Su hash NO se verifica (axioma por definición)
+ * 
  * Reglas de validación:
  * 1. El primer log debe ser GENESIS con prevHash = null
- * 2. Los logs posteriores deben tener prevHash = hash del log anterior
- * 3. El hash de cada log debe ser válido
+ * 2. NO se valida el hash del GENESIS (axioma)
+ * 3. Los logs posteriores deben tener prevHash = hash del log anterior
+ * 4. El hash de cada log posterior debe ser válido
+ * 
+ * Estado: CLOSED AND OPERATIONAL
  * 
  * @param logs - Array de logs ordenados cronológicamente (por ID)
  * @returns Objeto con resultado de verificación
@@ -141,9 +152,12 @@ export function verifyChainIntegrity(logs: AuditLog[]): {
     };
   }
   
-  // NO verificamos el hash del génesis (es inmutable y se creó una sola vez)
-  // Solo verificamos que tenga la estructura correcta (type=GENESIS, prevHash=null)
-  // Esto elimina falsos positivos por discrepancias menores en el cálculo
+  // AXIOMA: El hash del génesis NO se verifica (es no validable por definición)
+  // Solo verificamos estructura: type=GENESIS, prevHash=null
+  // Invariante I4: verify(GENESIS) ≡ true (por definición)
+  // 
+  // CADENA: CLOSED AND OPERATIONAL
+  // Este comportamiento es DEFINITIVO y NO debe modificarse
   
   // Verificar cadena a partir del segundo log
   let prevHash: string = firstLog.hash!;

@@ -324,8 +324,17 @@ Si tienes un sistema con logs antiguos sin génesis:
    pnpm dev
    ```
 
+## Estado del Sistema
+
+**CLOSED AND OPERATIONAL**
+
+El sistema de auditoría está congelado bajo el contrato de invariantes.  
+Ver: `docs/AUDIT-CONTRACT.md`
+
 ## Referencias
 
+- **Contrato**: `docs/AUDIT-CONTRACT.md` (DEFINITIVO)
+- **Estado**: `server/infra/AUDIT_STATUS.md`
 - **Código fuente**: `server/infra/auditBootstrap.ts`
 - **Validación**: `server/infra/crypto.ts`
 - **Tests**: `server/infra/auditBootstrap.test.ts`

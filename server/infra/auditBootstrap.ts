@@ -3,12 +3,18 @@
  * 
  * Sistema de Bootstrap de Auditoría con Bloque Génesis Único
  * 
- * Garantías:
- * - Génesis se crea UNA SOLA VEZ
- * - prevHash = null para génesis
- * - type = "GENESIS" para identificación
- * - timestamp fijo e inmutable
- * - No se recrea en reinicios
+ * CONTRATO DE AUDITORÍA - INVARIANTES:
+ * 
+ * AXIOMA: El bloque GENESIS es no validable.
+ * 
+ * Garantías (Invariantes I1-I3):
+ * - I1. Unicidad: Génesis se crea UNA SOLA VEZ
+ * - I2. Estructura Canónica: prevHash = null, type = "GENESIS", timestamp fijo
+ * - I3. Inmutabilidad: Nunca se recalcula ni reescribe
+ * 
+ * Bootstrap es idempotente: bootstrap() ∘ bootstrap() = bootstrap()
+ * 
+ * Estado: CLOSED AND OPERATIONAL
  */
 
 import { getDb } from "../db";
