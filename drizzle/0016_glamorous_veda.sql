@@ -1,0 +1,1 @@
+ALTER TABLE `auditLogs` ADD `type` varchar(20) DEFAULT 'STANDARD' NOT NULL;

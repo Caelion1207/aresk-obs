@@ -12,6 +12,7 @@ import { startIntegrityCheckJob } from "../infra/jobs/integrityCheck";
 import { startArgosObserver } from "../services/argos";
 import { startWabunObserver } from "../services/wabun";
 import { preloadBucefaloCache } from "../services/embeddings";
+import { bootstrapAuditSystem } from "../infra/auditBootstrap";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -77,6 +78,15 @@ async function startServer() {
     console.log(`Server running on http://localhost:${port}/`);
     
     console.log('🛡️ Core System Secured. Initializing Sidecars...');
+    
+    // 0. BOOTSTRAP DE AUDITORÍA (DEBE SER PRIMERO)
+    // Crear bloque génesis si no existe
+    try {
+      await bootstrapAuditSystem();
+    } catch (error) {
+      console.error('⚠️ Error al inicializar sistema de auditoría:', error);
+      console.error('⚠️ El servidor continuará, pero la auditoría puede no funcionar correctamente.');
+    }
     
     // 1. PRECARGA DE CACHÉ DE BUCÉFALO
     // Cachear embedding de referencia ética para reducir latencia en ~50%

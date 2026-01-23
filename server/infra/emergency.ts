@@ -8,11 +8,13 @@
  * - Alerta inmediata al owner
  * - Bloqueo de escrituras (modo emergencia)
  * - Logging de incidente
+ * 
+ * Respeta bloque génesis único (no genera falsos positivos)
  */
 
 import { getDb } from "../db";
 import { auditLogs } from "../../drizzle/auditLogs";
-import { verifyLogHash } from "./crypto";
+import { verifyChainIntegrity } from "./crypto";
 import { asc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -24,8 +26,12 @@ let corruptionDetails: string | null = null;
 /**
  * Verifica integridad de la cadena de audit logs
  * 
- * @param limit - Número de logs a verificar (desde el más reciente)
- * @returns true si la cadena es íntegra, false si hay corrupción
+ * Respeta el bloque génesis único:
+ * - Primer log debe ser GENESIS con prevHash = null
+ * - Logs posteriores deben tener prevHash = hash del anterior
+ * 
+ * @param limit - Número de logs a verificar (desde el más antiguo)
+ * @returns Resultado de verificación
  */
 export async function verifyAuditChainIntegrity(limit: number = 100): Promise<{
   isValid: boolean;
@@ -40,7 +46,7 @@ export async function verifyAuditChainIntegrity(limit: number = 100): Promise<{
     });
   }
   
-  // Obtener logs en orden cronológico
+  // Obtener logs en orden cronológico (por ID)
   const logs = await db
     .select()
     .from(auditLogs)
@@ -51,35 +57,16 @@ export async function verifyAuditChainIntegrity(limit: number = 100): Promise<{
     return { isValid: true };
   }
   
-  // Verificar cada log
-  for (let i = 0; i < logs.length; i++) {
-    const log = logs[i]!;
-    const prevHash = i === 0 ? null : logs[i - 1]!.hash;
-    
-    // Verificar hash del log
-    const isValid = verifyLogHash({
-      ...log,
-      ip: log.ip || undefined,
-      userAgent: log.userAgent || undefined,
-      requestId: log.requestId || undefined,
-    }, prevHash);
-    
-    if (!isValid) {
-      return {
-        isValid: false,
-        corruptedLogId: log.id,
-        details: `Log ${log.id} has invalid hash. Expected prevHash: ${prevHash}, Found: ${log.prevHash}`,
-      };
-    }
-    
-    // Verificar encadenamiento
-    if (i > 0 && log.prevHash !== prevHash) {
-      return {
-        isValid: false,
-        corruptedLogId: log.id,
-        details: `Log ${log.id} has broken chain. Expected prevHash: ${prevHash}, Found: ${log.prevHash}`,
-      };
-    }
+  // Usar función de crypto que respeta génesis
+  const result = verifyChainIntegrity(logs as any);
+  
+  if (!result.valid) {
+    const corruptedLog = logs[result.brokenAt || 0];
+    return {
+      isValid: false,
+      corruptedLogId: corruptedLog?.id,
+      details: `Chain broken at log ${result.brokenAt}: ${result.reason} (expected: ${result.expectedHash}, got: ${result.actualHash})`
+    };
   }
   
   return { isValid: true };

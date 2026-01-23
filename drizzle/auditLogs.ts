@@ -24,6 +24,9 @@ export const auditLogs = mysqlTable("auditLogs", {
   endpoint: varchar("endpoint", { length: 255 }).notNull(),
   method: varchar("method", { length: 10 }).notNull(),
   
+  // Tipo de log (GENESIS para bloque inicial)
+  type: varchar("type", { length: 20 }).notNull().default("STANDARD"),
+  
   // Resultado
   statusCode: int("statusCode").notNull(),
   duration: int("duration").notNull(), // milisegundos

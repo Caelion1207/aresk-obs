@@ -6,8 +6,8 @@
  * Garantías:
  * - Serialización de escrituras (Mutex)
  * - Integridad criptográfica (SHA-256 + canonical JSON)
- * - Rehidratación automática de prevHash
- * - Detección de corrupción en tiempo real
+ * - Génesis único e inmutable
+ * - No recrea génesis en reinicios
  */
 
 import { Mutex } from "async-mutex";
@@ -16,6 +16,7 @@ import { auditLogs } from "../../drizzle/auditLogs";
 import { calculateLogHash } from "../infra/crypto";
 import { desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { getLastAuditHash, getGenesisHash } from "../infra/auditBootstrap";
 
 // Mutex global para serializar escrituras de audit
 const auditMutex = new Mutex();
@@ -26,6 +27,8 @@ let cacheInitialized = false;
 
 /**
  * Inicializa el cache de prevHash desde la última entrada
+ * 
+ * Si no hay logs (solo génesis), usa el hash del génesis.
  */
 async function initializePrevHashCache(): Promise<void> {
   if (cacheInitialized) return;
@@ -38,7 +41,7 @@ async function initializePrevHashCache(): Promise<void> {
     });
   }
   
-  // Obtener última entrada
+  // Obtener última entrada (excluyendo génesis si es el único)
   const lastEntry = await db
     .select()
     .from(auditLogs)
@@ -47,16 +50,18 @@ async function initializePrevHashCache(): Promise<void> {
   
   if (lastEntry.length > 0) {
     lastPrevHash = lastEntry[0]!.hash;
+    console.log("🔄 Audit cache initialized from last entry (hash:", lastPrevHash?.substring(0, 8), "...)");
   } else {
-    // Primera entrada: prevHash = hash de string vacío
-    lastPrevHash = calculateLogHash({
-      userId: 0,
-      endpoint: "genesis",
-      method: "GENESIS",
-      statusCode: 200,
-      duration: 0,
-      timestamp: new Date("2026-01-01T00:00:00Z"),
-    }, null);
+    // No hay logs: usar hash del génesis
+    const genesisHash = await getGenesisHash();
+    if (!genesisHash) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Genesis block not found. Run bootstrap first.",
+      });
+    }
+    lastPrevHash = genesisHash;
+    console.log("🔄 Audit cache initialized from genesis (hash:", lastPrevHash.substring(0, 8), "...)");
   }
   
   cacheInitialized = true;
@@ -106,6 +111,7 @@ export async function writeAuditLog(entry: {
       userId: entry.userId,
       endpoint: entry.endpoint,
       method: entry.method,
+      type: "STANDARD",
       statusCode: entry.statusCode,
       duration: entry.duration,
       timestamp,
@@ -119,6 +125,7 @@ export async function writeAuditLog(entry: {
       userId: entry.userId,
       endpoint: entry.endpoint,
       method: entry.method,
+      type: "STANDARD", // Logs normales son STANDARD
       statusCode: entry.statusCode,
       duration: entry.duration,
       timestamp,

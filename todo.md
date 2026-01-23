@@ -1807,3 +1807,14 @@
 - [x] Integrar caché en semantic_bridge_exact para reutilizar embedding
 - [x] Crear tests de validación de caché (hit/miss, latencia)
 - [x] Documentar mejora de rendimiento en comentarios del código
+
+
+## Corrección de Sistema de Auditoría - Génesis Real y Único
+- [x] Analizar código actual de auditoría y detectar problema de bootstrap
+- [x] Definir bloque génesis explícito (log_id=1, prevHash=null, type=GENESIS)
+- [x] Implementar estado de bootstrap persistente en DB
+- [x] Corregir lógica de validación de cadena (no recrear génesis)
+- [x] Crear script de bootstrap one-time para inicializar génesis
+- [x] Implementar procedimiento de cierre (bootstrap idempotente)
+- [x] Crear tests de validación de génesis y cadena (7/7 pasados)
+- [x] Documentar sistema de génesis en AUDIT-GENESIS.md
