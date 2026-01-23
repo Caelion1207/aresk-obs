@@ -1853,3 +1853,12 @@ El bloque GENESIS es no validable (axioma por definición).
 **Este contrato es DEFINITIVO. No se permiten modificaciones.**
 
 ---
+
+
+## Dashboard de Monitoreo de Auditoría
+- [x] Crear endpoint público `/api/health/audit` (sin autenticación)
+- [x] Retornar estado de cadena (CLOSED/OPERATIONAL, valid/corrupted)
+- [x] Incluir hash del génesis y total de logs en respuesta
+- [x] Agregar panel de auditoría en Core Dashboard
+- [x] Mostrar estado, génesis hash, número de logs, última verificación
+- [x] Crear tests para endpoint de health check (6/6 pasados)

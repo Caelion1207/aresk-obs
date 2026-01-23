@@ -34,6 +34,7 @@ export function CoreDashboard() {
   const { data: cycleData, refetch: refetchCycles } = trpc.cycles.listActive.useQuery();
   const { data: healthSummary, refetch: refetchHealth } = trpc.health.summary.useQuery();
   const { data: metricsData, refetch: refetchMetrics } = trpc.health.metrics.useQuery();
+  const { data: auditStatus, refetch: refetchAudit } = trpc.health.audit.useQuery();
   
   // Obtener sesión activa más reciente para métricas ARESK
   const { data: userSessions } = trpc.session.list.useQuery();
@@ -62,10 +63,11 @@ export function CoreDashboard() {
       refetchMetrics();
       refetchArgos();
       refetchTokens();
+      refetchAudit();
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [autoRefresh, refetchCycles, refetchHealth, refetchMetrics, refetchArgos, refetchTokens]);
+  }, [autoRefresh, refetchCycles, refetchHealth, refetchMetrics, refetchArgos, refetchTokens, refetchAudit]);
 
   // Datos del ciclo activo
   const activeCycle = cycleData?.[0];
@@ -156,6 +158,50 @@ export function CoreDashboard() {
               )}
             </div>
           </DeepCard>
+
+          <InterpretationTooltip
+            law="AUDIT CHAIN STATUS"
+            value={auditStatus?.status || 'LOADING'}
+            interpretation="El sistema de auditoría mantiene una cadena de hash inmutable con bloque génesis único. Estado CLOSED_AND_OPERATIONAL indica que la cadena es válida y el sistema está operativo. CORRUPTED indica corrupción real en logs posteriores al génesis."
+          >
+            <DeepCard title="CADENA DE AUDITORÍA">
+              <div className="space-y-3 text-technical">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Estado:</span>
+                  <span className={
+                    auditStatus?.status === 'CLOSED_AND_OPERATIONAL' 
+                      ? 'text-state-nominal' 
+                      : auditStatus?.status === 'CORRUPTED' || auditStatus?.status === 'EMERGENCY'
+                      ? 'text-state-critical'
+                      : 'text-gray-400'
+                  }>
+                    {auditStatus?.status || 'LOADING'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Génesis:</span>
+                  <span className="text-xs font-mono text-gray-400">
+                    {auditStatus?.genesisHash?.substring(0, 12)}...
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Total Logs:</span>
+                  <span className="text-gray-300">{auditStatus?.totalLogs || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Cadena Válida:</span>
+                  <span className={auditStatus?.chainValid ? 'text-state-nominal' : 'text-state-critical'}>
+                    {auditStatus?.chainValid ? '✓ SÍ' : '✗ NO'}
+                  </span>
+                </div>
+                {auditStatus?.corruptionDetails && (
+                  <div className="mt-2 p-2 bg-state-critical/10 border border-state-critical rounded text-xs">
+                    {auditStatus.corruptionDetails}
+                  </div>
+                )}
+              </div>
+            </DeepCard>
+          </InterpretationTooltip>
         </section>
 
         {/* COLUMNA 2: ESTABILIDAD SEMÁNTICA (ARESK) */}
