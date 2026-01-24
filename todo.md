@@ -1937,3 +1937,14 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Agregar métricas de rendimiento por componente (latencia, throughput)
 - [x] Incluir dependencias y tecnologías utilizadas
 - [x] Hacer tarjetas de componentes clicables para abrir modal
+
+
+## Smoke Test de Funcionalidades Desplegadas
+- [x] Verificar navegación desde Home a Experimento de Estabilidad
+- [x] Verificar navegación desde Home a Diagrama de Arquitectura
+- [x] Verificar carga de gráfica en página de estabilidad
+- [x] Verificar tabla expandible con ordenamiento
+- [x] Verificar navegación desde Estabilidad a Comparación
+- [x] Verificar gráfica comparativa de regímenes
+- [x] Verificar modal de documentación técnica en diagrama
+- [x] Generar informe de resultados del smoke test (24/24 tests pasados)
