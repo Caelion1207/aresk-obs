@@ -79,11 +79,16 @@ export default function Home() {
                 Experimento de Estabilidad
               </Button>
             </Link>
-            <Link href="/sistema/flujo">
-              <Button variant="outline" className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
-                Diagrama de Arquitectura
-              </Button>
-            </Link>
+          <Link href="/sistema/flujo">
+            <Button variant="outline" className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10">
+              Diagrama de Arquitectura
+            </Button>
+          </Link>
+          <Link href="/metricas/hud">
+            <Button variant="outline" className="border-green-500 text-green-400 hover:bg-green-500/10 glow-green">
+              HUD de Métricas
+            </Button>
+          </Link>
               <Link href="/simulator">
                 <Button size="lg">
                   Acceder al Instrumento

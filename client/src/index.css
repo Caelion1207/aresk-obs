@@ -79,38 +79,41 @@
 }
 
 .dark {
-  --primary: var(--color-cyan-500);
+  --primary: var(--color-cyan-400);
   --primary-foreground: var(--color-gray-950);
-  --sidebar-primary: var(--color-cyan-600);
+  --sidebar-primary: var(--color-cyan-500);
   --sidebar-primary-foreground: var(--color-gray-50);
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.85 0.005 65);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.85 0.005 65);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.85 0.005 65);
-  --secondary: oklch(0.24 0.006 286.033);
-  --secondary-foreground: oklch(0.7 0.005 65);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground:  oklch(0.92 0.005 65);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.488 0.243 264.376);
+  /* Fondo negro puro estilo HUD */
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.95 0.01 180);
+  --card: oklch(0.05 0 0);
+  --card-foreground: oklch(0.95 0.01 180);
+  --popover: oklch(0.05 0 0);
+  --popover-foreground: oklch(0.95 0.01 180);
+  --secondary: oklch(0.1 0.02 180);
+  --secondary-foreground: oklch(0.8 0.05 180);
+  --muted: oklch(0.15 0.02 180);
+  --muted-foreground: oklch(0.6 0.03 180);
+  --accent: oklch(0.15 0.05 180);
+  --accent-foreground: oklch(0.95 0.05 180);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  /* Bordes con glow sutil */
+  --border: oklch(0.3 0.1 180 / 30%);
+  --input: oklch(0.2 0.08 180 / 40%);
+  --ring: oklch(0.65 0.18 180);
+  /* Colores de gráficas con glow */
   --chart-1: var(--color-cyan-400);
-  --chart-2: var(--color-purple-500);
-  --chart-3: var(--color-teal-500);
-  --chart-4: var(--color-amber-500);
-  --chart-5: var(--color-red-500);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.85 0.005 65);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground:  oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.488 0.243 264.376);
+  --chart-2: var(--color-purple-400);
+  --chart-3: var(--color-green-400);
+  --chart-4: var(--color-amber-400);
+  --chart-5: var(--color-red-400);
+  --sidebar: oklch(0.05 0 0);
+  --sidebar-foreground: oklch(0.9 0.01 180);
+  --sidebar-accent: oklch(0.15 0.05 180);
+  --sidebar-accent-foreground: oklch(0.95 0.05 180);
+  --sidebar-border: oklch(0.3 0.1 180 / 20%);
+  --sidebar-ring: oklch(0.65 0.18 180);
 }
 
 @layer base {
@@ -236,5 +239,97 @@
 
   .border-state-critical {
     border-color: #EF4444;
+  }
+
+  /* ========================================
+     HUD Futurista - Efectos de Glow
+     ======================================== */
+
+  .glow-cyan {
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.5),
+                0 0 20px rgba(34, 211, 238, 0.3),
+                0 0 30px rgba(34, 211, 238, 0.1);
+  }
+
+  .glow-green {
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5),
+                0 0 20px rgba(16, 185, 129, 0.3),
+                0 0 30px rgba(16, 185, 129, 0.1);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5),
+                0 0 20px rgba(168, 85, 247, 0.3),
+                0 0 30px rgba(168, 85, 247, 0.1);
+  }
+
+  .glow-amber {
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5),
+                0 0 20px rgba(245, 158, 11, 0.3),
+                0 0 30px rgba(245, 158, 11, 0.1);
+  }
+
+  .text-glow-cyan {
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.8),
+                 0 0 20px rgba(34, 211, 238, 0.5),
+                 0 0 30px rgba(34, 211, 238, 0.3);
+  }
+
+  .text-glow-green {
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.8),
+                 0 0 20px rgba(16, 185, 129, 0.5),
+                 0 0 30px rgba(16, 185, 129, 0.3);
+  }
+
+  /* Grid de fondo tecnológico */
+  .tech-grid {
+    background-image: 
+      linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* Animación de pulso suave */
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Bordes con efecto scan */
+  .border-scan {
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    position: relative;
+  }
+
+  .border-scan::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(34, 211, 238, 0.5) 50%, 
+      transparent 100%);
+    animation: scan 3s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes scan {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
 }

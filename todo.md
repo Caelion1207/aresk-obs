@@ -1948,3 +1948,15 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Verificar gráfica comparativa de regímenes
 - [x] Verificar modal de documentación técnica en diagrama
 - [x] Generar informe de resultados del smoke test (24/24 tests pasados)
+
+
+## Visualizaciones Estilo HUD Futurista
+- [x] Implementar tema oscuro global (fondo negro puro oklch(0 0 0))
+- [x] Agregar efectos de glow verde/cyan a elementos interactivos (clases CSS)
+- [x] Crear componente de visualización circular concéntrica (HUDCircular.tsx)
+- [x] Implementar gráficas con líneas brillantes y efectos de neón (canvas con glow)
+- [x] Crear nueva página HUDMetrics con 4 visualizaciones circulares
+- [x] Agregar animaciones sutiles de pulso y glow (animate-pulse-glow)
+- [x] Implementar grid de fondo estilo tecnológico (tech-grid)
+- [x] Agregar ruta /metricas/hud en App.tsx
+- [x] Agregar enlace desde Home con efecto glow-green
