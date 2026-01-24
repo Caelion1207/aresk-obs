@@ -89,6 +89,11 @@ export default function Home() {
               HUD de Métricas
             </Button>
           </Link>
+          <Link href="/investigacion">
+            <Button variant="outline" className="border-purple-500 text-purple-400 hover:bg-purple-500/10">
+              Documentación de Investigación
+            </Button>
+          </Link>
               <Link href="/simulator">
                 <Button size="lg">
                   Acceder al Instrumento

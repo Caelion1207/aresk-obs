@@ -1976,3 +1976,13 @@ El bloque GENESIS es no validable (axioma por definición).
 - [ ] Agregar actualización automática cada 5 segundos en CoreDashboard
 - [ ] Implementar modo pantalla completa en HUDMetrics
 - [ ] Agregar animaciones de escaneo y efectos de partículas
+
+
+## Página de Documentación Interactiva de Investigación (Completado)
+
+- [x] Crear componente ResearchPage.tsx con lista de 8 documentos PDF
+- [x] Implementar cards con previews, descripciones y botones de descarga
+- [x] Agregar ruta /investigacion en App.tsx
+- [x] Agregar enlace desde Home.tsx con estilo HUD
+- [x] Verificar funcionalidad de descarga de PDFs
+- [x] Copiar PDFs a client/public/research para acceso web
