@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { Link } from 'wouter';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Maximize2, Minimize2 } from 'lucide-react';
 import { HUDCircular } from '@/components/HUDCircular';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 export function HUDMetrics() {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   // Datos de ejemplo del último análisis
   const metrics = {
     omega: 0.4228,
@@ -14,8 +17,9 @@ export function HUDMetrics() {
   };
 
   return (
-    <div className="min-h-screen bg-black tech-grid">
+    <div className={`min-h-screen bg-black tech-grid ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
       {/* Header */}
+      {!isFullscreen && (
       <div className="border-b border-cyan-500/30 bg-black/80 backdrop-blur-sm">
         <div className="container py-4">
           <div className="flex items-center justify-between">
@@ -35,18 +39,48 @@ export function HUDMetrics() {
                 </p>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-xs text-cyan-400/60 font-mono">ESTADO DEL SISTEMA</div>
-              <div className="text-lg font-bold text-green-400 text-glow-green">
-                OPERATIONAL
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="glow-purple"
+                onClick={() => setIsFullscreen(!isFullscreen)}
+              >
+                {isFullscreen ? (
+                  <><Minimize2 className="h-4 w-4 mr-2" />Salir de Pantalla Completa</>
+                ) : (
+                  <><Maximize2 className="h-4 w-4 mr-2" />Pantalla Completa</>
+                )}
+              </Button>
+              <div className="text-right">
+                <div className="text-xs text-cyan-400/60 font-mono">ESTADO DEL SISTEMA</div>
+                <div className="text-lg font-bold text-green-400 text-glow-green">
+                  OPERATIONAL
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      )}
+
+      {/* Botón flotante para salir de fullscreen */}
+      {isFullscreen && (
+        <div className="fixed top-4 right-4 z-50">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="glow-purple bg-black/80 backdrop-blur-sm"
+            onClick={() => setIsFullscreen(false)}
+          >
+            <Minimize2 className="h-4 w-4 mr-2" />
+            Salir de Pantalla Completa
+          </Button>
+        </div>
+      )}
 
       {/* Main Content */}
-      <div className="container py-12">
+      <div className={`${isFullscreen ? 'h-screen flex items-center justify-center' : 'container py-12'}`}>
         {/* Grid de visualizaciones circulares */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <Card className="bg-black/60 border-cyan-500/30 p-6 glow-cyan">

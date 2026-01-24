@@ -99,6 +99,17 @@ Las tareas pendientes están documentadas en `todo.md`.
 
 ---
 
+## Documentación de Investigación
+
+El directorio [`research/`](./research/) contiene la documentación técnica y científica que fundamenta el sistema ARESK-OBS y el framework CAELION:
+
+- **Serie Ingeniería Cognitiva** (4 partes): Fundamentos, Control, Semántica y Arquitecturas
+- **Análisis Técnicos**: Matemático 384D, Control LQR
+- **Análisis Comparativos**: CAELION vs ACT-R/SOAR, CAELION vs ML
+
+Ver [`research/README.md`](./research/README.md) para índice completo y descripciones.
+
+---
 ## Licencia
 
 Este proyecto se distribuye bajo la licencia  

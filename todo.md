@@ -1960,3 +1960,19 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Implementar grid de fondo estilo tecnológico (tech-grid)
 - [x] Agregar ruta /metricas/hud en App.tsx
 - [x] Agregar enlace desde Home con efecto glow-green
+
+
+## Documentación de Investigación
+- [x] Crear directorio research/ en el repositorio
+- [x] Copiar 8 PDFs de investigación a research/
+- [x] Crear README.md en research/ con índice de documentos
+- [x] Actualizar README principal con sección de investigación
+
+## Mejoras de Visualización HUD
+- [ ] Actualizar ExperimentoEstabilidad con canvas y efectos de glow
+- [ ] Reemplazar Chart.js por visualización HUD con líneas brillantes
+- [ ] Agregar grid tecnológico de fondo en ExperimentoEstabilidad
+- [ ] Implementar HUDCircular en CoreDashboard con métricas en tiempo real
+- [ ] Agregar actualización automática cada 5 segundos en CoreDashboard
+- [ ] Implementar modo pantalla completa en HUDMetrics
+- [ ] Agregar animaciones de escaneo y efectos de partículas

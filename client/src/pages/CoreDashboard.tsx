@@ -8,6 +8,7 @@ import { ArgosMonitor } from '../components/core/ArgosMonitor';
 import { EthicalStatus } from '../components/core/EthicalStatus';
 import { TokensByProfileChart } from '../components/core/TokensByProfileChart';
 import { ProtocolMonitor } from '../components/core/ProtocolMonitor';
+import { HUDCircular } from '../components/HUDCircular';
 import {
   getOmegaStatus,
   getLyapunovStatus,
@@ -238,6 +239,26 @@ export function CoreDashboard() {
             </DeepCard>
           </InterpretationTooltip>
 
+          {activeSession && (
+            <DeepCard title="VISUALIZACIÓN HUD">
+              <div className="grid grid-cols-2 gap-4">
+                <HUDCircular
+                  value={currentOmega}
+                  label="Ω"
+                  color="cyan"
+                  threshold={0.5}
+                  size={120}
+                />
+                <HUDCircular
+                  value={currentVe}
+                  label="V"
+                  color="purple"
+                  threshold={0.7}
+                  size={120}
+                />
+              </div>
+            </DeepCard>
+          )}
           {!activeSession && (
             <div className="text-technical text-center py-4 border border-subtle rounded">
               No hay sesión activa. Inicia una sesión en el Simulador para ver métricas ARESK.
