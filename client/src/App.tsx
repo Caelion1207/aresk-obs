@@ -23,6 +23,9 @@ import ExperimentoComparar from './pages/ExperimentoComparar';
 import SystemFlow from '@/pages/SystemFlow';
 import { HUDMetrics } from '@/pages/HUDMetrics';
 import ResearchPage from '@/pages/ResearchPage';
+import CampoPage from '@/pages/CampoPage';
+import MarcoPage from '@/pages/MarcoPage';
+import InstrumentoPage from '@/pages/InstrumentoPage';
 
 function Router() {
   return (
@@ -46,6 +49,9 @@ function Router() {
         <Route path="/sistema/flujo" component={SystemFlow} />
         <Route path="/metricas/hud" component={HUDMetrics} />
         <Route path="/investigacion" component={ResearchPage} />
+        <Route path="/campo" component={CampoPage} />
+        <Route path="/marco" component={MarcoPage} />
+        <Route path="/instrumento" component={InstrumentoPage} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

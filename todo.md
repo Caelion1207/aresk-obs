@@ -2000,3 +2000,91 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Actualizar HUDMetrics con nuevo diseño visual
 - [x] Aplicar diseño consistente en todas las páginas principales
 - [ ] Verificar navegación y experiencia visual completa
+
+
+## Reestructuración Canónica: Campo, Marco e Instrumento (En Progreso)
+
+### Separación Conceptual
+- [ ] Actualizar Home.tsx para reflejar separación: Campo (Ingeniería Coignitiva) → Marco (CAELION) → Instrumento (ARESK-OBS)
+- [ ] Crear página /campo para Ingeniería Coignitiva (fundamentos teóricos, formalización matemática, Capa 0)
+- [ ] Crear página /marco para CAELION (módulos supervisores, protocolos, directivas operacionales, diagrama unificado)
+- [ ] Actualizar descripción de ARESK-OBS como instrumento de medición (no confundir con el marco)
+- [ ] Eliminar confusiones entre instrumento y marco en todas las páginas
+
+### Documentación Canónica
+- [ ] Agregar documentos de Ingeniería Coignitiva a /investigacion (Fundamentos, Diferencias Cognitiva-Coignitiva, Síntesis Técnica, Validación)
+- [ ] Agregar documentos de CAELION a /investigacion (Marco Unificado, Especificaciones Módulos, DOS-07 a DOS-10)
+- [ ] Copiar diagrama_sistema_unificado.png a client/public/
+- [ ] Actualizar SystemFlow con diagrama real del sistema CAELION
+
+### Coherencia Terminológica
+- [ ] Verificar que "Ingeniería Coignitiva" se use correctamente como campo (no "cognitiva")
+- [ ] Verificar que CAELION se presente como marco/framework (no como instrumento)
+- [ ] Verificar que ARESK-OBS se presente como instrumento de medición (no como sistema completo)
+- [ ] Actualizar descripciones de métricas ε, Ω, V con definiciones canónicas del campo
+
+
+## Verificación de Coherencia: Especificación vs Implementación (En Progreso)
+
+### Auditoría de Implementación
+- [ ] Revisar drizzle/schema.ts para verificar tablas y campos implementados
+- [ ] Revisar server/routers.ts para verificar procedimientos tRPC disponibles
+- [ ] Revisar server/db.ts para verificar queries implementadas
+- [ ] Documentar métricas que el sistema REALMENTE calcula (no las que dice calcular)
+
+### Especificaciones del Campo
+- [ ] Verificar que ε (epsilon) se calcule según embeddings 384D reales
+- [ ] Verificar que Ω (omega) se calcule como cos(x(t), x_ref) con Capa 0 real
+- [ ] Verificar que V (Lyapunov) se calcule como ||x(t) - x_ref||²
+- [ ] Verificar que exista control LQR implementado (u(t) = -K·e(t))
+
+### Corrección de Discrepancias
+- [ ] Eliminar del sitio cualquier métrica que NO esté implementada en el backend
+- [ ] Actualizar descripciones para reflejar cálculos reales (no ideales)
+- [ ] Documentar limitaciones actuales del instrumento
+- [ ] Si faltan métricas críticas: implementarlas o documentar su ausencia
+
+### Coherencia del Sitio
+- [ ] Verificar que CoreDashboard muestre solo datos reales de la BD
+- [ ] Verificar que ExperimentoEstabilidad use datos reales (no hardcoded)
+- [ ] Verificar que HUDMetrics refleje métricas calculadas por el backend
+- [ ] Eliminar visualizaciones de métricas no implementadas
+
+
+## Estructura Conceptual Correcta (CRÍTICO)
+
+### Definiciones Canónicas
+
+**Campo: Ingeniería Coignitiva**
+- Disciplina que estudia sistemas donde la cognición emerge de la interacción regulada
+- Define el objeto de estudio S = (H, M, C, Ω, Π)
+- Establece métricas canónicas: ε, Ω, V
+
+**Instrumento: ARESK-OBS**
+- Instrumento de auditoría de sistemas coignitivos (CUALQUIER sistema del campo)
+- Mide métricas canónicas + métricas extendidas de auditoría
+- Incluye infraestructura de gobernanza para auditar sistemas
+- Capacidades: medición de ε/Ω/V, ciclos COM-72, costes ARGOS, logs éticos, cadena de auditoría
+
+**Marco: CAELION**
+- UNO de los marcos evaluados por ARESK-OBS
+- Corresponde al régimen "acoplada" (perfil C) en los experimentos
+- Incluye módulos supervisores: WABUN, LIANG, ARGOS, ARESK, HÉCATE
+- Protocolos: ARC-01, COM-72, CMD-02, CMD-03
+- Directivas: DOS-01 a DOS-10
+
+**Regímenes Experimentales:**
+- **Tipo A (tipo_a)**: Alta Entropía / Bajo Control (SIN marco de gobernanza)
+- **Tipo B (tipo_b)**: Ruido Estocástico Moderado / Sin Referencia (SIN marco)
+- **Tipo C (acoplada)**: Régimen CAELION (CON marco completo de gobernanza)
+
+### Tareas de Reestructuración
+
+- [x] Actualizar Home.tsx: ARESK-OBS como instrumento de auditoría (no solo medición)
+- [x] Actualizar CampoPage: Sistemas coignitivos son auditables por ARESK-OBS
+- [x] Crear MarcoPage: CAELION como uno de los marcos bajo evaluación
+- [x] Crear InstrumentoPage: ARESK-OBS con capacidades completas de auditoría
+- [x] Actualizar ExperimentoEstabilidad: Comparación de 3 regímenes (A sin marco, B sin marco, C con CAELION)
+- [x] Aclarar que cycles/argos/ethical/audit son parte del INSTRUMENTO, no del marco
+- [x] Documentar que CAELION solo se activa en régimen "acoplada"
+- [x] Agregar rutas /campo, /marco, /instrumento en App.tsx

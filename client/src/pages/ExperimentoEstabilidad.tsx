@@ -9,8 +9,9 @@ import { useLocation } from 'wouter';
 Chart.register(...registerables);
 
 // Datos del análisis de estabilidad temporal (Régimen A-1)
+// Régimen A: Sistema coignitivo SIN marco de gobernanza (tipo_a)
 const STABILITY_DATA = {
-  regime: 'A - Alta Entropía',
+  regime: 'A - Alta Entropía (Sin Marco)',
   totalMessages: 50,
   threshold: 0.5,
   maxOmega: 0.4228,
