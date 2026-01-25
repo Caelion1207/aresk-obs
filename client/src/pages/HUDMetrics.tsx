@@ -17,10 +17,10 @@ export function HUDMetrics() {
   };
 
   return (
-    <div className={`min-h-screen bg-black tech-grid ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
+    <div className={`min-h-screen bg-gradient-deep-blue tech-grid particles-bg ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
       {/* Header */}
       {!isFullscreen && (
-      <div className="border-b border-cyan-500/30 bg-black/80 backdrop-blur-sm">
+      <div className="border-b border-cyan-500/30 bg-gradient-to-r from-cyan-950/20 to-purple-950/20 backdrop-blur-sm">
         <div className="container py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -31,7 +31,7 @@ export function HUDMetrics() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-cyan-400 text-glow-cyan">
+                <h1 className="text-2xl font-bold text-white title-glow-cyan">
                   HUD DE MÉTRICAS COGNITIVAS
                 </h1>
                 <p className="text-sm text-cyan-300/60 font-mono">
@@ -83,7 +83,7 @@ export function HUDMetrics() {
       <div className={`${isFullscreen ? 'h-screen flex items-center justify-center' : 'container py-12'}`}>
         {/* Grid de visualizaciones circulares */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          <Card className="bg-black/60 border-cyan-500/30 p-6 glow-cyan">
+          <Card className="bg-gradient-blue-purple border-cyan-500/30 p-6 hover-glow-cyan">
             <div className="flex flex-col items-center">
               <HUDCircular
                 value={metrics.omega}
@@ -103,7 +103,7 @@ export function HUDMetrics() {
             </div>
           </Card>
 
-          <Card className="bg-black/60 border-green-500/30 p-6 glow-green">
+          <Card className="bg-gradient-blue-purple border-green-500/30 p-6 hover-glow-cyan">
             <div className="flex flex-col items-center">
               <HUDCircular
                 value={metrics.epsilon}
@@ -122,7 +122,7 @@ export function HUDMetrics() {
             </div>
           </Card>
 
-          <Card className="bg-black/60 border-purple-500/30 p-6 glow-purple">
+          <Card className="bg-gradient-blue-purple border-purple-500/30 p-6 hover-glow-purple">
             <div className="flex flex-col items-center">
               <HUDCircular
                 value={metrics.lyapunov}
@@ -141,7 +141,7 @@ export function HUDMetrics() {
             </div>
           </Card>
 
-          <Card className="bg-black/60 border-amber-500/30 p-6 glow-amber">
+          <Card className="bg-gradient-blue-purple border-amber-500/30 p-6 hover-glow-cyan">
             <div className="flex flex-col items-center">
               <HUDCircular
                 value={metrics.stability}
@@ -162,7 +162,7 @@ export function HUDMetrics() {
         </div>
 
         {/* Panel de información técnica */}
-        <Card className="bg-black/60 border-cyan-500/30 p-8 border-scan">
+        <Card className="bg-gradient-blue-purple border-cyan-500/30 p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-lg font-bold text-cyan-400 text-glow-cyan mb-4 uppercase font-mono">

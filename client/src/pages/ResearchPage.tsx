@@ -116,15 +116,15 @@ export default function ResearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header con gradiente HUD */}
-      <div className="border-b border-cyan-500/30 bg-gradient-to-b from-cyan-950/20 to-transparent">
+    <div className="min-h-screen bg-gradient-deep-blue particles-bg text-white">
+      {/* Header con gradiente azul-púrpura */}
+      <div className="border-b border-cyan-500/30 bg-gradient-to-r from-cyan-950/20 to-purple-950/20 backdrop-blur-sm">
         <div className="container py-8">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <BookOpen className="w-8 h-8 text-cyan-400" />
-                <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+                <h1 className="text-4xl font-bold text-white title-glow-cyan">
                   Documentación de Investigación
                 </h1>
               </div>
@@ -148,7 +148,7 @@ export default function ResearchPage() {
       <div className="container py-12">
         {/* Estadísticas rápidas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <Card className="bg-gradient-to-br from-cyan-950/30 to-cyan-900/10 border-cyan-500/30">
+          <Card className="bg-gradient-blue-purple border-cyan-500/30 hover-glow-cyan">
             <CardHeader>
               <CardTitle className="text-cyan-400 flex items-center gap-2">
                 <Brain className="w-5 h-5" />
@@ -161,7 +161,7 @@ export default function ResearchPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-950/30 to-purple-900/10 border-purple-500/30">
+          <Card className="bg-gradient-blue-purple border-purple-500/30 hover-glow-purple">
             <CardHeader>
               <CardTitle className="text-purple-400 flex items-center gap-2">
                 <FlaskConical className="w-5 h-5" />
@@ -174,7 +174,7 @@ export default function ResearchPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-950/30 to-green-900/10 border-green-500/30">
+          <Card className="bg-gradient-blue-purple border-green-500/30 hover-glow-cyan">
             <CardHeader>
               <CardTitle className="text-green-400 flex items-center gap-2">
                 <GitCompare className="w-5 h-5" />
@@ -208,7 +208,7 @@ export default function ResearchPage() {
                   return (
                     <Card 
                       key={doc.id}
-                      className={`bg-gradient-to-br from-${doc.color}-950/20 to-transparent border-${doc.color}-500/30 hover:border-${doc.color}-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-${doc.color}-500/20`}
+                      className="bg-gradient-blue-purple border-cyan-500/30 hover-glow-cyan transition-all duration-300"
                     >
                       <CardHeader>
                         <div className="flex items-start justify-between">
@@ -250,7 +250,7 @@ export default function ResearchPage() {
         </div>
 
         {/* Footer informativo */}
-        <Card className="mt-12 bg-gradient-to-br from-amber-950/20 to-transparent border-amber-500/30">
+        <Card className="mt-12 bg-gradient-blue-purple border-amber-500/30">
           <CardHeader>
             <CardTitle className="text-amber-400">Uso de la Documentación</CardTitle>
           </CardHeader>

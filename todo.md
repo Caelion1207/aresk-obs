@@ -1986,3 +1986,17 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Agregar enlace desde Home.tsx con estilo HUD
 - [x] Verificar funcionalidad de descarga de PDFs
 - [x] Copiar PDFs a client/public/research para acceso web
+
+
+## Rediseño Visual con Estética del PDF (En Progreso)
+
+- [x] Actualizar index.css con paleta de colores azul oscuro y gradientes azul-púrpura
+- [x] Implementar efectos de glow cyan en elementos interactivos
+- [x] Actualizar Home.tsx con hero section y nuevo diseño
+- [x] Aplicar nuevo estilo a páginas clave (CoreDashboard, ExperimentoEstabilidad)
+- [x] Actualizar ResearchPage con nuevo diseño visual
+- [x] Agregar partículas y efectos de profundidad espacial
+- [x] Implementar hover effects con glow incrementado
+- [x] Actualizar HUDMetrics con nuevo diseño visual
+- [x] Aplicar diseño consistente en todas las páginas principales
+- [ ] Verificar navegación y experiencia visual completa

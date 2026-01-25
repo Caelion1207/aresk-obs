@@ -103,10 +103,10 @@ export function CoreDashboard() {
   const ethicalStatus = getEthicalStatus(ethicalViolations, 0);
 
   return (
-    <div className="min-h-screen bg-void p-6 font-mono text-gray-400">
+    <div className="min-h-screen bg-gradient-deep-blue particles-bg p-6 font-mono text-gray-300">
       {/* Header con controles */}
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-verdict text-2xl text-gray-300">CORE DASHBOARD</h1>
+        <h1 className="text-verdict text-3xl text-white title-glow-cyan">CORE DASHBOARD</h1>
         <div className="flex items-center gap-4">
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}

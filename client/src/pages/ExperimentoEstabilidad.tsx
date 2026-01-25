@@ -290,7 +290,7 @@ export default function ExperimentoEstabilidad() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-deep-blue particles-bg">
       <div className="container mx-auto py-8 px-4">
         {/* Header */}
         <div className="mb-8">
@@ -312,14 +312,14 @@ export default function ExperimentoEstabilidad() {
             </Button>
           </div>
           
-          <h1 className="text-4xl font-bold mb-2">Análisis de Estabilidad Temporal</h1>
-          <p className="text-muted-foreground text-lg">
+          <h1 className="text-4xl font-bold mb-2 text-white title-glow-cyan">Análisis de Estabilidad Temporal</h1>
+          <p className="text-cyan-300 text-lg">
             Régimen A - Alta Entropía | 50 mensajes analizados
           </p>
         </div>
 
         {/* Resumen de hallazgos */}
-        <Card className="mb-6 border-amber-500/50 bg-amber-500/5">
+        <Card className="mb-6 border-amber-500/50 bg-gradient-blue-purple">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span className="text-2xl">⚠️</span>
@@ -336,7 +336,7 @@ export default function ExperimentoEstabilidad() {
         </Card>
 
         {/* Selector de métrica */}
-        <Card className="mb-6">
+        <Card className="mb-6 bg-gradient-blue-purple border-cyan-500/30">
           <CardHeader>
             <CardTitle>Seleccionar Métrica</CardTitle>
             <CardDescription>
@@ -368,7 +368,7 @@ export default function ExperimentoEstabilidad() {
         </Card>
 
         {/* Gráfica */}
-        <Card className="mb-6">
+        <Card className="mb-6 bg-gradient-blue-purple border-cyan-500/30">
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
