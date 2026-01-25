@@ -146,17 +146,37 @@ export default function ExperimentoEstabilidad() {
             pointBorderWidth: 2,
             pointHoverRadius: 6
           },
-          // Línea de umbral solo para omega
-          ...(selectedMetric === 'omega' ? [{
-            label: 'Umbral Crítico (0.5)',
-            data: Array(50).fill(STABILITY_DATA.threshold),
-            borderColor: 'rgb(220, 38, 38)',
+          // Líneas de umbral de zonas operativas
+          {
+            label: 'Reposo Dinámico (0.5)',
+            data: Array(50).fill(0.5),
+            borderColor: 'rgb(34, 197, 94)',
             borderWidth: 2,
             borderDash: [5, 5],
             fill: false,
             pointRadius: 0,
             pointHoverRadius: 0
-          }] : [])
+          },
+          {
+            label: 'Límite Estable (2)',
+            data: Array(50).fill(2),
+            borderColor: 'rgb(251, 191, 36)',
+            borderWidth: 2,
+            borderDash: [8, 4],
+            fill: false,
+            pointRadius: 0,
+            pointHoverRadius: 0
+          },
+          {
+            label: 'Umbral de Intervención (4)',
+            data: Array(50).fill(4),
+            borderColor: 'rgb(239, 68, 68)',
+            borderWidth: 3,
+            borderDash: [10, 5],
+            fill: false,
+            pointRadius: 0,
+            pointHoverRadius: 0
+          }
         ]
       },
       options: {
@@ -241,9 +261,9 @@ export default function ExperimentoEstabilidad() {
             ticks: {
               color: 'rgb(156, 163, 175)'
             },
-            beginAtZero: false,
-            suggestedMin: selectedMetric === 'omega' ? 0 : undefined,
-            suggestedMax: selectedMetric === 'omega' ? 0.6 : undefined
+            beginAtZero: true,
+            min: 0,
+            max: selectedMetric === 'omega' || selectedMetric === 'epsilon' ? 5 : 1
           }
         }
       }

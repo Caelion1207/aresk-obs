@@ -2147,3 +2147,12 @@ El bloque GENESIS es no validable (axioma por definición).
 
 ### Formulación Técnica (Inglés):
 "ARESK-OBS does not minimize error to zero. Zero represents semantic collapse, not stability. The system targets a bounded dynamic equilibrium centered around ~0.5, allowing controlled excursions up to 4 before corrective action. Stability is defined as persistence within an operational band, not convergence to a null state."
+
+
+## Modificación de Gráficas con Líneas de Umbral
+
+### Tarea:
+- [x] Modificar gráficas de ExperimentoEstabilidad para agregar líneas de umbral en 0.5, 2 y 4
+- [x] Agregar leyendas para cada línea (Reposo, Límite Estable, Intervención)
+- [x] Usar colores consistentes con RegimeZonesVisualization (verde, amarillo, rojo)
+- [x] Ajustar rango del eje Y para visualizar todas las zonas (0-5)
