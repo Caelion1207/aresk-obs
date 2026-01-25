@@ -2088,3 +2088,62 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Aclarar que cycles/argos/ethical/audit son parte del INSTRUMENTO, no del marco
 - [x] Documentar que CAELION solo se activa en régimen "acoplada"
 - [x] Agregar rutas /campo, /marco, /instrumento en App.tsx
+
+
+## Auditoría Técnica de Gemini - Mejoras Críticas
+
+### Críticas Identificadas:
+
+1. **Trampa de Perfección en Simulación**
+   - Problema: Coherencia Ω en R1 es casi línea recta (>0.8), sin jitters naturales de LLMs
+   - Riesgo: Sistema sobre-amortiguado, ganancia K podría estar ocultando ruido real
+   - Pregunta: ¿CAELION es estable porque controla bien o porque el umbral es permisivo?
+
+2. **Mapa de Fase H-C: Trayectorias Demasiado Limpias**
+   - Problema: Régimen R2 cae linealmente hacia Alta Entropía/Baja Coherencia
+   - Riesgo: En colapso real, trayectoria debería ser errática o circular (caótica)
+   - Necesidad: Ver qué pasa en bucles infinitos del LLM
+
+3. **Complejidad Arquitectónica: Latencia Potencial**
+   - Problema: 6 entidades (Wabun, Liang, Hécate, Argos, Aresk, Bucéfalo) gestionan una interacción
+   - Riesgo: Procesar ética + estrategia + registro ANTES de inyectar u(t) crea desfase temporal
+   - Advertencia: Si LLM responde más rápido que el Consejo, corrección llega tarde
+
+4. **Common Mode Failure: Métrica Única**
+   - Problema: ε, Ω, V dependen del MISMO modelo de embeddings (all-MiniLM-L6-v2)
+   - Riesgo: Si embeddings fallan, las 3 métricas fallan simultáneamente
+   - Solución: Necesita métrica de respaldo NO basada en vectores (léxica o tokens)
+
+### Tareas de Mejora:
+
+- [ ] Documentar limitaciones técnicas en InstrumentoPage (latencia, Common Mode Failure)
+- [ ] Agregar sección "Limitaciones y Riesgos de Ingeniería" con advertencias de Gemini
+- [ ] Implementar métrica de respaldo léxica (no basada en embeddings)
+- [ ] Crear visualización de "casos de fallo real" (no solo simulaciones ideales)
+- [ ] Documentar latencias de cada módulo supervisor en el flujo
+- [ ] Crear página "Test de Estrés de Ruptura" para forzar desincronización
+- [ ] Agregar gráficas de "caos real" donde el control falla
+- [ ] Implementar detección de bucles infinitos en el mapa de fase
+- [ ] Analizar y optimizar complejidad del Consejo (reducir módulos si es posible)
+
+### Veredicto de Gemini:
+> "Tienes un producto, no solo una idea. La interfaz se ve lista para producción. Pero no te enamores de la estética de tus gráficas. Un buen ingeniero busca dónde se rompe la aguja. El sistema se ve 'demasiado bien' para ser un sistema que mide el caos de una IA. Necesito ver una gráfica donde el control falle para saber que el sensor de verdad funciona."
+
+
+## Implementación de Control por Régimen (Definiciones Faltantes)
+
+### Tareas de Implementación:
+
+- [x] Crear componente RegimeZonesVisualization para visualizar zonas operativas
+- [x] Actualizar InstrumentoPage: Documentar equilibrio no nulo (~0.5)
+- [x] Agregar sección "Zonas de Régimen Operativo" con tabla de rangos
+- [x] Documentar que 0 = colapso semántico, NO estabilidad
+- [x] Explicar criterio de intervención condicional (no continuo)
+- [x] Documentar respuesta a crítica de "demasiado perfecto"
+- [x] Agregar formulación técnica en inglés para publicación
+- [ ] Agregar analogía de Collatz como base teórica del atractor
+- [ ] Actualizar ExperimentoEstabilidad con líneas de umbral (0.5, 2, 4)
+- [ ] Crear página "Fundamentos Teóricos" con control por régimen (opcional)
+
+### Formulación Técnica (Inglés):
+"ARESK-OBS does not minimize error to zero. Zero represents semantic collapse, not stability. The system targets a bounded dynamic equilibrium centered around ~0.5, allowing controlled excursions up to 4 before corrective action. Stability is defined as persistence within an operational band, not convergence to a null state."

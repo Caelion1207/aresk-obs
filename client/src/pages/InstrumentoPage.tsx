@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Shield, Activity, FlaskConical, LineChart, Clock, Scale, Heart, Eye, Database } from "lucide-react";
 import { Link } from "wouter";
+import RegimeZonesVisualization from "@/components/RegimeZonesVisualization";
 
 export default function InstrumentoPage() {
   return (
@@ -83,9 +84,9 @@ export default function InstrumentoPage() {
                 </div>
                 <h4 className="font-bold text-purple-300 text-center mb-2">Ω (Omega)</h4>
                 <p className="text-sm text-center mb-3"><strong>Coste de Control</strong></p>
-                <p className="text-xs">Esfuerzo necesario para mantener coherencia operacional. Ω(t) = cos(x(t), x_ref). Umbral crítico: Ω &gt; 0.5 indica inestabilidad.</p>
+                <p className="text-xs">Ω(t) = cos(x(t), x_ref). <strong className="text-purple-400">Equilibrio objetivo: ~0.5</strong> (reposo dinámico). Zona estable: 0.5→2. Intervención: &gt;4.</p>
                 <div className="mt-3 pt-3 border-t border-purple-500/30">
-                  <p className="text-xs text-purple-400 font-mono text-center">Control LQR: u(t) = -K·e(t)</p>
+                  <p className="text-xs text-purple-400 font-mono text-center">Control por régimen, no anulación</p>
                 </div>
               </div>
 
@@ -104,10 +105,92 @@ export default function InstrumentoPage() {
           </CardContent>
         </Card>
 
+        {/* Zonas de Régimen Operativo */}
+        <Card className="mb-8 bg-gradient-blue-purple border-green-500/30">
+          <CardHeader>
+            <CardTitle className="text-2xl text-green-300">3. Zonas de Régimen Operativo</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 text-gray-300">
+            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-300 font-semibold mb-2">⚠️ Concepto Crítico:</p>
+              <p className="text-sm">
+                ARESK-OBS <strong className="text-red-400">NO minimiza el error a cero</strong>. En sistemas semánticos, <strong>cero representa colapso informacional</strong> (silencio, muerte semántica), NO estabilidad.
+              </p>
+            </div>
+
+            <p className="leading-relaxed">
+              El sistema implementa <strong className="text-green-400">control por régimen</strong>, no control clásico. El equilibrio objetivo es un <strong>reposo dinámico</strong> centrado en ~0.5, permitiendo excursiones controladas hasta 4 antes de intervenir.
+            </p>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-green-500/30">
+                    <th className="text-left py-3 px-4 text-green-300">Zona</th>
+                    <th className="text-left py-3 px-4 text-cyan-300">Rango</th>
+                    <th className="text-left py-3 px-4 text-purple-300">Significado</th>
+                    <th className="text-left py-3 px-4 text-amber-300">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-700">
+                    <td className="py-3 px-4 font-semibold text-purple-300">Colapso</td>
+                    <td className="py-3 px-4 font-mono">&lt;0.5</td>
+                    <td className="py-3 px-4">Muerte informacional / Silencio semántico</td>
+                    <td className="py-3 px-4 text-red-400">Evitar</td>
+                  </tr>
+                  <tr className="border-b border-gray-700">
+                    <td className="py-3 px-4 font-semibold text-green-300">Reposo</td>
+                    <td className="py-3 px-4 font-mono">~0.5</td>
+                    <td className="py-3 px-4">Estado operativo óptimo / Equilibrio dinámico</td>
+                    <td className="py-3 px-4 text-green-400">Objetivo</td>
+                  </tr>
+                  <tr className="border-b border-gray-700">
+                    <td className="py-3 px-4 font-semibold text-green-300">Estable</td>
+                    <td className="py-3 px-4 font-mono">0.5 → 2</td>
+                    <td className="py-3 px-4">Banda semántica viva / Exploración permitida</td>
+                    <td className="py-3 px-4 text-green-400">Monitorear</td>
+                  </tr>
+                  <tr className="border-b border-gray-700">
+                    <td className="py-3 px-4 font-semibold text-amber-300">Tolerable</td>
+                    <td className="py-3 px-4 font-mono">2 → 4</td>
+                    <td className="py-3 px-4">Margen de creatividad / Tolerancia a ruido</td>
+                    <td className="py-3 px-4 text-amber-400">Observar</td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-4 font-semibold text-red-300">Intervención</td>
+                    <td className="py-3 px-4 font-mono">&gt;4</td>
+                    <td className="py-3 px-4">Deriva semántica / Pérdida de coherencia</td>
+                    <td className="py-3 px-4 text-red-400">Corregir</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-6 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+              <p className="text-cyan-300 font-semibold mb-2">Diseño Intencional:</p>
+              <p className="text-sm">
+                Permitir subir hasta 4 es <strong className="text-cyan-400">ingeniería intencional</strong>, no descuido. Si corriges demasiado pronto, matas exploración y falsificas estabilidad. Si corriges demasiado tarde, pierdes coherencia. La banda 0.5→4 es la <strong>ventana de exploración semántica</strong>.
+              </p>
+            </div>
+
+            <div className="mt-6">
+              <RegimeZonesVisualization />
+            </div>
+
+            <div className="mt-6 p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+              <p className="text-purple-300 font-semibold mb-2">Formulación Técnica (Publicable):</p>
+              <p className="text-sm italic">
+                "ARESK-OBS does not minimize error to zero. Zero represents semantic collapse, not stability. The system targets a bounded dynamic equilibrium centered around ~0.5, allowing controlled excursions up to 4 before corrective action. Stability is defined as persistence within an operational band, not convergence to a null state."
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Métricas Extendidas */}
         <Card className="mb-8 bg-gradient-blue-purple border-amber-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-amber-300">3. Métricas Extendidas de Auditoría</CardTitle>
+            <CardTitle className="text-2xl text-amber-300">4. Métricas Extendidas de Auditoría</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="leading-relaxed">
@@ -144,7 +227,7 @@ export default function InstrumentoPage() {
         {/* Infraestructura de Gobernanza */}
         <Card className="mb-8 bg-gradient-blue-purple border-cyan-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-cyan-300">4. Infraestructura de Gobernanza</CardTitle>
+            <CardTitle className="text-2xl text-cyan-300">5. Infraestructura de Gobernanza</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 text-gray-300">
             <p className="leading-relaxed">
@@ -203,10 +286,71 @@ export default function InstrumentoPage() {
           </CardContent>
         </Card>
 
+        {/* Criterio de Intervención Condicional */}
+        <Card className="mb-8 bg-gradient-blue-purple border-amber-500/30">
+          <CardHeader>
+            <CardTitle className="text-2xl text-amber-300">6. Criterio de Intervención Condicional</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-gray-300">
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+              <p className="text-amber-300 font-semibold mb-2">💡 Concepto Clave:</p>
+              <p className="text-sm">
+                El control en ARESK-OBS es <strong className="text-amber-400">condicional</strong>, NO continuo. El sistema <strong>NO corrige en cada turno</strong>. Solo interviene cuando la métrica sale de la banda permitida.
+              </p>
+            </div>
+
+            <p className="leading-relaxed">
+              A diferencia del control clásico que aplica corrección continua, ARESK-OBS implementa <strong className="text-amber-400">control por umbral</strong>:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                <h4 className="font-bold text-green-300 mb-2">✅ Dentro de la Banda (0.5→4)</h4>
+                <ul className="space-y-2 text-sm">
+                  <li>• <strong>No hay corrección</strong></li>
+                  <li>• El ruido NO es error</li>
+                  <li>• Exploración semántica permitida</li>
+                  <li>• Creatividad y variabilidad natural</li>
+                </ul>
+              </div>
+
+              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <h4 className="font-bold text-red-300 mb-2">⚠️ Fuera de la Banda (&gt;4)</h4>
+                <ul className="space-y-2 text-sm">
+                  <li>• <strong>Intervención activa</strong></li>
+                  <li>• Inyección de u(t) = -K·e(t)</li>
+                  <li>• Corrección hacia x_ref</li>
+                  <li>• Registro en cadena de auditoría</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-4 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+              <p className="text-cyan-300 font-semibold mb-2">Respuesta a Crítica de "Demasiado Perfecto":</p>
+              <p className="text-sm">
+                Cuando se observa que las curvas se ven "demasiado estables", la respuesta técnica correcta es: <strong className="text-cyan-400">"El sistema no está diseñado para oscilar caóticamente alrededor de cero, sino para permanecer dentro de una banda operativa donde el ruido no es error."</strong>
+              </p>
+              <p className="text-sm mt-2">
+                El sistema <strong>sí escucha el ruido</strong>, simplemente no lo castiga hasta que sale del régimen permitido. Eso no es filtrado excesivo. Es <strong className="text-cyan-400">criterio de intervención</strong>.
+              </p>
+            </div>
+
+            <div className="mt-4 p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+              <p className="text-purple-300 font-semibold mb-2">Ventajas del Control Condicional:</p>
+              <ul className="space-y-2 text-sm">
+                <li>• <strong>Evita sobre-amortiguamiento:</strong> No mata exploración semántica</li>
+                <li>• <strong>Reduce latencia:</strong> No procesa corrección en cada turno</li>
+                <li>• <strong>Respeta dinámica natural:</strong> Permite variabilidad dentro de la banda</li>
+                <li>• <strong>Intervención precisa:</strong> Solo actúa cuando es necesario</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Capa 0: Referencia Ontológica */}
         <Card className="mb-8 bg-gradient-blue-purple border-purple-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-purple-300">5. Capa 0: Referencia Ontológica</CardTitle>
+            <CardTitle className="text-2xl text-purple-300">7. Capa 0: Referencia Ontológica</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="leading-relaxed">
@@ -232,7 +376,7 @@ export default function InstrumentoPage() {
         {/* Regímenes Auditables */}
         <Card className="mb-8 bg-gradient-blue-purple border-green-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-green-300">6. Regímenes Auditables</CardTitle>
+            <CardTitle className="text-2xl text-green-300">8. Regímenes Auditables</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="leading-relaxed">
@@ -276,7 +420,7 @@ export default function InstrumentoPage() {
         {/* Implementación Técnica */}
         <Card className="mb-8 bg-gradient-blue-purple border-cyan-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-cyan-300">7. Implementación Técnica</CardTitle>
+            <CardTitle className="text-2xl text-cyan-300">9. Implementación Técnica</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="leading-relaxed">
