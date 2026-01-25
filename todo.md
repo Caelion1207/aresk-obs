@@ -2156,3 +2156,13 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Agregar leyendas para cada línea (Reposo, Límite Estable, Intervención)
 - [x] Usar colores consistentes con RegimeZonesVisualization (verde, amarillo, rojo)
 - [x] Ajustar rango del eje Y para visualizar todas las zonas (0-5)
+
+
+## Limpieza de Evidencia Externa
+
+### Tareas:
+- [x] Buscar y eliminar referencias a "35k interacciones" en todas las páginas - No encontradas
+- [x] Eliminar referencias a evaluaciones externas y validaciones empíricas - 1 encontrada y corregida
+- [x] Eliminar menciones a estudios comparativos externos - No encontradas
+- [x] Verificar que solo queden métricas cuantificables por ARESK-OBS
+- [x] Mantener solo: experimento A-1 (50 mensajes), métricas coherenciaObservable/entropiaH/funcionLyapunov

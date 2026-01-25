@@ -258,7 +258,7 @@ export function HelpDialog({ open, onOpenChange }: HelpDialogProps) {
                     <p className="mt-2"><strong>Contexto:</strong> Búsqueda de K óptimo para nuevo tipo de tarea</p>
                     <p className="mt-1"><strong>Método:</strong> Comparar K con valores 0.3, 0.5, 0.7 usando segmentos de 50 pasos cada uno</p>
                     <p className="mt-1"><strong>Decisión:</strong> Exportar CSV, analizar estadísticas, seleccionar K con mejor score</p>
-                    <p className="mt-1 text-xs text-muted-foreground"><strong>Resultado:</strong> Identificación de K óptimo basado en evidencia empírica</p>
+                    <p className="mt-1 text-xs text-muted-foreground"><strong>Resultado:</strong> Identificación de K óptimo basado en métricas medidas</p>
                   </div>
                 </div>
               </div>
