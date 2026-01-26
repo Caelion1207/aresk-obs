@@ -105,3 +105,24 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# Analysis and planning documents (internal)
+analisis-*.md
+analisis-*.pdf
+audit-*.md
+audit-*.pdf
+canonical-*.md
+canonical-*.pdf
+design-*.md
+design-*.pdf
+informe-*.md
+informe-*.pdf
+mapeo-*.md
+mapeo-*.pdf
+plan-*.md
+plan-*.pdf
+separacion-*.md
+separacion-*.pdf
+
+# Todo list (internal)
+todo.md

@@ -2215,3 +2215,17 @@ El bloque GENESIS es no validable (axioma por definición).
 ### Fase 5: Checkpoint Final
 - [ ] Crear checkpoint "ARESK-OBS: Instrumento Congelado"
 - [ ] Marcar proyecto como CERRADO
+
+
+## Limpieza de Repositorio GitHub
+
+### Objetivo
+Eliminar documentos innecesarios del repositorio público, dejar solo lo esencial para auditoría
+
+### Tareas
+- [x] Listar todos los archivos .md en el proyecto
+- [x] Identificar documentos triviales (guiones, análisis internos, notas de desarrollo)
+- [x] Eliminar 47 documentos innecesarios (guiones, validaciones, informes internos)
+- [x] Actualizar .gitignore para excluir archivos de análisis interno
+- [x] Actualizar README.md con estado congelado del instrumento
+- [ ] Crear checkpoint y sincronizar con GitHub

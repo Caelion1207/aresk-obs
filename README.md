@@ -1,55 +1,53 @@
-# ARESK-OBS v1.0
+# ARESK-OBS
 
-**Instrumento de Medición de Coste de Estabilidad Cognitiva**
-
-ARESK-OBS **no determina verdad**.  
-**No predice**, **no diagnostica**, **no optimiza automáticamente**.
-
-Mide cuánta energía, control y coherencia requiere un sistema cognitivo para **no colapsar** a lo largo del tiempo.
+**Instrumento de Auditoría de Sistemas Coignitivos**
 
 ---
 
 ## Qué es
 
-ARESK-OBS es un **instrumento de observación** para sistemas cognitivos acoplados (LLMs, arquitecturas híbridas, sistemas simbióticos).
+ARESK-OBS es un **instrumento de observación** para auditar sistemas coignitivos (H + M + C), donde la cognición emerge de la interacción regulada entre operador humano y sustrato de inferencia.
 
-Su función es **medir costes operacionales observables**, no tomar decisiones por el operador.
-
-Este repositorio se publica con fines de **estudio, análisis técnico y validación empírica**.
+Su función es **medir métricas de estabilidad** en horizonte largo, no tomar decisiones por el operador.
 
 ---
 
 ## Qué mide
 
-ARESK-OBS cuantifica tres métricas principales:
+ARESK-OBS cuantifica tres métricas canónicas:
 
-### 1. Stability Cost (V — Lyapunov)
+### 1. Función de Lyapunov (V)
 
-- **Definición:** Esfuerzo de control necesario para mantener coherencia.
+- **Definición:** V = e^T P e, donde e = x - x_ref
 - **Rango:** [0, ∞)
-- **Interpretación:**
-  - V > 0.7 → Alto coste de estabilización
-  - V < 0.3 → Régimen estable
+- **Interpretación:** Coste energético de desviación respecto a referencia ontológica (Capa 0)
 
----
+### 2. Coherencia Observable (Ω)
 
-### 2. Coherence (Ω)
-
-- **Definición:** Estabilidad narrativa relativa al historial inmediato.
-- **Rango:** [0, 1]
-- **Interpretación:**
-  - Ω > 0.7 → Coherencia estable
-  - Ω < 0.4 → Desalineación crítica
-
----
-
-### 3. Semantic Efficiency (ε_eff)
-
-- **Definición:** Pérdida o ganancia de información por token.
+- **Definición:** Ω = cos(h(x), h(x_ref))
 - **Rango:** [-1, 1]
-- **Interpretación:**
-  - ε_eff < -0.2 → Drenaje semántico
-  - ε_eff > 0.1 → Control efectivo
+- **Interpretación:** Alineación semántica direccional con referencia
+
+### 3. Entropía Semántica (ε)
+
+- **Definición:** ε = H(x) - H(x_ref)
+- **Rango:** (-∞, ∞)
+- **Interpretación:** Divergencia entrópica respecto a referencia
+
+---
+
+## Control por Régimen
+
+ARESK-OBS implementa **control por invariancia**, no control clásico:
+
+- **Equilibrio objetivo:** ~0.5 (reposo dinámico), NO 0 (colapso semántico)
+- **Zonas operativas:**
+  - Reposo: ~0.5
+  - Estable: 0.5 → 2
+  - Tolerable: 2 → 4
+  - Intervención: > 4
+
+El control **NO es continuo**. Solo interviene cuando el sistema sale de la banda admisible.
 
 ---
 
@@ -61,64 +59,59 @@ ARESK-OBS cuantifica tres métricas principales:
 - ❌ No evalúa verdad, corrección ni ética
 - ❌ No sustituye criterio humano
 
-ARESK-OBS **mide estado actual**.  
-La interpretación y la decisión **son responsabilidad del operador humano**.
+ARESK-OBS **mide estado actual**. La interpretación es responsabilidad del operador.
 
 ---
 
-## Uso básico
+## Estructura del Repositorio
 
-1. Definir referencia de propósito (`x_ref`)
-2. Seleccionar ganancia de control (`K`)
-3. Monitorear métricas V, Ω, ε_eff
-4. Intervenir **solo cuando la evidencia lo justifique**
-5. Comparar configuraciones empíricamente
-
----
-
-## LAB | Dynamics Monitor
-
-Incluye visualizaciones avanzadas:
-
-- Phase Portrait (Entropía vs Coherencia)
-- Lyapunov Energy V²(t)
-- Error Dynamics (ε_eff vs Δε_eff)
-- Control Effort ΔV(t)
-
-Estas gráficas **no decoran datos**: representan dinámica de sistemas.
-
----
-
-## Estado del proyecto
-
-Este repositorio se encuentra en **fase de instrumentación activa**.
-
-Algunos componentes están en transición y no representan una versión final ni un producto comercial.
-
-Las tareas pendientes están documentadas en `todo.md`.
+```
+/client          → Frontend (React + Tailwind)
+/server          → Backend (tRPC + Express)
+/drizzle         → Schema de base de datos
+/research        → Documentación técnica (8 PDFs)
+```
 
 ---
 
 ## Documentación de Investigación
 
-El directorio [`research/`](./research/) contiene la documentación técnica y científica que fundamenta el sistema ARESK-OBS y el framework CAELION:
+El directorio [`research/`](./research/) contiene 8 documentos técnicos:
 
-- **Serie Ingeniería Cognitiva** (4 partes): Fundamentos, Control, Semántica y Arquitecturas
+- **Serie Ingeniería Cognitiva** (4 partes): Fundamentos, Control, Semántica, Arquitecturas
 - **Análisis Técnicos**: Matemático 384D, Control LQR
 - **Análisis Comparativos**: CAELION vs ACT-R/SOAR, CAELION vs ML
 
-Ver [`research/README.md`](./research/README.md) para índice completo y descripciones.
+Ver [`research/README.md`](./research/README.md) para índice completo.
 
 ---
+
+## Experimento A-1
+
+El repositorio incluye datos reales del **Experimento A-1** (Régimen Acoplada con marco CAELION):
+
+- **50 mensajes** de interacción H-M
+- **Métricas medidas:** Ω, ε, V
+- **Resultado:** Sistema estable (Ω_max = 0.4228)
+
+---
+
 ## Licencia
 
-Este proyecto se distribuye bajo la licencia  
-**Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)**.
+**Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)**
 
 - Uso permitido para **estudio, investigación y análisis**
 - **Prohibido** cualquier uso comercial o derivado con fines de lucro
 
-Ver archivo `LICENSE` para detalles completos.
+---
+
+## Estado del Proyecto
+
+**INSTRUMENTO CONGELADO**
+
+Este repositorio contiene la versión final de ARESK-OBS como instrumento de auditoría.
+
+No se aceptan pull requests ni issues. El proyecto está cerrado para desarrollo.
 
 ---
 
@@ -129,11 +122,3 @@ ARESK-OBS es un instrumento de medición.
 Mide costes.  
 Habilita decisiones.  
 No piensa por ti.
-
----
-
-## Repository Status
-
-**This repository is frozen at v1.0.0-AUDIT-CLOSED.**
-
-Any further development will occur in a separate branch or project.
