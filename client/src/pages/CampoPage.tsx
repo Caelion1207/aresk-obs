@@ -78,7 +78,7 @@ export default function CampoPage() {
                   <Brain className="w-5 h-5 text-purple-400" />
                   <h4 className="font-bold text-purple-300">M: Sustrato de Inferencia</h4>
                 </div>
-                <p className="text-sm">LLM u otro sistema de inferencia (reemplazable, no es el locus de inteligencia)</p>
+                <p className="text-sm">LLM u otro sistema de inferencia (componente reemplazable del sistema)</p>
               </div>
 
               <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">

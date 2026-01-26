@@ -2166,3 +2166,52 @@ El bloque GENESIS es no validable (axioma por definición).
 - [x] Eliminar menciones a estudios comparativos externos - No encontradas
 - [x] Verificar que solo queden métricas cuantificables por ARESK-OBS
 - [x] Mantener solo: experimento A-1 (50 mensajes), métricas coherenciaObservable/entropiaH/funcionLyapunov
+
+
+## Alineación con Documento Formal (Versión 2.6)
+
+### Prioridad Alta (Correcciones Críticas):
+- [ ] Agregar métrica C (Coste de Gobernanza) al schema y cálculos
+- [ ] Corregir nomenclatura: entropiaH → eficienciaSem
+- [ ] Verificar y corregir definición de Ω (debe ser cos(x̂_k, x_ref))
+- [ ] Actualizar InstrumentoPage con las 4 métricas canónicas
+
+### Prioridad Media (Mejoras de Documentación):
+- [ ] CampoPage: Agregar sección "Dinámica Estocástica" (x_{k+1} = f(x_k, w_k))
+- [ ] MarcoPage: Agregar "Diferencia con Enfoques Tradicionales"
+- [ ] InstrumentoPage: Agregar tabla comparativa CAELION vs ARESK-OBS
+- [ ] Aclarar notación: x_k (bruto) vs x̂_k (consolidado)
+
+### Prioridad Baja (Futuro):
+- [ ] Crear página /metodologia con diseño experimental completo
+- [ ] Documentar grupos (a) baseline, (b) ad-hoc, (c) sistema S
+- [ ] Documentar criterios de éxito experimentales
+
+
+## Congelación del Instrumento (Estado Final)
+
+### Fase 1: Verificar Uso
+- [ ] Verificar si TensionVectors.tsx se usa
+- [ ] Verificar si DashboardLayout.tsx se usa  
+- [ ] Verificar si AIChatBox.tsx se usa
+- [ ] Verificar si Map.tsx se usa
+- [ ] Verificar si SystemFlow tiene diagrama real o genérico
+- [ ] Verificar si CoreDashboard tiene datos reales
+- [ ] Verificar si HUDMetrics tiene datos reales
+
+### Fase 2: Eliminar Páginas Innecesarias
+- [x] Eliminar 14 páginas legacy (Simulator, Lab, SessionReplay, Architecture, Modules, Protocols, Proposals, Statistics, CompareHistorical, ErosionDashboard, CyclesDashboard, SystemHealth, CoreDashboard, ExperimentoComparar)
+- [x] Actualizar App.tsx con solo 8 rutas esenciales
+- [x] Eliminar componentes no usados (TensionVectors, DashboardLayout, AIChatBox, Map)
+
+### Fase 3: Limpiar Jerga
+- [x] CampoPage: Eliminar "locus de inteligencia" → "componente reemplazable"
+
+### Fase 4: Verificar Estado Final
+- [ ] Verificar que no haya enlaces rotos
+- [ ] Verificar que todas las páginas carguen
+- [ ] Verificar que experimento A-1 funcione
+
+### Fase 5: Checkpoint Final
+- [ ] Crear checkpoint "ARESK-OBS: Instrumento Congelado"
+- [ ] Marcar proyecto como CERRADO
