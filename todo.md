@@ -2244,3 +2244,14 @@ Eliminar cualquier dato que no sea evidencia empírica directa del experimento A
 - [x] Eliminar componente HUDCircular.tsx
 - [x] Verificar que solo queden datos reales del experimento A-1
 - [ ] Crear checkpoint final
+
+
+## Crear CONTRIBUTING.md
+
+### Objetivo
+Documentar que el proyecto está cerrado para desarrollo y proporcionar contacto para consultas académicas
+
+### Tareas
+- [x] Crear CONTRIBUTING.md con política de proyecto cerrado
+- [x] Incluir correo fragua.creative@gmail.com para consultas
+- [ ] Crear checkpoint y sincronizar con GitHub
