@@ -100,8 +100,18 @@ El repositorio incluye datos reales del **Experimento A-1** (Régimen Acoplada c
 
 **Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)**
 
-- Uso permitido para **estudio, investigación y análisis**
-- **Prohibido** cualquier uso comercial o derivado con fines de lucro
+Este proyecto está licenciado bajo [CC BY-NC 4.0](./LICENSE).
+
+**Permisos:**
+- ✅ Uso para estudio, investigación y análisis académico
+- ✅ Forking y adaptación para proyectos no comerciales
+- ✅ Citación en publicaciones académicas
+
+**Restricciones:**
+- ❌ Uso comercial o con fines de lucro
+- ❌ Distribución sin atribución al autor original
+
+Ver el archivo [`LICENSE`](./LICENSE) para el texto completo de la licencia.
 
 ---
 
@@ -111,7 +121,12 @@ El repositorio incluye datos reales del **Experimento A-1** (Régimen Acoplada c
 
 Este repositorio contiene la versión final de ARESK-OBS como instrumento de auditoría.
 
-No se aceptan pull requests ni issues. El proyecto está cerrado para desarrollo.
+**No se aceptan:**
+- ❌ Pull requests
+- ❌ Issues
+- ❌ Contribuciones de código
+
+Para consultas académicas, ver [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ---
 

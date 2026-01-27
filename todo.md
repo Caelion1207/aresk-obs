@@ -2266,3 +2266,15 @@ Agregar archivo LICENSE con texto completo de CC BY-NC 4.0
 - [x] Obtener texto oficial de licencia CC BY-NC 4.0 desde creativecommons.org
 - [x] Crear archivo LICENSE en la raíz del repositorio
 - [ ] Crear checkpoint y sincronizar con GitHub
+
+
+## Actualizar README con Licencia
+
+### Objetivo
+Agregar sección de licencia en README.md con enlace directo al archivo LICENSE
+
+### Tareas
+- [x] Leer README.md actual
+- [x] Agregar sección de licencia con enlace a LICENSE
+- [x] Agregar enlace a CONTRIBUTING.md
+- [ ] Crear checkpoint final y sincronizar con GitHub
