@@ -2229,3 +2229,18 @@ Eliminar documentos innecesarios del repositorio público, dejar solo lo esencia
 - [x] Actualizar .gitignore para excluir archivos de análisis interno
 - [x] Actualizar README.md con estado congelado del instrumento
 - [ ] Crear checkpoint y sincronizar con GitHub
+
+
+## Revisión de Evidencia Empírica en SystemFlow y HUDMetrics
+
+### Objetivo
+Eliminar cualquier dato que no sea evidencia empírica directa del experimento A-1
+
+### Tareas
+- [x] Revisar SystemFlow.tsx - Documentación técnica, no evidencia empírica
+- [x] Revisar HUDMetrics.tsx - Datos hardcodeados, no evidencia real
+- [x] Eliminar SystemFlow.tsx y HUDMetrics.tsx
+- [x] Eliminar rutas y botones en App.tsx y Home.tsx
+- [x] Eliminar componente HUDCircular.tsx
+- [x] Verificar que solo queden datos reales del experimento A-1
+- [ ] Crear checkpoint final

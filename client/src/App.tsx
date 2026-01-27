@@ -6,8 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import ExperimentoEstabilidad from "./pages/ExperimentoEstabilidad";
-import SystemFlow from '@/pages/SystemFlow';
-import { HUDMetrics } from '@/pages/HUDMetrics';
+
 import ResearchPage from '@/pages/ResearchPage';
 import CampoPage from '@/pages/CampoPage';
 import MarcoPage from '@/pages/MarcoPage';
@@ -18,8 +17,7 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/experimento/estabilidad"} component={ExperimentoEstabilidad} />
-      <Route path="/sistema/flujo" component={SystemFlow} />
-      <Route path="/metricas/hud" component={HUDMetrics} />
+
       <Route path="/investigacion" component={ResearchPage} />
       <Route path="/campo" component={CampoPage} />
       <Route path="/marco" component={MarcoPage} />

@@ -307,24 +307,6 @@ export default function Home() {
             </Card>
           </Link>
 
-          <Link href="/metricas/hud">
-            <Card className="bg-gradient-blue-purple border-green-500/30 hover-glow-cyan cursor-pointer">
-              <CardContent className="p-6">
-                <h4 className="text-xl font-bold text-green-300 mb-2">HUD de Métricas</h4>
-                <p className="text-gray-400 text-sm">Visualización circular futurista de métricas</p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/sistema/flujo">
-            <Card className="bg-gradient-blue-purple border-cyan-500/30 hover-glow-cyan cursor-pointer">
-              <CardContent className="p-6">
-                <h4 className="text-xl font-bold text-cyan-300 mb-2">Arquitectura CAELION</h4>
-                <p className="text-gray-400 text-sm">Diagrama del marco evaluado en régimen C</p>
-              </CardContent>
-            </Card>
-          </Link>
-
           <Link href="/investigacion">
             <Card className="bg-gradient-blue-purple border-purple-500/30 hover-glow-purple cursor-pointer">
               <CardContent className="p-6">
