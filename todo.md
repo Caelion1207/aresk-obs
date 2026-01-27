@@ -2255,3 +2255,14 @@ Documentar que el proyecto está cerrado para desarrollo y proporcionar contacto
 - [x] Crear CONTRIBUTING.md con política de proyecto cerrado
 - [x] Incluir correo fragua.creative@gmail.com para consultas
 - [ ] Crear checkpoint y sincronizar con GitHub
+
+
+## Crear LICENSE
+
+### Objetivo
+Agregar archivo LICENSE con texto completo de CC BY-NC 4.0
+
+### Tareas
+- [x] Obtener texto oficial de licencia CC BY-NC 4.0 desde creativecommons.org
+- [x] Crear archivo LICENSE en la raíz del repositorio
+- [ ] Crear checkpoint y sincronizar con GitHub
