@@ -1,0 +1,9 @@
+{
+  "query": "SELECT sessionId, messageId, coherenciaObservable, entropiaH, funcionLyapunov FROM metrics WHERE sessionId = 1 ORDER BY messageId LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute SELECT sessionId, messageId, coherenciaObservable, entropiaH, funcionLyapunov FROM metrics WHERE sessionId = 1 ORDER BY messageId LIMIT 5;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 225
+}

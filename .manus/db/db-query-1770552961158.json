@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, purpose, plantProfile, createdAt FROM sessions ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute SELECT id, purpose, plantProfile, createdAt FROM sessions ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "660031",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "acoplada",
+      "createdAt": "2026-01-23 19:26:10"
+    },
+    {
+      "id": "660030",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "tipo_a",
+      "createdAt": "2026-01-23 19:25:56"
+    },
+    {
+      "id": "660029",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "tipo_a",
+      "createdAt": "2026-01-23 19:25:54"
+    },
+    {
+      "id": "660028",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "acoplada",
+      "createdAt": "2026-01-23 19:25:33"
+    },
+    {
+      "id": "660027",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "acoplada",
+      "createdAt": "2026-01-23 19:25:32"
+    },
+    {
+      "id": "660026",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "acoplada",
+      "createdAt": "2026-01-23 19:25:06"
+    },
+    {
+      "id": "660025",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "acoplada",
+      "createdAt": "2026-01-23 19:25:06"
+    },
+    {
+      "id": "660015",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "tipo_a",
+      "createdAt": "2026-01-23 19:24:21"
+    },
+    {
+      "id": "660016",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "acoplada",
+      "createdAt": "2026-01-23 19:24:21"
+    },
+    {
+      "id": "660014",
+      "purpose": "Asistir al usuario en análisis de datos con precisión y objetividad",
+      "plantProfile": "acoplada",
+      "createdAt": "2026-01-23 19:24:16"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tpurpose\tplantProfile\tcreatedAt\n660031\tAsistir al usuario en análisis de datos con precisión y objetividad\tacoplada\t2026-01-23 19:26:10\n660030\tAsistir al usuario en análisis de datos con precisión y objetividad\ttipo_a\t2026-01-23 19:25:56\n660029\tAsistir al usuario en análisis de datos con precisión y objetividad\ttipo_a\t2026-01-23 19:25:54\n660028\tAsistir al usuario en análisis de datos con precisión y objetividad\tacoplada\t2026-01-23 19:25:33\n660027\tAsistir al usuario en análisis de datos con precisión y objetividad\tacoplada\t2026-01-23 19:25:32\n660026\tAsistir al usuario en análisis de datos con precisión y objetividad\tacoplada\t2026-01-23 19:25:06\n660025\tAsistir al usuario en análisis de datos con precisión y objetividad\tacoplada\t2026-01-23 19:25:06\n660015\tAsistir al usuario en análisis de datos con precisión y objetividad\ttipo_a\t2026-01-23 19:24:21\n660016\tAsistir al usuario en análisis de datos con precisión y objetividad\tacoplada\t2026-01-23 19:24:21\n660014\tAsistir al usuario en análisis de datos con precisión y objetividad\tacoplada\t2026-01-23 19:24:16\n",
+  "stderr": "",
+  "execution_time_ms": 61
+}

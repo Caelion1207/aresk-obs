@@ -2314,3 +2314,24 @@ Copiar 3 PDFs de viabilidad a carpeta de investigación y actualizar ResearchPag
 - [x] Agregar Shield al import de lucide-react
 - [x] Agregar Viabilidad Operativa a categoryColors
 - [ ] Crear checkpoint final
+
+
+## Ejecutar Experimentos Faltantes
+
+### Objetivo
+Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK-OBS completo con datos empíricos de los 3 regímenes
+
+### Estado Actual
+- ✅ Experimento A-1: 50 mensajes del Régimen A (sin marco de gobernanza) - COMPLETO
+- ❌ Experimento B: Régimen B (sin marco de gobernanza, diferente configuración) - FALTANTE
+- ❌ Experimento C: Régimen C (CAELION, con marco de gobernanza) - FALTANTE
+
+### Tareas
+- [x] Analizar experimento A-1 para extraer estructura y parámetros
+- [x] Diseñar protocolo para Experimento B (Régimen B sin marco)
+- [x] Diseñar protocolo para Experimento C (Régimen C con CAELION)
+- [x] Especificar formato de captura de datos (embeddings, métricas, metadatos)
+- [x] Crear plantilla JSON para ingreso de datos experimentales
+- [x] Crear script de importación Python de datos a base de datos
+- [x] Generar documento de protocolo experimental en PDF
+- [x] Documentar procedimiento de ejecución paso a paso con checklist
