@@ -2299,3 +2299,18 @@ Actualizar ARESK-OBS para reflejar cambio de teoría de control a viabilidad ope
 - [x] Actualizar MarcoPage para CAELION como marco de viabilidad
 - [x] Actualizar Home.tsx con paradigma de viabilidad
 - [ ] Crear checkpoint final con paradigma actualizado
+
+
+## Agregar PDFs de Viabilidad a Investigación
+
+### Objetivo
+Copiar 3 PDFs de viabilidad a carpeta de investigación y actualizar ResearchPage con nueva categoría "Viabilidad Operativa"
+
+### Tareas
+- [x] Copiar CAELION_Directrices_Actualizadas_ARESK_OBS.pdf a client/public/research/
+- [x] Copiar CAELION_Marco_Viabilidad_Operativa_Dinamica_v2.pdf a client/public/research/
+- [x] Copiar CAELION_Por_que_estabilidad_no_es_legitimidad.pdf a client/public/research/
+- [x] Actualizar ResearchPage.tsx con nueva categoría "Viabilidad Operativa"
+- [x] Agregar Shield al import de lucide-react
+- [x] Agregar Viabilidad Operativa a categoryColors
+- [ ] Crear checkpoint final

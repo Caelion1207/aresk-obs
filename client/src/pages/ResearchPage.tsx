@@ -1,4 +1,4 @@
-import { FileText, Download, BookOpen, FlaskConical, GitCompare, Brain } from "lucide-react";
+import { FileText, Download, BookOpen, FlaskConical, GitCompare, Brain, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -95,13 +95,44 @@ const documents: ResearchDocument[] = [
     size: "311 KB",
     icon: GitCompare,
     color: "green"
+  },
+  {
+    id: "viab-directrices",
+    title: "Directrices Actualizadas ARESK-OBS",
+    filename: "CAELION_Directrices_Actualizadas_ARESK_OBS.pdf",
+    category: "Viabilidad Operativa",
+    description: "Directrices actualizadas para ARESK-OBS bajo paradigma de viabilidad: señales de observación, RLD, silencio operativo, estabilidad ≠ legitimidad.",
+    size: "245 KB",
+    icon: Shield,
+    color: "yellow"
+  },
+  {
+    id: "viab-marco",
+    title: "Marco de Viabilidad Operativa Dinámica v2",
+    filename: "CAELION_Marco_Viabilidad_Operativa_Dinamica_v2.pdf",
+    category: "Viabilidad Operativa",
+    description: "Marco teórico de viabilidad operativa dinámica, dominio de legitimidad D_leg(t), supervisor por invariancia, condiciones de permanencia.",
+    size: "268 KB",
+    icon: Shield,
+    color: "yellow"
+  },
+  {
+    id: "viab-estabilidad",
+    title: "Por qué Estabilidad No es Legitimidad",
+    filename: "CAELION_Por_que_estabilidad_no_es_legitimidad.pdf",
+    category: "Viabilidad Operativa",
+    description: "Análisis crítico de la separación entre estabilidad dinámica y legitimidad operativa, casos de estabilidad ilegítima, RLD como indicador negativo.",
+    size: "223 KB",
+    icon: Shield,
+    color: "yellow"
   }
 ];
 
 const categoryColors: Record<string, string> = {
   "Serie: Ingeniería Cognitiva": "cyan",
   "Análisis Técnicos": "purple",
-  "Análisis Comparativos": "green"
+  "Análisis Comparativos": "green",
+  "Viabilidad Operativa": "yellow"
 };
 
 export default function ResearchPage() {
