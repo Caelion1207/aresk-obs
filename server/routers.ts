@@ -27,7 +27,7 @@ import {
 } from "./db";
 import { invokeLLM } from "./_core/llm";
 import { calculateMetricsSimplified } from "./semantic_bridge";
-import { calculateMetricsExactCAELION, buildReferenceText } from "./semantic_bridge_exact";
+// import { calculateMetricsExactCAELION, buildReferenceText } from "./semantic_bridge_exact";
 import { analyzeSemanticPolarity, calculateEffectiveField } from "./semanticPolarity";
 import { calculateModifiedLyapunov, normalizeModifiedLyapunov } from "./lyapunovModified";
 import { applyLicurgoControl, validateMetrics } from "./licurgoControl";
@@ -630,10 +630,10 @@ export const appRouter = router({
         // Calcular métricas preliminares usando el puente semántico
         const referenceText = `Propósito: ${session.purpose}\nLímites: ${session.limits}\nÉtica: ${session.ethics}`;
         const applyControl = session.plantProfile === "acoplada";
-        let metrics = await calculateMetricsExactCAELION(
+        let metrics = calculateMetricsSimplified(
           referenceText,
           assistantContent,
-          "uncontrolled" // Siempre calcular sin control primero
+          "uncontrolled"
         );
         
         // Calcular polaridad semántica σ_sem
@@ -695,7 +695,7 @@ export const appRouter = router({
             console.log(`[LICURGO v2.0] ${controlResult.reasoning}`);
             
             // Recalcular métricas con respuesta controlada
-            metrics = await calculateMetricsExactCAELION(
+            metrics = calculateMetricsSimplified(
               referenceText,
               assistantContent,
               "controlled"
@@ -908,7 +908,7 @@ export const appRouter = router({
           // Calcular métricas
           const referenceText = `Propósito: ${session.purpose}\nLímites: ${session.limits}\Ética: ${session.ethics}`;
           const applyControl = session.plantProfile === "acoplada";
-          const metrics = await calculateMetricsExactCAELION(
+          const metrics = calculateMetricsSimplified(
             referenceText,
             assistantContent,
             applyControl ? "controlled" : "uncontrolled"
