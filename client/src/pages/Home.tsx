@@ -20,7 +20,7 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white title-glow-cyan">ARESK-OBS</h1>
-                <p className="text-sm text-cyan-300/80">Instrumento de Auditoría de Sistemas Coignitivos</p>
+                <p className="text-sm text-cyan-300/80">Instrumento de Observación de Viabilidad Operativa</p>
               </div>
             </div>
             <Link href="/core">
@@ -43,10 +43,10 @@ export default function Home() {
             ARESK-OBS
           </h2>
           <p className="mb-4 text-2xl text-cyan-300 font-light">
-            Auditoría de Estabilidad en Sistemas Coignitivos
+            Observación de Viabilidad Operativa en Sistemas Coignitivos
           </p>
           <p className="text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Instrumento de auditoría que mide costes operacionales en <strong>cualquier sistema coignitivo</strong> mediante métricas de entropía semántica (ε), coste de control (Ω) y estabilidad de Lyapunov (V). Incluye infraestructura completa de gobernanza para auditar interacciones de horizonte largo.
+            Instrumento de observación que mide <strong>señales de viabilidad operativa</strong> en sistemas coignitivos mediante métricas de entropía semántica (ε), coherencia observable (Ω), función de Lyapunov (V) y Reserva de Legitimidad Dinámica (RLD). <strong className="text-red-400">No autoriza acción ni infiere legitimidad desde estabilidad</strong>.
           </p>
         </div>
       </section>

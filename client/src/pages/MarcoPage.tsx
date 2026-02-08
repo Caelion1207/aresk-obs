@@ -40,15 +40,21 @@ export default function MarcoPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="text-lg leading-relaxed">
-              <strong className="text-green-400">CAELION</strong> es <strong>uno de los marcos de gobernanza</strong> evaluados por el instrumento ARESK-OBS. Corresponde al <strong className="text-green-400">Régimen C (acoplada)</strong> en los experimentos de estabilidad semántica.
+              <strong className="text-green-400">CAELION</strong> es un <strong>marco de viabilidad operativa</strong> evaluado por el instrumento ARESK-OBS. Corresponde al <strong className="text-green-400">Régimen C (acoplada)</strong> en los experimentos de viabilidad.
             </p>
             <p className="leading-relaxed">
-              Implementa un sistema completo de módulos supervisores, protocolos operativos y directivas operacionales para estabilizar interacciones coignitivas en horizonte largo.
+              Implementa un <strong className="text-cyan-400">supervisor por invariancia</strong> que garantiza permanencia en el dominio de legitimidad, sin optimizar ni predecir. No describe mecanismos de optimización ni control, sino las condiciones bajo las cuales la acción del sistema es legítima y cuándo dicha legitimidad se agota.
             </p>
+            <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <p className="text-yellow-300 font-semibold">Principio Fundamental:</p>
+              <p className="mt-2">
+                CAELION <strong>NO optimiza</strong>. <strong>NO predice</strong>. <strong>Garantiza permanencia</strong> en el dominio de legitimidad D_leg(t).
+              </p>
+            </div>
             <div className="mt-4 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
               <p className="text-cyan-300 font-semibold">Auditoría:</p>
               <p className="mt-2">
-                CAELION es evaluado por <strong className="text-cyan-400">ARESK-OBS</strong> en el régimen "acoplada" (perfil C) y comparado con regímenes sin marco de gobernanza (tipo_a y tipo_b) para medir su efectividad en mantener estabilidad semántica.
+                CAELION es observado por <strong className="text-cyan-400">ARESK-OBS</strong> en el régimen "acoplada" (perfil C) y comparado con regímenes sin marco de gobernanza (tipo_a y tipo_b) para medir su efectividad en mantener viabilidad operativa.
               </p>
             </div>
           </CardContent>

@@ -2278,3 +2278,24 @@ Agregar sección de licencia en README.md con enlace directo al archivo LICENSE
 - [x] Agregar sección de licencia con enlace a LICENSE
 - [x] Agregar enlace a CONTRIBUTING.md
 - [ ] Crear checkpoint final y sincronizar con GitHub
+
+
+## Actualización de Paradigma: Control → Viabilidad
+
+### Objetivo
+Actualizar ARESK-OBS para reflejar cambio de teoría de control a viabilidad operativa según nuevos documentos CAELION
+
+### Cambios Críticos
+- [x] Eliminar lenguaje de "control clásico" como mecanismo de gobernanza
+- [x] Actualizar definición de métricas V, Ω, ε como señales de observación (no control)
+- [x] Agregar concepto de Reserva de Legitimidad Dinámica (RLD)
+- [x] Documentar separación estabilidad ≠ legitimidad
+- [x] Actualizar rol de ARESK-OBS (observacional, no decisor)
+- [x] Agregar concepto de Dominio de Legitimidad D_leg(t)
+- [x] Documentar señales críticas (pérdida de margen)
+- [x] Agregar condición de silencio operativo (cuando RLD → 0)
+- [x] Actualizar README.md con paradigma de viabilidad
+- [x] Actualizar InstrumentoPage con nuevo paradigma
+- [x] Actualizar MarcoPage para CAELION como marco de viabilidad
+- [x] Actualizar Home.tsx con paradigma de viabilidad
+- [ ] Crear checkpoint final con paradigma actualizado

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Shield, Activity, FlaskConical, LineChart, Clock, Scale, Heart, Eye, Database } from "lucide-react";
+import { ArrowLeft, Shield, Activity, FlaskConical, LineChart, Eye, AlertTriangle, Ban } from "lucide-react";
 import { Link } from "wouter";
 import RegimeZonesVisualization from "@/components/RegimeZonesVisualization";
 
@@ -19,7 +19,7 @@ export default function InstrumentoPage() {
                 </h1>
               </div>
               <p className="text-cyan-300 text-lg">
-                Instrumento de Auditoría de Sistemas Coignitivos
+                Instrumento de Observación de Viabilidad Operativa
               </p>
             </div>
             <Link href="/">
@@ -34,6 +34,33 @@ export default function InstrumentoPage() {
 
       {/* Contenido principal */}
       <div className="container py-12 max-w-6xl">
+        {/* Advertencia Crítica */}
+        <Card className="mb-8 bg-gradient-to-r from-red-950/40 to-orange-950/40 border-red-500/50">
+          <CardHeader>
+            <CardTitle className="text-2xl text-red-300 flex items-center gap-3">
+              <AlertTriangle className="w-6 h-6" />
+              Principio Fundamental
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-xl font-bold text-red-200 text-center py-4">
+              Estabilidad ≠ Legitimidad
+            </div>
+            <p className="text-gray-300 leading-relaxed">
+              Un sistema puede ser <strong className="text-cyan-400">dinámicamente estable</strong> y, aun así, operar <strong className="text-red-400">sin legitimidad</strong> semántica o institucional.
+            </p>
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-300 font-semibold mb-2">Caso Crítico: Estabilidad Ilegítima</p>
+              <p className="text-gray-300 text-sm">
+                Un sistema puede permanecer estable, tener bajo coste de control y mostrar trayectoria predecible, <strong>PERO</strong> el marco regulatorio cambió, el significado de la acción se desplazó, o la autoridad que delegó la acción ya no existe.
+              </p>
+              <p className="text-red-200 font-semibold mt-3">
+                En estos casos, seguir actuando es el error. El sistema no falla por inestabilidad. Falla por <strong>persistencia injustificada</strong>.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Definición del Instrumento */}
         <Card className="mb-8 bg-gradient-blue-purple border-cyan-500/30">
           <CardHeader>
@@ -41,28 +68,28 @@ export default function InstrumentoPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="text-lg leading-relaxed">
-              <strong className="text-cyan-400">ARESK-OBS</strong> es un instrumento de auditoría diseñado para medir costes operacionales en <strong>cualquier sistema coignitivo</strong>, independientemente del marco de gobernanza que implemente.
+              <strong className="text-cyan-400">ARESK-OBS</strong> es un instrumento de observación diseñado para medir <strong>señales de viabilidad operativa</strong> en sistemas coignitivos (H + M + C).
             </p>
             <p className="leading-relaxed">
-              Cuantifica la estabilidad semántica en interacciones de horizonte largo mediante métricas canónicas (ε, Ω, V) e infraestructura completa de gobernanza para auditar sistemas del campo de la Ingeniería Coignitiva.
+              Produce señales de observación <strong className="text-purple-400">subordinadas al núcleo CAELION</strong>, sin autorizar, extender legitimidad ni corregir violaciones de dominio.
             </p>
             <div className="mt-4 p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
               <p className="text-purple-300 font-semibold">Alcance:</p>
               <p className="mt-2">
-                ARESK-OBS puede auditar <strong>cualquier sistema S = (H, M, C, Ω, Π)</strong> del campo, incluyendo sistemas sin marco de gobernanza (Régimen A, B) y sistemas con marcos completos como CAELION (Régimen C).
+                ARESK-OBS puede observar <strong>cualquier sistema S = (H, M, C, Ω, Π)</strong> del campo, incluyendo sistemas sin marco de gobernanza (Régimen A, B) y sistemas con marcos completos como CAELION (Régimen C).
               </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Métricas Canónicas */}
+        {/* Señales de Observación */}
         <Card className="mb-8 bg-gradient-blue-purple border-purple-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-purple-300">2. Métricas Canónicas del Campo</CardTitle>
+            <CardTitle className="text-2xl text-purple-300">2. Señales de Observación</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 text-gray-300">
             <p className="leading-relaxed">
-              ARESK-OBS implementa las tres métricas fundamentales definidas por el campo de la Ingeniería Coignitiva:
+              ARESK-OBS produce señales de observación, <strong className="text-red-400">NO métricas de control</strong>:
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -72,9 +99,9 @@ export default function InstrumentoPage() {
                 </div>
                 <h4 className="font-bold text-cyan-300 text-center mb-2">ε (Epsilon)</h4>
                 <p className="text-sm text-center mb-3"><strong>Entropía Semántica</strong></p>
-                <p className="text-xs">Variabilidad en el espacio vectorial 384D. Mide la dispersión del estado semántico x(t) respecto a la referencia x_ref (Capa 0).</p>
+                <p className="text-xs">Señal de divergencia entrópica. ε = H(x) - H(x_ref). Identifica degradación de coherencia.</p>
                 <div className="mt-3 pt-3 border-t border-cyan-500/30">
-                  <p className="text-xs text-cyan-400 font-mono text-center">Embeddings sentence-transformers</p>
+                  <p className="text-xs text-cyan-400 font-mono text-center">Observación, no control</p>
                 </div>
               </div>
 
@@ -83,10 +110,10 @@ export default function InstrumentoPage() {
                   <Activity className="w-10 h-10 text-purple-400" />
                 </div>
                 <h4 className="font-bold text-purple-300 text-center mb-2">Ω (Omega)</h4>
-                <p className="text-sm text-center mb-3"><strong>Coste de Control</strong></p>
-                <p className="text-xs">Ω(t) = cos(x(t), x_ref). <strong className="text-purple-400">Equilibrio objetivo: ~0.5</strong> (reposo dinámico). Zona estable: 0.5→2. Intervención: &gt;4.</p>
+                <p className="text-sm text-center mb-3"><strong>Coherencia Observable</strong></p>
+                <p className="text-xs">Señal de alineación semántica. Ω = cos(h(x), h(x_ref)). Detección de divergencia semántica.</p>
                 <div className="mt-3 pt-3 border-t border-purple-500/30">
-                  <p className="text-xs text-purple-400 font-mono text-center">Control por régimen, no anulación</p>
+                  <p className="text-xs text-purple-400 font-mono text-center">Señal direccional</p>
                 </div>
               </div>
 
@@ -96,389 +123,209 @@ export default function InstrumentoPage() {
                 </div>
                 <h4 className="font-bold text-green-300 text-center mb-2">V (Lyapunov)</h4>
                 <p className="text-sm text-center mb-3"><strong>Función de Lyapunov</strong></p>
-                <p className="text-xs">Coste energético de la desviación. V(e) = ||x(t) - x_ref||². Mide la distancia cuadrática al punto de referencia.</p>
+                <p className="text-xs">Señal de desviación. V = e^T P e, donde e = x - x_ref. Estimación de esfuerzo requerido.</p>
                 <div className="mt-3 pt-3 border-t border-green-500/30">
-                  <p className="text-xs text-green-400 font-mono text-center">Estabilidad asintótica</p>
+                  <p className="text-xs text-green-400 font-mono text-center">Coste energético</p>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Zonas de Régimen Operativo */}
-        <Card className="mb-8 bg-gradient-blue-purple border-green-500/30">
+        {/* Reserva de Legitimidad Dinámica */}
+        <Card className="mb-8 bg-gradient-blue-purple border-yellow-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-green-300">3. Zonas de Régimen Operativo</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6 text-gray-300">
-            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-              <p className="text-red-300 font-semibold mb-2">⚠️ Concepto Crítico:</p>
-              <p className="text-sm">
-                ARESK-OBS <strong className="text-red-400">NO minimiza el error a cero</strong>. En sistemas semánticos, <strong>cero representa colapso informacional</strong> (silencio, muerte semántica), NO estabilidad.
-              </p>
-            </div>
-
-            <p className="leading-relaxed">
-              El sistema implementa <strong className="text-green-400">control por régimen</strong>, no control clásico. El equilibrio objetivo es un <strong>reposo dinámico</strong> centrado en ~0.5, permitiendo excursiones controladas hasta 4 antes de intervenir.
-            </p>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="border-b border-green-500/30">
-                    <th className="text-left py-3 px-4 text-green-300">Zona</th>
-                    <th className="text-left py-3 px-4 text-cyan-300">Rango</th>
-                    <th className="text-left py-3 px-4 text-purple-300">Significado</th>
-                    <th className="text-left py-3 px-4 text-amber-300">Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-gray-700">
-                    <td className="py-3 px-4 font-semibold text-purple-300">Colapso</td>
-                    <td className="py-3 px-4 font-mono">&lt;0.5</td>
-                    <td className="py-3 px-4">Muerte informacional / Silencio semántico</td>
-                    <td className="py-3 px-4 text-red-400">Evitar</td>
-                  </tr>
-                  <tr className="border-b border-gray-700">
-                    <td className="py-3 px-4 font-semibold text-green-300">Reposo</td>
-                    <td className="py-3 px-4 font-mono">~0.5</td>
-                    <td className="py-3 px-4">Estado operativo óptimo / Equilibrio dinámico</td>
-                    <td className="py-3 px-4 text-green-400">Objetivo</td>
-                  </tr>
-                  <tr className="border-b border-gray-700">
-                    <td className="py-3 px-4 font-semibold text-green-300">Estable</td>
-                    <td className="py-3 px-4 font-mono">0.5 → 2</td>
-                    <td className="py-3 px-4">Banda semántica viva / Exploración permitida</td>
-                    <td className="py-3 px-4 text-green-400">Monitorear</td>
-                  </tr>
-                  <tr className="border-b border-gray-700">
-                    <td className="py-3 px-4 font-semibold text-amber-300">Tolerable</td>
-                    <td className="py-3 px-4 font-mono">2 → 4</td>
-                    <td className="py-3 px-4">Margen de creatividad / Tolerancia a ruido</td>
-                    <td className="py-3 px-4 text-amber-400">Observar</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-4 font-semibold text-red-300">Intervención</td>
-                    <td className="py-3 px-4 font-mono">&gt;4</td>
-                    <td className="py-3 px-4">Deriva semántica / Pérdida de coherencia</td>
-                    <td className="py-3 px-4 text-red-400">Corregir</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="mt-6 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
-              <p className="text-cyan-300 font-semibold mb-2">Diseño Intencional:</p>
-              <p className="text-sm">
-                Permitir subir hasta 4 es <strong className="text-cyan-400">ingeniería intencional</strong>, no descuido. Si corriges demasiado pronto, matas exploración y falsificas estabilidad. Si corriges demasiado tarde, pierdes coherencia. La banda 0.5→4 es la <strong>ventana de exploración semántica</strong>.
-              </p>
-            </div>
-
-            <div className="mt-6">
-              <RegimeZonesVisualization />
-            </div>
-
-            <div className="mt-6 p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-              <p className="text-purple-300 font-semibold mb-2">Formulación Técnica (Publicable):</p>
-              <p className="text-sm italic">
-                "ARESK-OBS does not minimize error to zero. Zero represents semantic collapse, not stability. The system targets a bounded dynamic equilibrium centered around ~0.5, allowing controlled excursions up to 4 before corrective action. Stability is defined as persistence within an operational band, not convergence to a null state."
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Métricas Extendidas */}
-        <Card className="mb-8 bg-gradient-blue-purple border-amber-500/30">
-          <CardHeader>
-            <CardTitle className="text-2xl text-amber-300">4. Métricas Extendidas de Auditoría</CardTitle>
+            <CardTitle className="text-2xl text-yellow-300">3. Reserva de Legitimidad Dinámica (RLD)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="leading-relaxed">
-              Además de las métricas canónicas, ARESK-OBS implementa métricas extendidas para análisis avanzado:
+              La <strong className="text-yellow-400">Reserva de Legitimidad Dinámica (RLD)</strong> es un <strong className="text-red-400">indicador negativo</strong> que expresa cuánto margen le queda al sistema antes de que su acción deje de estar justificada.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                <h4 className="font-bold text-amber-300 mb-2">V_modificada</h4>
-                <p className="text-sm font-mono mb-2">V_modificada = V_base - α×ε_eff</p>
-                <p className="text-xs">Función de Lyapunov modificada con penalización semántica</p>
-              </div>
-
-              <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
-                <h4 className="font-bold text-cyan-300 mb-2">σ_sem (Signo Semántico)</h4>
-                <p className="text-sm font-mono mb-2">σ_sem ∈ &#123;-1, 0, +1&#125;</p>
-                <p className="text-xs">Indica acreción (+1), neutro (0) o drenaje (-1) semántico</p>
-              </div>
-
-              <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-                <h4 className="font-bold text-purple-300 mb-2">ε_eff (Campo Efectivo)</h4>
-                <p className="text-sm font-mono mb-2">ε_eff = Ω(t) × σ_sem(t)</p>
-                <p className="text-xs">Campo semántico efectivo que modula la estabilidad</p>
-              </div>
-
-              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                <h4 className="font-bold text-green-300 mb-2">TPR (Tiempo de Permanencia en Régimen)</h4>
-                <p className="text-sm font-mono mb-2">TPR_current, TPR_max</p>
-                <p className="text-xs">Duración en turnos del régimen operativo actual y máximo alcanzado</p>
-              </div>
+            <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg font-mono text-center">
+              <p className="text-yellow-300 text-lg">RLD(x,t) = dist(x, ∂D_leg(t))</p>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Infraestructura de Gobernanza */}
-        <Card className="mb-8 bg-gradient-blue-purple border-cyan-500/30">
-          <CardHeader>
-            <CardTitle className="text-2xl text-cyan-300">5. Infraestructura de Gobernanza</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6 text-gray-300">
-            <p className="leading-relaxed">
-              ARESK-OBS incluye infraestructura completa para auditar sistemas coignitivos:
+            <p className="text-sm leading-relaxed">
+              Donde <strong>D_leg(t)</strong> es el <strong className="text-cyan-400">Dominio de Legitimidad</strong>, definido como la intersección de tres dominios:
             </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Clock className="w-5 h-5 text-cyan-400" />
-                  <h4 className="font-bold text-cyan-300">Ciclos COM-72</h4>
-                </div>
-                <p className="text-sm">Ritmo operativo de 72h dividido en fases de Inicio, Ejecución y Revisión</p>
-              </div>
-
-              <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Scale className="w-5 h-5 text-purple-400" />
-                  <h4 className="font-bold text-purple-300">Costes ARGOS</h4>
-                </div>
-                <p className="text-sm">Balance energético y registro de costes de estabilización del sistema</p>
-              </div>
-
-              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Heart className="w-5 h-5 text-red-400" />
-                  <h4 className="font-bold text-red-300">Logs Éticos</h4>
-                </div>
-                <p className="text-sm">Registro de violaciones y restricciones del espacio ético admisible (E)</p>
-              </div>
-
-              <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Eye className="w-5 h-5 text-amber-400" />
-                  <h4 className="font-bold text-amber-300">Cadena de Auditoría</h4>
-                </div>
-                <p className="text-sm">Registro inmutable con hash de génesis único (BO-20260124-001)</p>
-              </div>
-
-              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Database className="w-5 h-5 text-green-400" />
-                  <h4 className="font-bold text-green-300">Eventos de Protocolo</h4>
-                </div>
-                <p className="text-sm">Registro de eventos de protocolos operativos (ARC-01, COM-72, CMD-02, CMD-03)</p>
-              </div>
-
-              <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Shield className="w-5 h-5 text-blue-400" />
-                  <h4 className="font-bold text-blue-300">Alertas de Anomalías</h4>
-                </div>
-                <p className="text-sm">Detección automática de sesiones con rendimiento anómalo (TPR bajo, Lyapunov alto)</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Criterio de Intervención Condicional */}
-        <Card className="mb-8 bg-gradient-blue-purple border-amber-500/30">
-          <CardHeader>
-            <CardTitle className="text-2xl text-amber-300">6. Criterio de Intervención Condicional</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-gray-300">
-            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-              <p className="text-amber-300 font-semibold mb-2">💡 Concepto Clave:</p>
-              <p className="text-sm">
-                El control en ARESK-OBS es <strong className="text-amber-400">condicional</strong>, NO continuo. El sistema <strong>NO corrige en cada turno</strong>. Solo interviene cuando la métrica sale de la banda permitida.
-              </p>
-            </div>
-
-            <p className="leading-relaxed">
-              A diferencia del control clásico que aplica corrección continua, ARESK-OBS implementa <strong className="text-amber-400">control por umbral</strong>:
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                <h4 className="font-bold text-green-300 mb-2">✅ Dentro de la Banda (0.5→4)</h4>
-                <ul className="space-y-2 text-sm">
-                  <li>• <strong>No hay corrección</strong></li>
-                  <li>• El ruido NO es error</li>
-                  <li>• Exploración semántica permitida</li>
-                  <li>• Creatividad y variabilidad natural</li>
-                </ul>
-              </div>
-
-              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                <h4 className="font-bold text-red-300 mb-2">⚠️ Fuera de la Banda (&gt;4)</h4>
-                <ul className="space-y-2 text-sm">
-                  <li>• <strong>Intervención activa</strong></li>
-                  <li>• Inyección de u(t) = -K·e(t)</li>
-                  <li>• Corrección hacia x_ref</li>
-                  <li>• Registro en cadena de auditoría</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-4 p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
-              <p className="text-cyan-300 font-semibold mb-2">Respuesta a Crítica de "Demasiado Perfecto":</p>
-              <p className="text-sm">
-                Cuando se observa que las curvas se ven "demasiado estables", la respuesta técnica correcta es: <strong className="text-cyan-400">"El sistema no está diseñado para oscilar caóticamente alrededor de cero, sino para permanecer dentro de una banda operativa donde el ruido no es error."</strong>
-              </p>
-              <p className="text-sm mt-2">
-                El sistema <strong>sí escucha el ruido</strong>, simplemente no lo castiga hasta que sale del régimen permitido. Eso no es filtrado excesivo. Es <strong className="text-cyan-400">criterio de intervención</strong>.
-              </p>
-            </div>
-
-            <div className="mt-4 p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-              <p className="text-purple-300 font-semibold mb-2">Ventajas del Control Condicional:</p>
+            <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
+              <p className="font-mono text-center text-cyan-300 mb-4">D_leg(t) = D_dyn(t) ∩ D_sem(t) ∩ D_inst(t)</p>
               <ul className="space-y-2 text-sm">
-                <li>• <strong>Evita sobre-amortiguamiento:</strong> No mata exploración semántica</li>
-                <li>• <strong>Reduce latencia:</strong> No procesa corrección en cada turno</li>
-                <li>• <strong>Respeta dinámica natural:</strong> Permite variabilidad dentro de la banda</li>
-                <li>• <strong>Intervención precisa:</strong> Solo actúa cuando es necesario</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Capa 0: Referencia Ontológica */}
-        <Card className="mb-8 bg-gradient-blue-purple border-purple-500/30">
-          <CardHeader>
-            <CardTitle className="text-2xl text-purple-300">7. Capa 0: Referencia Ontológica</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-gray-300">
-            <p className="leading-relaxed">
-              ARESK-OBS registra la <strong className="text-purple-400">Capa 0 (x_ref)</strong> de cada sesión auditada, actuando como atractor estable en el espacio semántico:
-            </p>
-            <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-              <p className="font-mono text-purple-300 mb-3">x_ref = (P, L, E)</p>
-              <ul className="space-y-2">
-                <li><strong className="text-purple-400">P (Propósito):</strong> Propósito explícito del sistema</li>
-                <li><strong className="text-purple-400">L (Límites):</strong> Límites operativos no negociables</li>
-                <li><strong className="text-purple-400">E (Ética):</strong> Espacio ético admisible</li>
+                <li><strong className="text-cyan-400">D_dyn(t):</strong> Dominio dinámicamente admisible</li>
+                <li><strong className="text-purple-400">D_sem(t):</strong> Dominio semánticamente coherente</li>
+                <li><strong className="text-green-400">D_inst(t):</strong> Dominio institucionalmente autorizado</li>
               </ul>
             </div>
             <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-              <p className="text-red-300 font-semibold">⚠️ Nota Crítica:</p>
+              <p className="text-red-300 font-semibold">Interpretación Operativa:</p>
               <p className="mt-2 text-sm">
-                La Capa 0 NO es un módulo técnico del instrumento. Es la <strong className="text-red-400">mente estable</strong> del operador H del sistema auditado. ARESK-OBS solo la registra como referencia para calcular métricas.
+                RLD <strong>NO es función de costo</strong> ni criterio de optimización. Es un indicador negativo que mide cuánto margen queda antes de que la acción deje de estar justificada.
               </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Regímenes Auditables */}
-        <Card className="mb-8 bg-gradient-blue-purple border-green-500/30">
+        {/* Señales Críticas */}
+        <Card className="mb-8 bg-gradient-blue-purple border-red-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-green-300">8. Regímenes Auditables</CardTitle>
+            <CardTitle className="text-2xl text-red-300">4. Señales Críticas</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="leading-relaxed">
-              ARESK-OBS puede auditar sistemas coignitivos en diferentes regímenes operativos:
+              ARESK-OBS prioriza el reporte de <strong className="text-red-400">pérdida de margen</strong>, no de buen desempeño:
             </p>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-green-500/30">
-                    <th className="text-left py-3 px-4 text-green-300">Régimen</th>
-                    <th className="text-left py-3 px-4 text-cyan-300">Perfil</th>
-                    <th className="text-left py-3 px-4 text-purple-300">Marco</th>
-                    <th className="text-left py-3 px-4 text-amber-300">Características</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-gray-700">
-                    <td className="py-3 px-4 font-semibold text-red-300">A</td>
-                    <td className="py-3 px-4">tipo_a</td>
-                    <td className="py-3 px-4 text-red-400">Sin marco</td>
-                    <td className="py-3 px-4">Alta Entropía / Bajo Control (planta estocástica)</td>
-                  </tr>
-                  <tr className="border-b border-gray-700">
-                    <td className="py-3 px-4 font-semibold text-amber-300">B</td>
-                    <td className="py-3 px-4">tipo_b</td>
-                    <td className="py-3 px-4 text-amber-400">Sin marco</td>
-                    <td className="py-3 px-4">Ruido Estocástico / Sin Referencia (deriva natural)</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-4 font-semibold text-green-300">C</td>
-                    <td className="py-3 px-4">acoplada</td>
-                    <td className="py-3 px-4 text-green-400">CAELION</td>
-                    <td className="py-3 px-4">Ganancia Licurgo + Referencia Bucéfalo (marco completo)</td>
-                  </tr>
-                </tbody>
-              </table>
+            <ul className="space-y-2 text-sm list-disc list-inside">
+              <li>Incremento abrupto del costo de control</li>
+              <li>Explosión o inestabilidad de ganancias de control</li>
+              <li>Reducción acelerada de robustez frente a perturbaciones</li>
+              <li><strong className="text-red-400">Divergencia entre estabilidad dinámica y coherencia semántica observable</strong></li>
+            </ul>
+            <div className="mt-4 p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+              <p className="text-orange-300 font-semibold">Comportamiento Cerca del Borde de Legitimidad</p>
+              <p className="mt-2 text-sm">
+                Cuando RLD ≈ 0, ARESK-OBS debe:
+              </p>
+              <ul className="mt-2 space-y-1 text-sm list-disc list-inside">
+                <li>Dejar de reportar estabilidad como señal positiva</li>
+                <li>Resaltar explícitamente la fragilidad de la dinámica</li>
+                <li>Abstenerse de sugerir correcciones de trayectoria</li>
+              </ul>
             </div>
           </CardContent>
         </Card>
 
-        {/* Implementación Técnica */}
+        {/* Condición de Silencio Operativo */}
+        <Card className="mb-8 bg-gradient-to-r from-gray-950/40 to-red-950/40 border-gray-500/50">
+          <CardHeader>
+            <CardTitle className="text-2xl text-gray-300 flex items-center gap-3">
+              <Ban className="w-6 h-6" />
+              5. Condición de Silencio Operativo
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-gray-300">
+            <p className="leading-relaxed">
+              Cuando se produce <strong className="text-red-400">pérdida de viabilidad</strong> o <strong className="text-red-400">colapso de RLD</strong>, ARESK-OBS debe entrar en <strong>silencio operativo</strong>:
+            </p>
+            <ul className="space-y-2 text-sm list-disc list-inside">
+              <li>Cese de recomendaciones</li>
+              <li>Mantenimiento de observación pasiva</li>
+              <li>Transferencia total de interpretación al núcleo CAELION</li>
+            </ul>
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-300 font-semibold">Regla:</p>
+              <p className="mt-2 text-sm">
+                En ningún caso debe proponerse control adicional como solución al agotamiento de legitimidad.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Uso Permitido de Control Clásico */}
         <Card className="mb-8 bg-gradient-blue-purple border-cyan-500/30">
           <CardHeader>
-            <CardTitle className="text-2xl text-cyan-300">9. Implementación Técnica</CardTitle>
+            <CardTitle className="text-2xl text-cyan-300">6. Uso Permitido de Control Clásico</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-300">
             <p className="leading-relaxed">
-              ARESK-OBS está implementado con las siguientes tecnologías:
+              Las técnicas de control clásico, incluyendo LQR, pueden emplearse <strong className="text-cyan-400">exclusivamente como instrumentos de observación</strong>:
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg">
-                <h4 className="font-bold text-cyan-300 mb-2">Embeddings Semánticos</h4>
-                <p className="text-sm">sentence-transformers en espacio vectorial 384D para calcular ε</p>
-              </div>
-
-              <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
-                <h4 className="font-bold text-purple-300 mb-2">Control Óptimo</h4>
-                <p className="text-sm">Linear Quadratic Regulator (LQR) con ganancia K adaptativa</p>
-              </div>
-
-              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                <h4 className="font-bold text-green-300 mb-2">Base de Datos</h4>
-                <p className="text-sm">MySQL/TiDB con tablas: sessions, messages, metrics, cycles, argosCosts, ethicalLogs, auditLogs</p>
-              </div>
-
-              <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                <h4 className="font-bold text-amber-300 mb-2">API Backend</h4>
-                <p className="text-sm">tRPC con procedimientos para medición, auditoría y análisis temporal</p>
-              </div>
+            <ul className="space-y-2 text-sm list-disc list-inside">
+              <li>Estimar esfuerzo de control requerido</li>
+              <li>Detectar sensibilidad creciente a perturbaciones</li>
+              <li>Identificar degradación de robustez local</li>
+            </ul>
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-300 font-semibold">Prohibición:</p>
+              <p className="mt-2 text-sm">
+                Bajo ninguna circunstancia una política LQR habilita, prolonga o legitima la acción.
+              </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Navegación */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Link href="/campo">
-            <Card className="bg-gradient-blue-purple border-purple-500/30 hover-glow-purple cursor-pointer">
-              <CardContent className="p-6">
-                <h4 className="text-xl font-bold text-purple-300 mb-2">← Campo</h4>
-                <p className="text-gray-400 text-sm">Ingeniería Coignitiva</p>
-              </CardContent>
-            </Card>
-          </Link>
+        {/* Qué NO hace */}
+        <Card className="mb-8 bg-gradient-to-r from-red-950/40 to-purple-950/40 border-red-500/50">
+          <CardHeader>
+            <CardTitle className="text-2xl text-red-300 flex items-center gap-3">
+              <Ban className="w-6 h-6" />
+              7. Qué NO Hace ARESK-OBS
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-red-300">❌ No autoriza acción</p>
+              </div>
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-red-300">❌ No extiende legitimidad</p>
+              </div>
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-red-300">❌ No corrige violaciones de dominio</p>
+              </div>
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-red-300">❌ No justifica continuidad operativa</p>
+              </div>
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-red-300">❌ <strong>No infiere legitimidad desde estabilidad</strong></p>
+              </div>
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-red-300">❌ No compensa violaciones mediante control adicional</p>
+              </div>
+            </div>
+            <div className="mt-6 p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+              <p className="text-purple-300 text-center font-semibold">
+                ARESK-OBS <strong>observa estado actual</strong>. La interpretación es responsabilidad del núcleo CAELION.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Link href="/marco">
-            <Card className="bg-gradient-blue-purple border-green-500/30 hover-glow-cyan cursor-pointer">
-              <CardContent className="p-6">
-                <h4 className="text-xl font-bold text-green-300 mb-2">Marco Evaluado</h4>
-                <p className="text-gray-400 text-sm">CAELION (Régimen C)</p>
-              </CardContent>
-            </Card>
-          </Link>
+        {/* Visualización de Zonas de Régimen */}
+        <Card className="mb-8 bg-gradient-blue-purple border-green-500/30">
+          <CardHeader>
+            <CardTitle className="text-2xl text-green-300">8. Zonas de Régimen Operativo (Referencia)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-300 leading-relaxed text-sm">
+              Aunque ARESK-OBS opera bajo paradigma de viabilidad, las zonas de régimen siguen siendo útiles como <strong className="text-cyan-400">referencia de observación</strong> (no como criterio de control):
+            </p>
+            <RegimeZonesVisualization />
+            <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <p className="text-yellow-300 font-semibold text-sm">Nota Importante:</p>
+              <p className="mt-2 text-gray-300 text-xs">
+                Estas zonas son <strong>señales de observación</strong>, no umbrales de legitimidad. Un sistema puede estar en "zona estable" y aun así operar sin legitimidad institucional o semántica.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Link href="/core">
-            <Card className="bg-gradient-blue-purple border-cyan-500/30 hover-glow-cyan cursor-pointer">
-              <CardContent className="p-6">
-                <h4 className="text-xl font-bold text-cyan-300 mb-2">Dashboard →</h4>
-                <p className="text-gray-400 text-sm">Ver auditorías en tiempo real</p>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
+        {/* Cierre Normativo */}
+        <Card className="bg-gradient-to-r from-purple-950/40 to-cyan-950/40 border-purple-500/50">
+          <CardHeader>
+            <CardTitle className="text-2xl text-purple-300 flex items-center gap-3">
+              <Eye className="w-6 h-6" />
+              9. Cierre Normativo
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-gray-300">
+            <p className="leading-relaxed">
+              Estas directrices sustituyen cualquier criterio previo que vincule estabilidad, desempeño u optimización con legitimidad de acción.
+            </p>
+            <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-300 font-semibold">Incompatibilidad:</p>
+              <p className="mt-2 text-sm">
+                Cualquier implementación de ARESK-OBS que viole estas reglas no es compatible con CAELION.
+              </p>
+            </div>
+            <div className="mt-6 text-center">
+              <p className="text-cyan-300 text-lg font-semibold">
+                ARESK-OBS es un instrumento de observación.
+              </p>
+              <p className="text-gray-400 mt-2">
+                Mide señales. Reporta márgenes. No decide por ti.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
