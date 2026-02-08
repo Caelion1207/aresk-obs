@@ -4,6 +4,7 @@ import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, boolean, float } 
 export * from './schema/argosCosts';
 export * from './schema/cycles';
 export * from './schema/ethicalLogs';
+export * from './schema/experiments';
 
 /**
  * Core user table backing auth flow.

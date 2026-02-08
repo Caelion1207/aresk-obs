@@ -1,0 +1,42 @@
+CREATE TABLE `experiment_interactions` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`experimentId` varchar(64) NOT NULL,
+	`interactionIndex` int NOT NULL,
+	`userMessage` text NOT NULL,
+	`systemMessage` text NOT NULL,
+	`userEmbedding` json,
+	`systemEmbedding` json,
+	`referenceEmbedding` json,
+	`omegaSem` float NOT NULL,
+	`epsilonEff` float NOT NULL,
+	`vLyapunov` float NOT NULL,
+	`hDiv` float NOT NULL,
+	`timestamp` timestamp NOT NULL DEFAULT (now()),
+	`processingTimeMs` int,
+	CONSTRAINT `experiment_interactions_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `experiments` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`experimentId` varchar(64) NOT NULL,
+	`regime` enum('tipo_a','tipo_b','acoplada') NOT NULL,
+	`hasCAELION` boolean NOT NULL,
+	`totalInteractions` int NOT NULL,
+	`successfulInteractions` int NOT NULL,
+	`failedInteractions` int NOT NULL,
+	`referencePurpose` text NOT NULL,
+	`referenceLimits` text NOT NULL,
+	`referenceEthics` text NOT NULL,
+	`avgOmegaSem` float,
+	`avgEpsilonEff` float,
+	`avgVLyapunov` float,
+	`avgHDiv` float,
+	`encoderModel` varchar(128) NOT NULL,
+	`encoderDimension` int NOT NULL,
+	`status` enum('running','completed','failed') NOT NULL DEFAULT 'running',
+	`startedAt` timestamp NOT NULL DEFAULT (now()),
+	`completedAt` timestamp,
+	`errorMessage` text,
+	CONSTRAINT `experiments_id` PRIMARY KEY(`id`),
+	CONSTRAINT `experiments_experimentId_unique` UNIQUE(`experimentId`)
+);

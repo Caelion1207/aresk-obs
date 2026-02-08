@@ -2335,3 +2335,17 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Crear script de importación Python de datos a base de datos
 - [x] Generar documento de protocolo experimental en PDF
 - [x] Documentar procedimiento de ejecución paso a paso con checklist
+
+
+## Experimentos B-1 y C-1 con Embeddings Locales (sentence-transformers)
+
+- [x] Instalar sentence-transformers y dependencias Python
+- [x] Implementar encoder local con all-MiniLM-L6-v2 (384D) como encoder de referencia
+- [x] Crear servicio de cálculo de métricas canónicas (Ω, V, ε, H_div) con embeddings locales
+- [x] Implementar script de experimento B-1 (50 interacciones reales, tipo_b, sin CAELION)
+- [x] Implementar script de experimento C-1 (50 interacciones reales, acoplada, con CAELION activo)
+- [ ] Ejecutar experimento B-1 y almacenar datos en base de datos
+- [ ] Ejecutar experimento C-1 y almacenar datos en base de datos
+- [ ] Validar completitud de datos experimentales (100 interacciones totales)
+- [ ] Documentar encoder de referencia, dimensión y supuestos del observador
+- [ ] Conectar ExperimentoEstabilidad.tsx a datos reales de la base de datos
