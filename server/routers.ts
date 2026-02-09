@@ -40,6 +40,7 @@ import { healthRouter } from "./routers/health";
 import { pdfRouter } from "./routers/pdf";
 import { argosRouter } from "./routers/argos";
 import { protocolRouter } from "./routers/protocol";
+import { experimentsRouter } from "./routers/experiments";
 import { protocolEvents } from "../drizzle/schema";
 import { SystemEvents, EVENTS } from "./infra/events";
 
@@ -2327,6 +2328,7 @@ export const appRouter = router({
   pdf: pdfRouter,
   argos: argosRouter,
   protocol: protocolRouter,
+  experiments: experimentsRouter,
 });
 
 

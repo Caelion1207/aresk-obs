@@ -29,10 +29,11 @@ export const experiments = mysqlTable("experiments", {
   encoderDimension: int("encoderDimension").notNull(),
   
   // Metadatos
-  status: mysqlEnum("status", ["running", "completed", "failed"]).default("running").notNull(),
+  status: mysqlEnum("status", ["running", "completed", "failed", "frozen"]).default("running").notNull(),
   startedAt: timestamp("startedAt").defaultNow().notNull(),
   completedAt: timestamp("completedAt"),
   errorMessage: text("errorMessage"),
+  metadata: json("metadata").$type<Record<string, any>>(), // Metadata adicional (baseline version, freeze info, etc.)
 });
 
 /**

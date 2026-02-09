@@ -307,6 +307,15 @@ export default function Home() {
             </Card>
           </Link>
 
+          <Link href="/experimento/comparacion">
+            <Card className="bg-gradient-blue-purple border-green-500/30 hover-glow-cyan cursor-pointer">
+              <CardContent className="p-6">
+                <h4 className="text-xl font-bold text-green-300 mb-2">Comparación B-1 vs C-1</h4>
+                <p className="text-gray-400 text-sm">Baseline v1: Análisis comparativo de regímenes</p>
+              </CardContent>
+            </Card>
+          </Link>
+
           <Link href="/investigacion">
             <Card className="bg-gradient-blue-purple border-purple-500/30 hover-glow-purple cursor-pointer">
               <CardContent className="p-6">

@@ -1,0 +1,24 @@
+{
+  "query": "UPDATE experiments \nSET \n  status = 'frozen',\n  metadata = JSON_OBJECT(\n    'baseline_version', 'v1',\n    'frozen_at', NOW(),\n    'frozen_by', 'ARESK-OBS System',\n    'reason', 'Baseline v1 - Post-experimental freeze',\n    'encoder_locked', 'sentence-transformers/all-MiniLM-L6-v2',\n    'dimension_locked', 384,\n    'modifications_blocked', true\n  )\nWHERE experimentId IN ('B-1-1770592429287', 'C-1-1770595741129');\n\nSELECT \n  experimentId,\n  regime,\n  status,\n  JSON_EXTRACT(metadata, '$.baseline_version') as baseline,\n  JSON_EXTRACT(metadata, '$.frozen_at') as frozen_at\nFROM experiments\nWHERE experimentId IN ('B-1-1770592429287', 'C-1-1770595741129');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute UPDATE experiments \nSET \n  status = 'frozen',\n  metadata = JSON_OBJECT(\n    'baseline_version', 'v1',\n    'frozen_at', NOW(),\n    'frozen_by', 'ARESK-OBS System',\n    'reason', 'Baseline v1 - Post-experimental freeze',\n    'encoder_locked', 'sentence-transformers/all-MiniLM-L6-v2',\n    'dimension_locked', 384,\n    'modifications_blocked', true\n  )\nWHERE experimentId IN ('B-1-1770592429287', 'C-1-1770595741129');\n\nSELECT \n  experimentId,\n  regime,\n  status,\n  JSON_EXTRACT(metadata, '$.baseline_version') as baseline,\n  JSON_EXTRACT(metadata, '$.frozen_at') as frozen_at\nFROM experiments\nWHERE experimentId IN ('B-1-1770592429287', 'C-1-1770595741129');",
+  "rows": [
+    {
+      "experimentId": "B-1-1770592429287",
+      "regime": "tipo_b",
+      "status": "frozen",
+      "baseline": "\"v1\"",
+      "frozen_at": "\"2026-02-09 01:54:29.000000\""
+    },
+    {
+      "experimentId": "C-1-1770595741129",
+      "regime": "acoplada",
+      "status": "frozen",
+      "baseline": "\"v1\"",
+      "frozen_at": "\"2026-02-09 01:54:29.000000\""
+    }
+  ],
+  "messages": [],
+  "stdout": "experimentId\tregime\tstatus\tbaseline\tfrozen_at\nB-1-1770592429287\ttipo_b\tfrozen\t\"v1\"\t\"2026-02-09 01:54:29.000000\"\nC-1-1770595741129\tacoplada\tfrozen\t\"v1\"\t\"2026-02-09 01:54:29.000000\"\n",
+  "stderr": "",
+  "execution_time_ms": 66
+}

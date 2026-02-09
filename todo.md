@@ -2344,8 +2344,24 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Crear servicio de cálculo de métricas canónicas (Ω, V, ε, H_div) con embeddings locales
 - [x] Implementar script de experimento B-1 (50 interacciones reales, tipo_b, sin CAELION)
 - [x] Implementar script de experimento C-1 (50 interacciones reales, acoplada, con CAELION activo)
-- [ ] Ejecutar experimento B-1 y almacenar datos en base de datos
-- [ ] Ejecutar experimento C-1 y almacenar datos en base de datos
-- [ ] Validar completitud de datos experimentales (100 interacciones totales)
-- [ ] Documentar encoder de referencia, dimensión y supuestos del observador
+- [x] Ejecutar experimento B-1 y almacenar datos en base de datos
+- [x] Ejecutar experimento C-1 y almacenar datos en base de datos
+- [x] Validar completitud de datos experimentales (100 interacciones totales)
+- [x] Documentar encoder de referencia, dimensión y supuestos del observador
+- [x] Generar resumen comparativo B-1 vs C-1
 - [ ] Conectar ExperimentoEstabilidad.tsx a datos reales de la base de datos
+
+
+## Pipeline Post-Experimental (Baseline v1)
+
+- [x] Congelar experimentos B-1 y C-1 como Baseline v1 (marcar como cerrados en BD)
+- [x] Bloquear modificaciones de encoder, métricas y configuración experimental
+- [x] Generar reporte técnico final (Markdown)
+- [x] Convertir reporte técnico a PDF
+- [x] Construir dashboard comparativo B-1 vs C-1 con visualizaciones
+- [x] Implementar gráficas de distribución y tendencia temporal
+- [x] Agregar indicadores de intervención de CAELION al dashboard
+- [x] Crear README técnico para terceros
+- [x] Documentar qué hace y qué NO hace CAELION
+- [x] Escribir instrucciones de integración básica
+- [ ] Crear checkpoint final con documentación completa
