@@ -2390,4 +2390,11 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Generar PDF comercial final (evidencia + límites explícitos)
 - [x] Crear lista explícita de supuestos y exclusiones
 - [x] Escribir frase de posicionamiento clara (1 párrafo)
-- [ ] Crear checkpoint final inmutable
+- [x] Crear checkpoint final inmutable
+
+
+## Corrección de Dashboard
+
+- [x] Diagnosticar problema del dashboard que no funciona
+- [x] Corregir errores identificados
+- [x] Verificar funcionamiento del dashboard
