@@ -1082,6 +1082,27 @@ export default function DynamicsMonitor() {
   // Obtener experimentos para split-screen
   const experimentB1Data = experiments?.find(e => e.experimentId === experimentB1);
   const experimentC1Data = experiments?.find(e => e.experimentId === experimentC1);
+  
+  // Calcular divergencias promedio (C-1 - B-1)
+  const calculateDivergences = () => {
+    if (!interactionsB1 || !interactionsC1) return null;
+    
+    const avgOmegaB1 = interactionsB1.reduce((sum, i) => sum + i.omegaSem, 0) / interactionsB1.length;
+    const avgOmegaC1 = interactionsC1.reduce((sum, i) => sum + i.omegaSem, 0) / interactionsC1.length;
+    const deltaOmega = avgOmegaC1 - avgOmegaB1;
+    
+    const avgVB1 = interactionsB1.reduce((sum, i) => sum + i.vLyapunov, 0) / interactionsB1.length;
+    const avgVC1 = interactionsC1.reduce((sum, i) => sum + i.vLyapunov, 0) / interactionsC1.length;
+    const deltaV = avgVC1 - avgVB1;
+    
+    const avgRLDB1 = interactionsB1.reduce((sum, i) => sum + calculateRLD(i.omegaSem, i.hDiv), 0) / interactionsB1.length;
+    const avgRLDC1 = interactionsC1.reduce((sum, i) => sum + calculateRLD(i.omegaSem, i.hDiv), 0) / interactionsC1.length;
+    const deltaRLD = avgRLDC1 - avgRLDB1;
+    
+    return { deltaOmega, deltaV, deltaRLD };
+  };
+  
+  const divergences = splitScreenMode ? calculateDivergences() : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 p-8">
@@ -1144,6 +1165,57 @@ export default function DynamicsMonitor() {
           </div>
         </div>
       </div>
+
+      {/* Badges de Divergencia (solo en split-screen) */}
+      {splitScreenMode && divergences && (
+        <div className="max-w-7xl mx-auto mb-8">
+          <div className="bg-slate-900/50 border border-amber-500/30 rounded-lg p-4">
+            <h3 className="text-amber-400 font-semibold text-sm mb-3 text-center">
+              Divergencias Promedio (C-1 - B-1)
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
+              {/* ΔΩ */}
+              <div className="flex flex-col items-center">
+                <div className="text-xs text-slate-400 mb-1">ΔΩ (Coherencia)</div>
+                <div className={`text-2xl font-bold ${
+                  divergences.deltaOmega > 0 ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  {divergences.deltaOmega > 0 ? '+' : ''}{divergences.deltaOmega.toFixed(4)}
+                </div>
+                <div className="text-xs text-slate-500 mt-1">
+                  {divergences.deltaOmega > 0 ? 'C-1 más coherente' : 'B-1 más coherente'}
+                </div>
+              </div>
+              
+              {/* ΔV */}
+              <div className="flex flex-col items-center">
+                <div className="text-xs text-slate-400 mb-1">ΔV (Lyapunov)</div>
+                <div className={`text-2xl font-bold ${
+                  divergences.deltaV < 0 ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  {divergences.deltaV > 0 ? '+' : ''}{divergences.deltaV.toFixed(4)}
+                </div>
+                <div className="text-xs text-slate-500 mt-1">
+                  {divergences.deltaV < 0 ? 'C-1 menor error' : 'B-1 menor error'}
+                </div>
+              </div>
+              
+              {/* ΔRLD */}
+              <div className="flex flex-col items-center">
+                <div className="text-xs text-slate-400 mb-1">ΔRLD (Margen Viable)</div>
+                <div className={`text-2xl font-bold ${
+                  divergences.deltaRLD > 0 ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  {divergences.deltaRLD > 0 ? '+' : ''}{divergences.deltaRLD.toFixed(4)}
+                </div>
+                <div className="text-xs text-slate-500 mt-1">
+                  {divergences.deltaRLD > 0 ? 'C-1 más viable' : 'B-1 más viable'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Métricas agregadas */}
       {!splitScreenMode && (

@@ -2456,3 +2456,13 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Mantener gráficos temporales sincronizados (mismo rango temporal)
 - [x] Verificar funcionamiento visual de comparación simultánea
 - [x] Congelar UI base como v1.1 (no nuevas rutas hasta validación)
+
+## Badges de Divergencia en Split-Screen (v1.1 Final)
+
+- [x] Calcular ΔΩ promedio (diferencia B-1 vs C-1)
+- [x] Calcular ΔV promedio (diferencia B-1 vs C-1)
+- [x] Calcular ΔRLD promedio (diferencia B-1 vs C-1)
+- [x] Crear badges visuales superiores en modo split-screen
+- [x] Mostrar valores con signo (+ indica C-1 > B-1, - indica C-1 < B-1)
+- [x] Verificar cálculos y visualización
+- [x] Congelar v1.1 definitivamente (sin nuevas features)
