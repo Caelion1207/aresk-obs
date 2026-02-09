@@ -272,6 +272,7 @@ async function runExperimentC1(numInteractions: number = 50): Promise<Experiment
         vLyapunov: metrics.v_lyapunov,
         hDiv: metrics.h_div,
         processingTimeMs: processingTime,
+        caelionIntervened: !caelionEval.approved, // Registrar si CAELION intervino
       });
 
       successfulInteractions++;

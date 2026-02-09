@@ -20,11 +20,24 @@ Chart.register(...registerables);
 
 export default function DynamicsMonitor() {
   const [, setLocation] = useLocation();
-  const [selectedExperiment, setSelectedExperiment] = useState<'B-1-1770592429287' | 'C-1-1770595741129'>('B-1-1770592429287');
+  const [selectedRegime, setSelectedRegime] = useState<'B-1' | 'C-1'>('B-1');
+  const [selectedExperiment, setSelectedExperiment] = useState<string>('');
   
   // Queries para datos reales
   const { data: experiments } = trpc.experiments.getAll.useQuery();
-  const { data: interactions } = trpc.experiments.getInteractions.useQuery({ experimentId: selectedExperiment });
+  const { data: interactions } = trpc.experiments.getInteractions.useQuery({ experimentId: selectedExperiment }, {
+    enabled: !!selectedExperiment
+  });
+  
+  // Actualizar selectedExperiment cuando cambia el régimen
+  useEffect(() => {
+    if (experiments && experiments.length > 0) {
+      const exp = experiments.find(e => e.experimentId.startsWith(selectedRegime));
+      if (exp) {
+        setSelectedExperiment(exp.experimentId);
+      }
+    }
+  }, [selectedRegime, experiments]);
   
   // Referencias para charts
   const phasePortraitRef = useRef<HTMLCanvasElement>(null);
@@ -401,6 +414,46 @@ export default function DynamicsMonitor() {
     errorControlChartInstance.current = new Chart(ctx, config);
   }, [interactions, hasCAELION]);
 
+  // Función de exportación CSV
+  const exportToCSV = () => {
+    if (!interactions || interactions.length === 0) {
+      alert('No hay datos para exportar');
+      return;
+    }
+
+    // Calcular RLD para cada interacción
+    const csvData = interactions.map((interaction, index) => {
+      const rld = calculateRLD(interaction.omegaSem, interaction.hDiv);
+      return {
+        interactionIndex: index + 1,
+        omega: interaction.omegaSem.toFixed(6),
+        v: interaction.vLyapunov.toFixed(6),
+        epsilon: interaction.epsilonEff.toFixed(6),
+        h: interaction.hDiv.toFixed(6),
+        rld: rld.toFixed(6),
+        caelionIntervened: interaction.caelionIntervened ? '1' : '0',
+      };
+    });
+
+    // Generar CSV
+    const headers = ['Interaction', 'Omega(t)', 'V(t)', 'Epsilon(t)', 'H(t)', 'RLD(t)', 'CAELION_Intervened'];
+    const csvContent = [
+      headers.join(','),
+      ...csvData.map(row => `${row.interactionIndex},${row.omega},${row.v},${row.epsilon},${row.h},${row.rld},${row.caelionIntervened}`)
+    ].join('\n');
+
+    // Descargar archivo
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `aresk-obs-${selectedRegime}-${Date.now()}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (!interactions || !currentExperiment) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 flex items-center justify-center">
@@ -432,19 +485,28 @@ export default function DynamicsMonitor() {
             </p>
           </div>
 
-          <Select value={selectedExperiment} onValueChange={(v) => setSelectedExperiment(v as any)}>
-            <SelectTrigger className="w-64 bg-slate-900/50 border-cyan-500/30 text-cyan-400">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-slate-900 border-cyan-500/30">
-              <SelectItem value="B-1-1770592429287">
-                Experimento B-1 (Sin CAELION)
-              </SelectItem>
-              <SelectItem value="C-1-1770595741129">
-                Experimento C-1 (Con CAELION)
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-4">
+            <Select value={selectedRegime} onValueChange={(v) => setSelectedRegime(v as 'B-1' | 'C-1')}>
+              <SelectTrigger className="w-64 bg-slate-900/50 border-cyan-500/30 text-cyan-400">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-slate-900 border-cyan-500/30">
+                <SelectItem value="B-1">
+                  Régimen B-1 (tipo_b, sin CAELION)
+                </SelectItem>
+                <SelectItem value="C-1">
+                  Régimen C-1 (acoplada, con CAELION)
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button
+              onClick={() => exportToCSV()}
+              className="bg-cyan-600 hover:bg-cyan-700 text-white"
+            >
+              Exportar CSV
+            </Button>
+          </div>
         </div>
       </div>
 

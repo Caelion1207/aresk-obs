@@ -2437,3 +2437,13 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Documentar extensión v1.1 del esquema
 - [x] Crear ruta /experimento/dynamics en App.tsx
 - [x] Actualizar enlace del botón principal en Home.tsx
+
+
+## Extensión de Dynamics Monitor
+
+- [x] Actualizar runExperimentC1.ts para setear caelionIntervened = true cuando CAELION interviene
+- [x] Implementar selector de régimen B-1/C-1 en /experimento/dynamics
+- [x] Implementar selección dinámica de experimento basado en régimen
+- [x] Agregar botón "Exportar CSV" en Dynamics Monitor
+- [x] Implementar generación de CSV con series temporales (Ω(t), V(t), RLD(t), caelionIntervened)
+- [x] Verificar funcionamiento de selector y exportación
