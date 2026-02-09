@@ -2466,3 +2466,25 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Mostrar valores con signo (+ indica C-1 > B-1, - indica C-1 < B-1)
 - [x] Verificar cálculos y visualización
 - [x] Congelar v1.1 definitivamente (sin nuevas features)
+
+## Congelamiento ARESK-OBS v1.1 FINAL (FROZEN)
+
+- [x] Marcar README.md como "ARESK-OBS v1.1 – FROZEN (read-only)"
+- [x] Agregar badge de estado FROZEN en README.md
+- [x] Generar RELEASE_NOTES_v1.1.md con:
+  - [x] Descripción del instrumento
+  - [x] Resultados experimentales B-1 vs C-1
+  - [x] Interpretación explícita de contradicción ΔRLD (trade-off estabilidad vs viabilidad)
+  - [x] Alcances y límites del instrumento (instrumental, no causal)
+- [x] Crear INSTRUMENT_CONTRACT.md con:
+  - [x] Qué mide el sistema
+  - [x] Qué NO mide el sistema
+  - [x] Supuestos fundamentales
+  - [x] Invariantes del instrumento
+- [x] Exportar paquete de evidencia:
+  - [x] CSV comparativo B-1 vs C-1 (con limitación documentada)
+  - [x] Capturas de split-screen y badges
+  - [x] Logs de integridad (documentados en EVIDENCE_NOTE.md)
+- [x] Deshabilitar scripts de mutación automática de UI/datos (documentado en FROZEN_SYSTEM.md)
+- [ ] Crear checkpoint final FROZEN
+- [ ] Sistema cerrado, auditable y vendible
