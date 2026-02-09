@@ -2447,3 +2447,12 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Agregar botón "Exportar CSV" en Dynamics Monitor
 - [x] Implementar generación de CSV con series temporales (Ω(t), V(t), RLD(t), caelionIntervened)
 - [x] Verificar funcionamiento de selector y exportación
+
+## Vista Split-Screen en Dynamics Monitor (v1.1)
+
+- [x] Implementar toggle para activar vista split-screen (B-1 vs C-1 lado a lado)
+- [x] Crear layout de dos columnas con phase portraits sincronizados
+- [x] Sincronizar escalas de ejes (Ω, H, V, RLD) entre ambos régimenes
+- [x] Mantener gráficos temporales sincronizados (mismo rango temporal)
+- [x] Verificar funcionamiento visual de comparación simultánea
+- [x] Congelar UI base como v1.1 (no nuevas rutas hasta validación)
