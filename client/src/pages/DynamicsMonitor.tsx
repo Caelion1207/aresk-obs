@@ -1129,19 +1129,35 @@ export default function DynamicsMonitor() {
 
           <div className="flex gap-4">
             {!splitScreenMode && (
-              <Select value={selectedRegime} onValueChange={(v) => setSelectedRegime(v as 'B-1' | 'C-1')}>
-                <SelectTrigger className="w-64 bg-slate-900/50 border-cyan-500/30 text-cyan-400">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-cyan-500/30">
-                  <SelectItem value="B-1">
-                    Régimen B-1 (tipo_b, sin CAELION)
-                  </SelectItem>
-                  <SelectItem value="C-1">
-                    Régimen C-1 (acoplada, con CAELION)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <>
+                <Select value={selectedRegime} onValueChange={(v) => setSelectedRegime(v as 'B-1' | 'C-1')}>
+                  <SelectTrigger className="w-64 bg-slate-900/50 border-cyan-500/30 text-cyan-400">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-cyan-500/30">
+                    <SelectItem value="B-1">
+                      Régimen B-1 (tipo_b, sin CAELION)
+                    </SelectItem>
+                    <SelectItem value="C-1">
+                      Régimen C-1 (acoplada, con CAELION)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                {/* Selector de experimento específico */}
+                <Select value={selectedExperiment} onValueChange={setSelectedExperiment}>
+                  <SelectTrigger className="w-80 bg-slate-900/50 border-cyan-500/30 text-cyan-400">
+                    <SelectValue placeholder="Seleccionar experimento..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-cyan-500/30">
+                    {experiments?.filter(e => e.experimentId.startsWith(selectedRegime)).map(exp => (
+                      <SelectItem key={exp.experimentId} value={exp.experimentId}>
+                        {exp.experimentId} {exp.hasCAELION ? '(CAELION)' : ''} - {exp.successfulInteractions} interacciones
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
             )}
             
             <Button

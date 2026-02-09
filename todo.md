@@ -192,7 +192,7 @@
 ### Fase 5: Checkpoint Final
 
 - [x] Actualizar documentación con arquitectura CAELION aplicada
-- [ ] Crear checkpoint con C-1-CAELION completado
+- [x] Crear checkpoint con C-1-CAELION completado
 
 **Restricciones**:
 - ❌ NO modificar B-1
@@ -201,3 +201,33 @@
 - ✅ Solo aplicar arquitectura CAELION a C-1
 
 **Objetivo**: Generar C-1 con arquitectura CAELION explícita y medir diferencias con B-1
+
+
+---
+
+## ACTUALIZACIÓN DYNAMICSMONITOR CON C-1-CAELION
+
+**Objetivo**: Permitir comparación visual válida B-1 vs C-1-CAELION en split-screen
+
+### Tareas
+
+- [x] Modificar selector de experimentos en DynamicsMonitor.tsx
+- [x] Agregar opción C-1-CAELION (C-1-1770628250311) al dropdown
+- [x] Verificar que split-screen carga B-1-1770623178573 vs C-1-1770628250311
+- [x] Documentar aclaración: RLD se extrae de arquitecturas de operadores (no calculada directamente por ARESK-OBS)
+- [x] Actualizar INSTRUMENT_CONTRACT.md con aclaración sobre RLD
+- [ ] Crear checkpoint final con DynamicsMonitor actualizado
+
+### Problema Detectado
+
+- ❌ **B-1 solo muestra 5 interacciones en split-screen** (debería mostrar 50)
+- Causa probable: Error en consulta de datos o filtrado de interacciones
+- Impacto: Comparación visual no válida (5 vs 57 interacciones)
+- Acción: Investigar y corregir query de B-1 en modo split-screen
+
+**Restricciones**:
+- ❌ NO modificar lógica de cálculo de métricas
+- ❌ NO cambiar visualizaciones existentes
+- ✅ Solo actualizar selector de experimentos
+
+**Objetivo**: Comparación visual válida B-1 vs C-1-CAELION en split-screen
