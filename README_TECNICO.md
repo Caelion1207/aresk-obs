@@ -1,6 +1,6 @@
 # ARESK-OBS: Instrumento de Observación de Viabilidad Operativa
 
-**Versión**: Baseline v1  
+**Versión**: 1.0 (Versión Comercial Inicial)  
 **Estado**: Producción  
 **Licencia**: Propietaria
 
@@ -87,7 +87,7 @@ ARESK-OBS puede detectar desviaciones semánticas, pero **no garantiza** que el 
 - **No aprende**: CAELION es determinístico (basado en patrones en Baseline v1), no adaptativo
 - **No garantiza seguridad absoluta**: Violaciones sutiles o reformuladas pueden evadir la detección
 
-### Resultados del Baseline v1
+### Resultados de Validación (v1.0)
 
 | Métrica | Régimen B (sin CAELION) | Régimen C (con CAELION) | Diferencia |
 |---------|-------------------------|-------------------------|------------|
@@ -275,11 +275,11 @@ Cada mensaje se evalúa aisladamente, sin considerar el contexto conversacional.
 
 ### 4. Detección de Violaciones Determinística
 
-CAELION en Baseline v1 usa detección de patrones (regex), no evaluación semántica completa. Violaciones sutiles pueden evadir la detección.
+CAELION en v1.0 usa detección de patrones (regex), no evaluación semántica completa. Violaciones sutiles pueden evadir la detección. Para detección semántica avanzada, ver upgrades opcionales.
 
 ### 5. Tamaño de Muestra
 
-Los resultados del Baseline v1 se basan en 50 interacciones por experimento. Para análisis robustos, se recomiendan 100+ interacciones.
+Los resultados de validación de v1.0 se basan en 50 interacciones por experimento. Para análisis robustos, se recomiendan 100+ interacciones (disponible como upgrade opcional).
 
 ---
 
@@ -294,5 +294,6 @@ Los resultados del Baseline v1 se basan en 50 interacciones por experimento. Par
 ---
 
 **Fin del README Técnico**  
-**Versión**: Baseline v1  
-**Última actualización**: 2026-02-09
+**Versión**: 1.0 (Versión Comercial Inicial)  
+**Última actualización**: 2026-02-09  
+**Upgrades opcionales**: Ver `OPTIONAL_UPGRADES.md`

@@ -1,8 +1,8 @@
-# ARESK-OBS Baseline v1: Resumen Ejecutivo
+# ARESK-OBS v1.0: Resumen Comercial
 
 **Instrumento de Observación de Viabilidad Operativa en Sistemas Cognitivos**
 
-**Versión**: Baseline v1  
+**Versión**: 1.0 (Versión Comercial Inicial)  
 **Fecha**: Febrero 2026  
 **Audiencia**: Ejecutivos técnicos, inversores, tomadores de decisión
 
@@ -14,7 +14,7 @@ ARESK-OBS es el primer instrumento de observación diseñado para medir viabilid
 
 **Problema que resuelve**: Las organizaciones que despliegan chatbots, asistentes virtuales o agentes autónomos no pueden medir en tiempo real si estos sistemas respetan políticas internas y regulaciones externas. ARESK-OBS proporciona métricas continuas de coherencia semántica (Ω), estabilidad energética (V), eficiencia incremental (ε) y divergencia informacional (H) que permiten detectar desviaciones antes de que se conviertan en violaciones.
 
-**Validación experimental**: El Baseline v1 incluye 100 interacciones reales (50 por régimen) comparando sistemas sin marco de gobernanza (Régimen B) versus sistemas con marco CAELION activo (Régimen C). Los resultados muestran que CAELION incrementa coherencia en 24.7% y reduce energía de error en 20.7%, con un costo de intervención del 14%.
+**Validación experimental**: La versión 1.0 incluye 100 interacciones reales (50 por régimen) comparando sistemas sin marco de gobernanza (Régimen B) versus sistemas con marco CAELION activo (Régimen C). Los resultados muestran que CAELION incrementa coherencia en 24.7% y reduce energía de error en 20.7%, con un costo de intervención del 14%.
 
 **Casos de uso vendibles**: Atención al cliente regulada (ROI 55x), asistencia médica no-autorizante (ROI 73x), auditoría de agentes autónomos (ROI 40x).
 
@@ -71,13 +71,13 @@ ARESK-OBS resuelve la brecha de observabilidad mediante **métricas canónicas**
 
 ### Encoder de Referencia
 
-ARESK-OBS usa **sentence-transformers/all-MiniLM-L6-v2** como encoder de referencia oficial. Este modelo genera embeddings de 384 dimensiones y está optimizado para tareas de similitud semántica. El encoder está congelado en Baseline v1 para garantizar reproducibilidad.
+ARESK-OBS usa **sentence-transformers/all-MiniLM-L6-v2** como encoder de referencia oficial. Este modelo genera embeddings de 384 dimensiones y está optimizado para tareas de similitud semántica. El encoder está congelado en v1.0 para garantizar reproducibilidad.
 
 ---
 
-## 3. Validación Experimental: Baseline v1
+## 3. Validación Experimental: v1.0
 
-El Baseline v1 incluye dos experimentos controlados que comparan sistemas sin marco de gobernanza (Régimen B) versus sistemas con marco CAELION activo (Régimen C). Cada experimento incluye 50 interacciones reales con métricas calculadas usando el encoder de referencia.
+La versión 1.0 incluye dos experimentos controlados que comparan sistemas sin marco de gobernanza (Régimen B) versus sistemas con marco CAELION activo (Régimen C). Cada experimento incluye 50 interacciones reales con métricas calculadas usando el encoder de referencia.
 
 ### Diseño Experimental
 
@@ -182,7 +182,8 @@ Esta pregunta es crítica para organizaciones que despliegan sistemas cognitivos
 
 ---
 
-**Fin del Resumen Ejecutivo**  
-**Versión**: Baseline v1  
+**Fin del Resumen Comercial**  
+**Versión**: 1.0 (Versión Comercial Inicial)  
 **Fecha**: Febrero 2026  
-**Contacto**: Para más información, consultar documentación técnica completa en `REPORTE_TECNICO_BASELINE_V1.pdf`
+**Contacto**: Para más información, consultar documentación técnica completa en `README_TECNICO.md`  
+**Upgrades opcionales**: Ver `OPTIONAL_UPGRADES.md` para mejoras disponibles

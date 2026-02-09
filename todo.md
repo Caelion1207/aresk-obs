@@ -2373,4 +2373,21 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Generar USE_CASES.md (3 casos vendibles)
 - [x] Generar BASELINE_V1_PUBLIC_SUMMARY.pdf (5 páginas, ejecutivo/técnico)
 - [x] Listar requisitos para Baseline v2
-- [ ] Crear checkpoint final con documentación de posicionamiento
+- [x] Crear checkpoint final con documentación de posicionamiento
+
+
+## Reposicionamiento Comercial (v1 → Versión Comercial Inicial)
+
+- [x] Actualizar README_TECNICO.md para reflejar v1 como versión comercial
+- [x] Actualizar BASELINE_V1_PUBLIC_SUMMARY.md eliminando "Baseline" del título
+- [x] Reescribir ROADMAP_BASELINE_V2.md como OPTIONAL_UPGRADES.md
+- [ ] Crear PRODUCT_EVOLUTION.md con narrativa de evolución
+- [ ] Crear checkpoint final con reposicionamiento comercial
+
+
+## Cierre Comercial v1.0 (FINAL)
+
+- [x] Generar PDF comercial final (evidencia + límites explícitos)
+- [x] Crear lista explícita de supuestos y exclusiones
+- [x] Escribir frase de posicionamiento clara (1 párrafo)
+- [ ] Crear checkpoint final inmutable
