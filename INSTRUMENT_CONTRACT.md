@@ -360,3 +360,145 @@ Este contrato es **inmutable** para ARESK-OBS v1.1.
 **Copyright (c) 2026 Ever (Caelion1207). Todos los derechos reservados.**
 
 **ARESK-OBS v1.1 – Sistema Cerrado y Operacional**
+
+
+---
+
+## 🔀 Separación Conceptual de Monitores (v1.1)
+
+ARESK-OBS v1.1 integra dos dimensiones de observación que son **conceptualmente independientes** pero actualmente **físicamente acopladas** en DynamicsMonitor.
+
+### Monitor A: Control / LQR
+
+**Métricas incluidas**:
+- **Ω(t)**: Coherencia observable
+- **ε(t)**: Entropía semántica (campo efectivo)
+- **V(t)**: Función de Lyapunov
+- **LQR**: Control óptimo lineal-cuadrático
+
+**Qué mide**: Estabilidad, convergencia y costo de control del sistema respecto a referencia ontológica.
+
+**Prohibido incluir**: RLD, núcleo K, trayectorias viables, métricas de viabilidad.
+
+**Fundamento teórico**: Teoría de control óptimo (LQR), análisis de estabilidad de Lyapunov.
+
+---
+
+### Monitor B: Viabilidad (Aubin)
+
+**Métricas incluidas**:
+- **RLD(t)**: Reserva de Legitimidad Dinámica
+- **Núcleo K**: Conjunto viable (teoría de Aubin)
+- **Trayectorias**: Clasificación viable / no viable
+- **Margen restante**: Distancia al borde del núcleo
+
+**Qué mide**: Margen operativo, sostenibilidad temporal y distancia al borde del conjunto viable.
+
+**Prohibido incluir**: Ω, ε, V, LQR, métricas de control.
+
+**Fundamento teórico**: Teoría de viabilidad de Jean-Pierre Aubin, conjuntos viables, núcleos de viabilidad.
+
+---
+
+### Estado Actual (v1.1 "as-is")
+
+**Separación conceptual**: ✅ **Documentada** en este contrato.
+
+**Separación física**: ⏸️ **Pendiente** para v1.2 (componentes independientes `ControlMonitor.tsx` y `ViabilityMonitor.tsx`).
+
+**Justificación**: Priorizar **estabilidad del sistema** sobre refactors estructurales. DynamicsMonitor funciona correctamente "as-is" y no requiere modificación inmediata.
+
+**Implicación**: 
+- Las métricas de Control y Viabilidad están **conceptualmente separadas** pero **visualmente integradas** en la misma interfaz.
+- Los usuarios deben interpretar las métricas según su dimensión (Control vs Viabilidad).
+- La separación física se implementará en v1.2 sin cambiar las métricas subyacentes.
+
+---
+
+### Trade-off Estabilidad vs Viabilidad
+
+**Observación empírica (B-1 vs C-1)**:
+
+- **B-1 (sin CAELION)**: RLD promedio más alto (-0.2722 vs C-1) pero menor coherencia (ΔΩ = -0.1458)
+- **C-1 (con CAELION)**: Mayor coherencia (ΔΩ = +0.1458) pero RLD promedio más bajo
+
+**Interpretación**:
+- **B-1**: Viabilidad aparente con fragilidad oculta (alta RLD, baja Ω)
+- **C-1**: Estabilidad controlada con margen reducido (baja RLD, alta Ω)
+
+**Limitación de umbrales fijos**: Los umbrales de RLD (0.5, 0.3) **NO capturan dinámica de intervención adaptativa**, lo que puede llevar a interpretaciones erróneas del trade-off.
+
+**Conclusión**: La separación conceptual de monitores es **esencial** para evitar confundir estabilidad (Control) con viabilidad (Aubin).
+
+---
+
+## 🗂️ Conjunto Canónico de Estímulos (v1.1)
+
+### Decisión: C-1 como Conjunto Canónico
+
+**Fuente**: Experimento C-1 (régimen acoplada, CAELION activo)
+
+**Archivo**: `/experiments/canonical_stimuli_c1.json`
+
+**Estado**: `CANONICAL_FROZEN`
+
+**Total mensajes**: 50
+
+**Descripción**: Conjunto canónico de estímulos del experimento C-1. Este es el **ÚNICO input válido** para comparaciones experimentales B-1 vs C-1.
+
+---
+
+### Justificación: Eliminación de A-1
+
+**Problema detectado**: A-1 fue una **demo visual no persistida** que NO existía en la base de datos.
+
+**Síntoma**: Inconsistencia UI/BD (interfaz mostraba A-1, base de datos no contenía A-1).
+
+**Corrección aplicada**:
+- ❌ Eliminado componente `/client/src/pages/ExperimentoEstabilidad.tsx`
+- ❌ Eliminada ruta `/experimento/estabilidad`
+- ❌ Eliminada card "Experimento A-1" en Home.tsx
+- ❌ Eliminadas todas las referencias visuales y lógicas a A-1
+
+**Conclusión**: A-1 NO existe → A-1 NO debe existir en UI → C-1 es el conjunto canónico.
+
+---
+
+### Validez Experimental
+
+**Requisito**: B-1 y C-1 deben usar **EXACTAMENTE los mismos mensajes** (los de C-1).
+
+**Única diferencia permitida**: Régimen dinámico (sin/con CAELION).
+
+**Estado actual**:
+- Datos históricos de B-1 y C-1 existen en base de datos
+- Validez experimental: ⚠️ **Pendiente de verificación** (input idéntico)
+
+**Implicación**: Si B-1 y C-1 usaron inputs diferentes, las comparaciones son **inválidas** y deben recalcularse usando el conjunto canónico de C-1.
+
+---
+
+## 🔐 Sistema Cerrado y Operacional (v1.1 "as-is")
+
+**ARESK-OBS v1.1 "as-is" CONGELADO**:
+
+✅ Consistencia UI/BD restaurada (A-1 eliminado)  
+✅ C-1 declarado como conjunto canónico  
+✅ Separación conceptual documentada (Control vs Viabilidad)  
+✅ Sistema científicamente honesto (sin datos ficticios)  
+✅ Auditable, trazable y reproducible  
+
+**Restricciones activas**:
+- ❌ NO reintroducir A-1 bajo ningún concepto
+- ❌ NO recalcular métricas históricas sin documentar
+- ❌ NO cambiar encoder o umbrales sin validación experimental
+- ❌ NO mezclar métricas entre monitores (Control vs Viabilidad)
+- ❌ NO modificar visualizaciones sin documentar impacto
+
+**Objetivo cumplido**: Sistema cerrado, auditable y científicamente honesto.
+
+---
+
+**ARESK-OBS v1.1 – Contrato Cerrado y Operacional**
+
+**Copyright (c) 2026 Ever (Caelion1207). Todos los derechos reservados.**

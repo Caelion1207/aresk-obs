@@ -112,9 +112,6 @@ La base teórica del proyecto se encuentra en [`docs/research/`](./docs/research
 
 ## 🧪 Experimentos Incluidos
 
-### Experimento A-1
-Datos reales de interacción H-M bajo el régimen acoplado CAELION, demostrando la estabilidad del sistema (Ω_max = 0.4228) y la efectividad de las métricas de observación.
-
 ### Experimentos B-1 y C-1 (v1.1)
 Comparación experimental entre régimen sin CAELION (B-1, tipo_b) y régimen con CAELION (C-1, tipo_c) con 50 interacciones cada uno. Resultados disponibles en `/evidence/v1.1/`.
 

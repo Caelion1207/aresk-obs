@@ -298,15 +298,6 @@ export default function Home() {
             </Card>
           </Link>
 
-          <Link href="/experimento/estabilidad">
-            <Card className="bg-gradient-blue-purple border-amber-500/30 hover-glow-cyan cursor-pointer">
-              <CardContent className="p-6">
-                <h4 className="text-xl font-bold text-amber-300 mb-2">Experimento A-1</h4>
-                <p className="text-gray-400 text-sm">Análisis temporal de 50 mensajes del Régimen A</p>
-              </CardContent>
-            </Card>
-          </Link>
-
           <Link href="/experimento/comparacion">
             <Card className="bg-gradient-blue-purple border-green-500/30 hover-glow-cyan cursor-pointer">
               <CardContent className="p-6">
