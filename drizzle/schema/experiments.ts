@@ -63,6 +63,10 @@ export const experimentInteractions = mysqlTable("experiment_interactions", {
   // Metadatos
   timestamp: timestamp("timestamp").defaultNow().notNull(),
   processingTimeMs: int("processingTimeMs"), // Tiempo de procesamiento en ms
+  
+  // Extensión v1.1: Registro de intervenciones CAELION
+  // NOTA: Datos históricos (B-1, C-1) no registran intervenciones (campo agregado post-experimento)
+  caelionIntervened: boolean("caelion_intervened").notNull().default(false),
 });
 
 export type Experiment = typeof experiments.$inferSelect;

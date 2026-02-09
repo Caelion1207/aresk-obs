@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import ExperimentoEstabilidad from "./pages/ExperimentoEstabilidad";
 import ComparacionExperimentos from "./pages/ComparacionExperimentos";
+import DynamicsMonitor from "./pages/DynamicsMonitor";
 
 import ResearchPage from '@/pages/ResearchPage';
 import CampoPage from '@/pages/CampoPage';
@@ -19,6 +20,7 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/experimento/estabilidad"} component={ExperimentoEstabilidad} />
       <Route path={"/experimento/comparacion"} component={ComparacionExperimentos} />
+      <Route path={"/experimento/dynamics"} component={DynamicsMonitor} />
 
       <Route path="/investigacion" component={ResearchPage} />
       <Route path="/campo" component={CampoPage} />

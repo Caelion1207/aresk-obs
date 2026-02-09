@@ -141,6 +141,13 @@
       "when": 1770609915492,
       "tag": "0019_lovely_thundra",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1770611963831,
+      "tag": "0020_sad_shaman",
+      "breakpoints": true
     }
   ]
 }

@@ -2420,3 +2420,20 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Documentar formalmente la ruptura de auditoría en fase de desarrollo
 - [x] Mantener alertas visibles como historial
 - [x] Confirmar que audit_v2 inicia limpio y operativo
+
+
+## Restauración del LAB | Dynamics Monitor
+
+- [x] Restaurar visualización Phase Portrait (H vs Ω) original del LAB
+- [x] Restaurar visualización Lyapunov V(t) original del LAB
+- [x] Restaurar visualización Error Dynamics original del LAB (RLD vs V)
+- [x] Restaurar visualización Control Effort ΔV original del LAB (implícito en RLD(t))
+- [x] Añadir capa de Núcleo de Viabilidad K (Aubin) como overlay
+- [x] Añadir visualización RLD(t) con umbrales de viabilidad
+- [x] Añadir visualización RLD vs Costo V
+- [x] Añadir marcadores de trayectorias viables/no viables
+- [x] Rebindear todas las visualizaciones a datos de experiment_interactions
+- [x] Agregar campo caelion_intervened al esquema (extensión v1.1)
+- [x] Documentar extensión v1.1 del esquema
+- [x] Crear ruta /experimento/dynamics en App.tsx
+- [x] Actualizar enlace del botón principal en Home.tsx

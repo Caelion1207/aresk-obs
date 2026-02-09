@@ -1,0 +1,1 @@
+ALTER TABLE `experiment_interactions` ADD `caelion_intervened` boolean DEFAULT false NOT NULL;

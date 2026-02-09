@@ -23,9 +23,9 @@ export default function Home() {
                 <p className="text-sm text-cyan-300/80">Instrumento de Observación de Viabilidad Operativa</p>
               </div>
             </div>
-            <Link href="/experimento/comparacion">
+            <Link href="/experimento/dynamics">
               <Button size="lg" className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-400 glow-cyan hover-glow-cyan">
-                Acceder al Dashboard
+                Dynamics Monitor
                 <Activity className="ml-2 h-5 w-5" />
               </Button>
             </Link>
