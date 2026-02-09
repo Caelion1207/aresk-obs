@@ -1,0 +1,19 @@
+{
+  "query": "-- Paso 1: Limpiar tabla auditLogs (eliminar logs corruptos)\nTRUNCATE TABLE auditLogs;\n\n-- Paso 2: Crear nuevo GENESIS log para audit_v2\nINSERT INTO auditLogs \n  (userId, endpoint, method, type, statusCode, duration, timestamp, ip, userAgent, requestId, hash, prevHash)\nVALUES\n  (\n    1, -- userId del propietario\n    '/api/audit/genesis',\n    'SYSTEM',\n    'GENESIS',\n    200,\n    0,\n    NOW(),\n    '127.0.0.1',\n    'ARESK-OBS audit_v2 initialization',\n    'audit_v2_genesis',\n    SHA2('audit_v2_genesis_2026-02-09', 256), -- Hash del genesis\n    NULL -- prevHash es NULL para el primer log\n  );\n\n-- Paso 3: Verificar que audit_v2 inició correctamente\nSELECT \n  'audit_v2' as version,\n  id,\n  type,\n  endpoint,\n  hash,\n  prevHash,\n  timestamp\nFROM auditLogs\nWHERE type = 'GENESIS';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute -- Paso 1: Limpiar tabla auditLogs (eliminar logs corruptos)\nTRUNCATE TABLE auditLogs;\n\n-- Paso 2: Crear nuevo GENESIS log para audit_v2\nINSERT INTO auditLogs \n  (userId, endpoint, method, type, statusCode, duration, timestamp, ip, userAgent, requestId, hash, prevHash)\nVALUES\n  (\n    1, -- userId del propietario\n    '/api/audit/genesis',\n    'SYSTEM',\n    'GENESIS',\n    200,\n    0,\n    NOW(),\n    '127.0.0.1',\n    'ARESK-OBS audit_v2 initialization',\n    'audit_v2_genesis',\n    SHA2('audit_v2_genesis_2026-02-09', 256), -- Hash del genesis\n    NULL -- prevHash es NULL para el primer log\n  );\n\n-- Paso 3: Verificar que audit_v2 inició correctamente\nSELECT \n  'audit_v2' as version,\n  id,\n  type,\n  endpoint,\n  hash,\n  prevHash,\n  timestamp\nFROM auditLogs\nWHERE type = 'GENESIS';",
+  "rows": [
+    {
+      "version": "audit_v2",
+      "id": "1",
+      "type": "GENESIS",
+      "endpoint": "/api/audit/genesis",
+      "hash": "7bf8facc85692584dcda4b49a7c45fd287c2a1009eb421b8017fde3bcdcb0891",
+      "prevHash": "NULL",
+      "timestamp": "2026-02-09 04:05:51"
+    }
+  ],
+  "messages": [],
+  "stdout": "version\tid\ttype\tendpoint\thash\tprevHash\ttimestamp\naudit_v2\t1\tGENESIS\t/api/audit/genesis\t7bf8facc85692584dcda4b49a7c45fd287c2a1009eb421b8017fde3bcdcb0891\tNULL\t2026-02-09 04:05:51\n",
+  "stderr": "",
+  "execution_time_ms": 286
+}

@@ -2398,3 +2398,25 @@ Ejecutar experimentos para Régimen B y Régimen C para validar el sistema ARESK
 - [x] Diagnosticar problema del dashboard que no funciona
 - [x] Corregir errores identificados
 - [x] Verificar funcionamiento del dashboard
+
+
+## Reintegración de Visualizaciones Dinámicas del LAB
+
+- [x] Crear query tRPC para obtener interacciones por experimento (experiment_interactions)
+- [x] Implementar componente PhasePortrait (H vs Ω) con datos reales
+- [x] Implementar componente LyapunovComparisonChart (V(t) y V²(t)) con datos reales
+- [x] Implementar componente DeltaVChart (ΔV incremental) con datos reales
+- [ ] Integrar visualizaciones en dashboard de comparación
+- [ ] Agregar marcadores de intervenciones CAELION en gráficas temporales
+- [ ] Verificar que todas las visualizaciones usan datos reales (no simulados)
+
+
+## Aislamiento y Versionado de Audit Logs
+
+- [x] Congelar audit logs actuales como dev-corrupted
+- [x] Inicializar audit_v2 con nuevo genesis desde estado actual
+- [x] Marcar experimentos B-1 y C-1 con data_integrity: verified
+- [x] Marcar experimentos B-1 y C-1 con audit_integrity: legacy_broken
+- [x] Documentar formalmente la ruptura de auditoría en fase de desarrollo
+- [x] Mantener alertas visibles como historial
+- [x] Confirmar que audit_v2 inicia limpio y operativo

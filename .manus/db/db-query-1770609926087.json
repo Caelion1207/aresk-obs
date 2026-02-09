@@ -1,0 +1,17 @@
+{
+  "query": "-- Copiar todos los logs actuales a la tabla legacy\nINSERT INTO auditLogs_dev_corrupted \n  (id, userId, endpoint, method, type, statusCode, duration, timestamp, ip, userAgent, requestId, hash, prevHash)\nSELECT \n  id, userId, endpoint, method, type, statusCode, duration, timestamp, ip, userAgent, requestId, hash, prevHash\nFROM auditLogs;\n\n-- Verificar que se copiaron correctamente\nSELECT \n  'auditLogs_dev_corrupted' as table_name,\n  COUNT(*) as total_logs,\n  MIN(timestamp) as first_log,\n  MAX(timestamp) as last_log,\n  MIN(frozen_at) as frozen_timestamp\nFROM auditLogs_dev_corrupted;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute -- Copiar todos los logs actuales a la tabla legacy\nINSERT INTO auditLogs_dev_corrupted \n  (id, userId, endpoint, method, type, statusCode, duration, timestamp, ip, userAgent, requestId, hash, prevHash)\nSELECT \n  id, userId, endpoint, method, type, statusCode, duration, timestamp, ip, userAgent, requestId, hash, prevHash\nFROM auditLogs;\n\n-- Verificar que se copiaron correctamente\nSELECT \n  'auditLogs_dev_corrupted' as table_name,\n  COUNT(*) as total_logs,\n  MIN(timestamp) as first_log,\n  MAX(timestamp) as last_log,\n  MIN(frozen_at) as frozen_timestamp\nFROM auditLogs_dev_corrupted;",
+  "rows": [
+    {
+      "table_name": "auditLogs_dev_corrupted",
+      "total_logs": "4",
+      "first_log": "2026-01-23 00:00:00",
+      "last_log": "2026-01-23 20:12:39",
+      "frozen_timestamp": "2026-02-09 04:05:26"
+    }
+  ],
+  "messages": [],
+  "stdout": "table_name\ttotal_logs\tfirst_log\tlast_log\tfrozen_timestamp\nauditLogs_dev_corrupted\t4\t2026-01-23 00:00:00\t2026-01-23 20:12:39\t2026-02-09 04:05:26\n",
+  "stderr": "",
+  "execution_time_ms": 73
+}

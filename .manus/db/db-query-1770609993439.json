@@ -1,0 +1,26 @@
+{
+  "query": "-- Actualizar metadata de experimentos B-1 y C-1\nUPDATE experiments\nSET \n  metadata = JSON_SET(\n    COALESCE(metadata, '{}'),\n    '$.data_integrity', 'verified',\n    '$.audit_integrity', 'legacy_broken',\n    '$.audit_version', 'dev-corrupted',\n    '$.audit_note', 'Audit chain broken during development phase. Data integrity verified independently. Audit logs isolated in auditLogs_dev_corrupted table.'\n  )\nWHERE experimentId IN ('B-1-1770592429287', 'C-1-1770595741129');\n\n-- Verificar actualización\nSELECT \n  experimentId,\n  regime,\n  status,\n  JSON_EXTRACT(metadata, '$.data_integrity') as data_integrity,\n  JSON_EXTRACT(metadata, '$.audit_integrity') as audit_integrity,\n  JSON_EXTRACT(metadata, '$.audit_version') as audit_version\nFROM experiments\nWHERE experimentId IN ('B-1-1770592429287', 'C-1-1770595741129');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute -- Actualizar metadata de experimentos B-1 y C-1\nUPDATE experiments\nSET \n  metadata = JSON_SET(\n    COALESCE(metadata, '{}'),\n    '$.data_integrity', 'verified',\n    '$.audit_integrity', 'legacy_broken',\n    '$.audit_version', 'dev-corrupted',\n    '$.audit_note', 'Audit chain broken during development phase. Data integrity verified independently. Audit logs isolated in auditLogs_dev_corrupted table.'\n  )\nWHERE experimentId IN ('B-1-1770592429287', 'C-1-1770595741129');\n\n-- Verificar actualización\nSELECT \n  experimentId,\n  regime,\n  status,\n  JSON_EXTRACT(metadata, '$.data_integrity') as data_integrity,\n  JSON_EXTRACT(metadata, '$.audit_integrity') as audit_integrity,\n  JSON_EXTRACT(metadata, '$.audit_version') as audit_version\nFROM experiments\nWHERE experimentId IN ('B-1-1770592429287', 'C-1-1770595741129');",
+  "rows": [
+    {
+      "experimentId": "B-1-1770592429287",
+      "regime": "tipo_b",
+      "status": "frozen",
+      "data_integrity": "\"verified\"",
+      "audit_integrity": "\"legacy_broken\"",
+      "audit_version": "\"dev-corrupted\""
+    },
+    {
+      "experimentId": "C-1-1770595741129",
+      "regime": "acoplada",
+      "status": "frozen",
+      "data_integrity": "\"verified\"",
+      "audit_integrity": "\"legacy_broken\"",
+      "audit_version": "\"dev-corrupted\""
+    }
+  ],
+  "messages": [],
+  "stdout": "experimentId\tregime\tstatus\tdata_integrity\taudit_integrity\taudit_version\nB-1-1770592429287\ttipo_b\tfrozen\t\"verified\"\t\"legacy_broken\"\t\"dev-corrupted\"\nC-1-1770595741129\tacoplada\tfrozen\t\"verified\"\t\"legacy_broken\"\t\"dev-corrupted\"\n",
+  "stderr": "",
+  "execution_time_ms": 69
+}

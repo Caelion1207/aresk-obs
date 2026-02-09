@@ -1,0 +1,8 @@
+{
+  "query": "-- Paso 1: Crear tabla de audit logs legacy (dev-corrupted)\nCREATE TABLE IF NOT EXISTS auditLogs_dev_corrupted AS SELECT * FROM auditLogs;\n\n-- Paso 2: Agregar metadatos de congelamiento\nALTER TABLE auditLogs_dev_corrupted \nADD COLUMN frozen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\nADD COLUMN frozen_reason VARCHAR(255) DEFAULT 'Development phase audit chain corruption - isolated for forensic reference';\n\n-- Paso 3: Verificar que se copiaron todos los registros\nSELECT \n  'auditLogs_dev_corrupted' as table_name,\n  COUNT(*) as total_logs,\n  MIN(timestamp) as first_log,\n  MAX(timestamp) as last_log\nFROM auditLogs_dev_corrupted;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute -- Paso 1: Crear tabla de audit logs legacy (dev-corrupted)\nCREATE TABLE IF NOT EXISTS auditLogs_dev_corrupted AS SELECT * FROM auditLogs;\n\n-- Paso 2: Agregar metadatos de congelamiento\nALTER TABLE auditLogs_dev_corrupted \nADD COLUMN frozen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\nADD COLUMN frozen_reason VARCHAR(255) DEFAULT 'Development phase audit chain corruption - isolated for forensic reference';\n\n-- Paso 3: Verificar que se copiaron todos los registros\nSELECT \n  'auditLogs_dev_corrupted' as table_name,\n  COUNT(*) as total_logs,\n  MIN(timestamp) as first_log,\n  MAX(timestamp) as last_log\nFROM auditLogs_dev_corrupted;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1105 (HY000) at line 2: 'CREATE TABLE ... SELECT' is not implemented yet"
+  ]
+}
