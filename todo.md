@@ -39,8 +39,8 @@
 - [x] Verificar honestidad científica (sin datos ficticios)
 - [x] Verificar que C-1 está congelado como canónico
 - [x] Verificar que separación conceptual está documentada
-- [ ] Crear checkpoint final v1.1 "as-is" CONGELADO
-- [ ] Sistema cerrado, auditable y científicamente honesto
+- [x] Crear checkpoint final v1.1 "as-is" CONGELADO
+- [x] Sistema cerrado, auditable y científicamente honesto
 
 **Estado**: ✅ Documentación completa, listo para checkpoint final
 
@@ -91,7 +91,7 @@
 
 - [x] Actualizar RESTRUCTURING_NOTES.md con re-ejecución
 - [x] Documentar validez experimental restaurada
-- [ ] Crear checkpoint final con B-1 válido
+- [x] Crear checkpoint final con B-1 válido
 
 **Restricciones**:
 - ❌ NO tocar UI
@@ -100,3 +100,104 @@
 - ❌ Solo persistir datos en BD
 
 **Objetivo**: B-1 y C-1 con input idéntico → comparación válida
+
+
+---
+
+## APLICACIÓN DE ARQUITECTURA CAELION (Gobernanza Formal)
+
+**Objetivo**: Definir régimen CAELION formalmente usando arquitectura de gobernanza del repositorio GitHub y recalcar diferencias con B-1
+
+### Fase 1: Análisis de Repositorio
+
+- [ ] Acceder a repositorio: https://github.com/Caelion1207/Arquitectura-de-gobernanza-sobre-agentes
+- [ ] Extraer documentos de arquitectura de gobernanza
+- [ ] Identificar componentes: ARGOS, HECATE, LICURGO, WABUN, ARESK
+- [ ] Extraer definición formal de CAELION
+- [ ] Identificar protocolos de control y corrección
+
+### Fase 2: Definición Formal de CAELION
+
+- [ ] Documentar arquitectura CAELION en `/docs/CAELION_ARCHITECTURE.md`
+- [ ] Definir loop de control: ARGOS → detección → LICURGO → corrección → ARESK → verificación
+- [ ] Documentar umbrales de estabilidad (0.7-0.8 estable, 0.12 intervención LICURGO)
+- [ ] Documentar protocolos de escalación (threshold 2: humano, 3: fundador, 4: eliminación)
+- [ ] Definir invariantes inmutables y respuestas a violaciones
+
+### Fase 3: Aplicación a C-1
+
+- [ ] Revisar 50 interacciones de C-1 (B-1-1770623178573 en BD)
+- [ ] Identificar intervenciones CAELION en respuestas de C-1
+- [ ] Documentar cómo CAELION modificó salidas vs marco normal del modelo
+- [ ] Marcar interacciones donde ARGOS detectó desviación
+- [ ] Marcar interacciones donde LICURGO aplicó corrección
+
+### Fase 4: Comparación B-1 vs C-1
+
+- [ ] Crear documento `/docs/B1_vs_C1_CAELION_ANALYSIS.md`
+- [ ] Comparar respuestas B-1 (marco normal) vs C-1 (CAELION) para mismos mensajes
+- [ ] Identificar diferencias cualitativas en manejo de desafíos éticos
+- [ ] Cuantificar impacto de CAELION en métricas (Ω, ε, V, RLD)
+- [ ] Documentar trade-offs: estabilidad vs viabilidad bajo CAELION
+
+### Fase 5: Documentación y Checkpoint
+
+- [ ] Actualizar INSTRUMENT_CONTRACT.md con arquitectura CAELION
+- [ ] Actualizar RESTRUCTURING_NOTES.md con aplicación de gobernanza
+- [ ] Crear checkpoint con arquitectura CAELION documentada
+
+**Restricciones**:
+- ❌ NO modificar datos de C-1 (solo análisis)
+- ❌ NO recalcular métricas
+- ❌ NO tocar UI sin autorización
+- ✅ Solo documentación y análisis arquitectónico
+
+**Objetivo**: Definir CAELION formalmente y recalcar diferencias con B-1 bajo marco arquitectónico riguroso
+
+
+---
+
+## RE-GENERACIÓN C-1 CON ARQUITECTURA CAELION
+
+**Objetivo**: Aplicar arquitectura CAELION del repositorio GitHub para generar C-1 con supervisión multi-módulo explícita
+
+### Fase 1: Definición de Arquitectura
+
+- [x] Crear system prompt con 5 módulos supervisores (LIANG, HÉCATE, ARGOS, ÆON, DEUS)
+- [x] Definir loop de control: ARGOS → LICURGO → ARESK
+- [x] Especificar métricas objetivo: Ω ≈ 1, V → 0, E decreciente
+- [x] Documentar arquitectura en `/docs/CAELION_SYSTEM_PROMPT.md`
+
+### Fase 2: Invalidación de C-1 Actual
+
+- [x] Marcar C-1-1770595905889 como `status: frozen` con metadata de invalidación
+- [x] Documentar razón: "Arquitectura CAELION no aplicada explícitamente"
+- [x] Mantener datos históricos como referencia
+
+### Fase 3: Re-ejecución C-1
+
+- [x] Crear script de re-ejecución con system prompt CAELION
+- [x] Usar input canónico (50 mensajes de C-1)
+- [x] Usar encoder 384D (sentence-transformers/all-MiniLM-L6-v2)
+- [x] Ejecutar 50 interacciones con supervisión multi-módulo (completado en 2 sesiones)
+- [x] Persistir en BD con `hasCAELION: true` (C-1-1770628250311)
+
+### Fase 4: Verificación
+
+- [x] Generar informe comparativo B-1 vs C-1-CAELION
+- [x] Verificar diferencias cuantitativas (Ω, ε, V, H)
+- [x] Analizar diferencias cualitativas en respuestas
+- [x] Documentar impacto de arquitectura CAELION
+
+### Fase 5: Checkpoint Final
+
+- [x] Actualizar documentación con arquitectura CAELION aplicada
+- [ ] Crear checkpoint con C-1-CAELION completado
+
+**Restricciones**:
+- ❌ NO modificar B-1
+- ❌ NO cambiar input canónico
+- ❌ NO cambiar encoder
+- ✅ Solo aplicar arquitectura CAELION a C-1
+
+**Objetivo**: Generar C-1 con arquitectura CAELION explícita y medir diferencias con B-1
