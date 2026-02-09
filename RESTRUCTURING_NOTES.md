@@ -160,3 +160,77 @@
 ---
 
 **Copyright (c) 2026 Ever (Caelion1207). Todos los derechos reservados.**
+
+
+---
+
+## Re-ejecución B-1 con Input Canónico (2026-02-09)
+
+### Contexto
+
+Durante la verificación de validez experimental, se descubrió que:
+
+1. **Experimentos originales B-1 y C-1 usaron dominios diferentes**:
+   - B-1: Preguntas técnicas (programación, algoritmos, arquitectura)
+   - C-1: Análisis filosófico + desafíos éticos
+
+2. **Encoder utilizado en Baseline v1**: `sentence-transformers/all-MiniLM-L6-v2` (384D), NO `text-embedding-3-small` (1536D)
+
+3. **Implicación**: B-1 y C-1 originales NO eran comparables debido a inputs diferentes
+
+### Decisión
+
+Re-ejecutar B-1 usando EXACTAMENTE los 50 mensajes canónicos de C-1 para restaurar validez experimental.
+
+### Implementación
+
+**Experimento**: B-1-1770623178573
+**Fecha**: 2026-02-09
+**Encoder**: sentence-transformers/all-MiniLM-L6-v2 (384D) - MISMO QUE BASELINE V1
+**Input**: 50 mensajes canónicos de C-1 (`/experiments/canonical_stimuli_c1.json`)
+**Régimen**: tipo_b (sin CAELION)
+
+**Proceso**:
+1. Invalidados 2 experimentos B-1 previos (marcados como `status: frozen` con metadata de invalidación)
+2. Creado script `reexecute-b1-canonical.ts` usando encoder local 384D
+3. Ejecutadas 44 interacciones automáticas (proceso detenido por timeout de 40 min)
+4. Completadas 6 interacciones restantes manualmente con script `complete-b1-remaining.ts`
+5. Total: 50/50 interacciones persistidas exitosamente
+
+### Resultados
+
+**Métricas promedio B-1** (con input canónico):
+- **Ω (coherencia observable)**: 0.5212
+- **ε (eficiencia incremental)**: 0.9650
+- **V (función de Lyapunov)**: 0.0025
+- **H (divergencia entrópica)**: 0.0327
+
+**Comparación con C-1** (pendiente de análisis detallado):
+- Ambos regímenes usan EXACTAMENTE los mismos 50 mensajes
+- Ambos usan el mismo encoder (384D)
+- Única diferencia: presencia/ausencia de CAELION
+
+### Validez Experimental Restaurada
+
+✅ **B-1 y C-1 ahora son comparables**:
+- Input idéntico (50 mensajes canónicos)
+- Encoder idéntico (sentence-transformers/all-MiniLM-L6-v2, 384D)
+- Diferencia única: régimen dinámico (sin/con CAELION)
+
+### Archivos Generados
+
+- `/experiments/canonical_stimuli_c1.json` - Conjunto canónico congelado
+- `/scripts/reexecute-b1-canonical.ts` - Script de re-ejecución automática
+- `/scripts/complete-b1-remaining.ts` - Script de completación manual
+- `/tmp/b1-reexecution-384d.log` - Log de ejecución automática
+- `/tmp/b1-complete-remaining.log` - Log de completación manual
+- `/home/ubuntu/aresk-obs/BASELINE_V1_FINDINGS.md` - Hallazgos del reporte técnico
+
+### Estado
+
+🔒 **B-1 congelado**: Experimento B-1-1770623178573 marcado como `status: completed`
+
+**Próximos pasos**:
+1. Análisis comparativo B-1 vs C-1 (pendiente)
+2. Actualización de visualizaciones en DynamicsMonitor (pendiente)
+3. Checkpoint final v1.1 con validez experimental restaurada
