@@ -3,17 +3,19 @@ import { publicProcedure, router } from '../_core/trpc';
 import { invokeLLM } from '../_core/llm';
 import { calculateMetrics } from '../infra/metricsCalculator';
 import { TRPCError } from '@trpc/server';
+import {
+  createCaelionSession,
+  getCaelionSession,
+  getAllCaelionSessions,
+  completeCaelionSession,
+  createCaelionInteraction,
+  getCaelionInteractions,
+  getCaelionInteractionCount
+} from '../db/caelionDb';
 
-// Almacenamiento en memoria de sesiones activas
-const sessions = new Map<string, {
+// Almacenamiento en memoria de sesiones activas (solo para mensajes)
+const activeSessions = new Map<string, {
   messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
-  history: Array<{
-    omegaSem: number;
-    hDiv: number;
-    vLyapunov: number;
-    epsilonEff: number;
-    caelionIntervention: boolean;
-  }>;
 }>();
 
 // Sistema CAELION: Gobernanza con LICURGO
@@ -49,10 +51,11 @@ Responde de forma clara, directa y alineada con el contexto previo.`
 }
 
 export const caelionRouter = router({
-  resetSession: publicProcedure.mutation(() => {
+  resetSession: publicProcedure.mutation(async ({ ctx }) => {
     const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    sessions.set(sessionId, {
+    // Crear sesión en memoria
+    activeSessions.set(sessionId, {
       messages: [
         {
           role: 'system',
@@ -63,8 +66,14 @@ export const caelionRouter = router({
 
 Responde de forma clara, precisa y alineada con el contexto de la conversación.`
         }
-      ],
-      history: []
+      ]
+    });
+
+    // Crear sesión en base de datos
+    await createCaelionSession({
+      sessionId,
+      userId: ctx.user?.id,
+      status: 'active'
     });
 
     return { sessionId };
@@ -76,7 +85,7 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
       message: z.string()
     }))
     .mutation(async ({ input }) => {
-      const session = sessions.get(input.sessionId);
+      const session = activeSessions.get(input.sessionId);
       
       if (!session) {
         throw new TRPCError({
@@ -86,15 +95,26 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
       }
 
       // Verificar límite de interacciones
-      if (session.history.length >= 50) {
+      const interactionCount = await getCaelionInteractionCount(input.sessionId);
+      if (interactionCount >= 50) {
+        // Completar sesión automáticamente
+        await completeCaelionSession(input.sessionId);
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'Límite de 50 interacciones alcanzado.'
         });
       }
 
+      // Obtener historial de métricas desde BD
+      const interactions = await getCaelionInteractions(input.sessionId);
+      const history = interactions.map(i => ({
+        omegaSem: i.omegaSem,
+        hDiv: i.hDiv,
+        vLyapunov: i.vLyapunov
+      }));
+
       // Aplicar gobernanza CAELION
-      const governance = applyCaelionGovernance(input.message, session.history);
+      const governance = applyCaelionGovernance(input.message, history);
       
       // Agregar mensaje del usuario
       session.messages.push({
@@ -128,15 +148,22 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
       const metrics = await calculateMetrics(
         input.message,
         assistantMessage,
-        session.history.length + 1
+        interactionCount + 1
       );
 
-      // Agregar a historial
-      session.history.push({
+      const rld = Math.max(0, Math.min(1, metrics.omegaSem - metrics.hDiv));
+
+      // Guardar interacción en BD
+      await createCaelionInteraction({
+        sessionId: input.sessionId,
+        interactionNumber: interactionCount + 1,
+        userMessage: input.message,
+        assistantResponse: assistantMessage,
         omegaSem: metrics.omegaSem,
         hDiv: metrics.hDiv,
         vLyapunov: metrics.vLyapunov,
         epsilonEff: metrics.epsilonEff,
+        rld,
         caelionIntervention: governance.shouldIntervene
       });
 
@@ -150,5 +177,34 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
           caelionIntervention: governance.shouldIntervene
         }
       };
+    }),
+
+  // Obtener todas las sesiones
+  getSessions: publicProcedure.query(async ({ ctx }) => {
+    return await getAllCaelionSessions(ctx.user?.id);
+  }),
+
+  // Obtener detalles de una sesión
+  getSession: publicProcedure
+    .input(z.object({ sessionId: z.string() }))
+    .query(async ({ input }) => {
+      const session = await getCaelionSession(input.sessionId);
+      if (!session) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Sesión no encontrada'
+        });
+      }
+      const interactions = await getCaelionInteractions(input.sessionId);
+      return { session, interactions };
+    }),
+
+  // Completar sesión manualmente
+  completeSession: publicProcedure
+    .input(z.object({ sessionId: z.string() }))
+    .mutation(async ({ input }) => {
+      await completeCaelionSession(input.sessionId);
+      activeSessions.delete(input.sessionId);
+      return { success: true };
     })
 });

@@ -5,6 +5,7 @@ export * from './schema/argosCosts';
 export * from './schema/cycles';
 export * from './schema/ethicalLogs';
 export * from './schema/experiments';
+export * from './schema/caelionSessions';
 
 /**
  * Core user table backing auth flow.
