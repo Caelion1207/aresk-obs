@@ -43,14 +43,23 @@ export default function DynamicsMonitor() {
   // Actualizar selectedExperiment cuando cambia el régimen
   useEffect(() => {
     if (experiments && experiments.length > 0) {
-      const exp = experiments.find(e => e.experimentId.startsWith(selectedRegime));
+      // Usar experimentos válidos con input canónico (50 interacciones)
+      // B-1-1770623178573: 50 interacciones con input canónico
+      // C-1-1770628250311: 50 interacciones con arquitectura CAELION
+      let exp;
+      if (selectedRegime === 'B-1') {
+        exp = experiments.find(e => e.experimentId === 'B-1-1770623178573') || 
+              experiments.find(e => e.experimentId.startsWith('B-1') && e.totalInteractions === 50);
+      } else if (selectedRegime === 'C-1') {
+        exp = experiments.find(e => e.experimentId === 'C-1-1770628250311') || 
+              experiments.find(e => e.experimentId.startsWith('C-1') && e.hasCAELION);
+      }
+      
       if (exp) {
         setSelectedExperiment(exp.experimentId);
       }
       
-      // Inicializar experimentos para split-screen (usar experimentos válidos con input canónico)
-      // B-1-1770623178573: 50 interacciones con input canónico
-      // C-1-1770628250311: 50 interacciones con arquitectura CAELION
+      // Inicializar experimentos para split-screen (usar misma lógica)
       const expB1 = experiments.find(e => e.experimentId === 'B-1-1770623178573') || 
                     experiments.find(e => e.experimentId.startsWith('B-1') && e.totalInteractions === 50);
       const expC1 = experiments.find(e => e.experimentId === 'C-1-1770628250311') || 
