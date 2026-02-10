@@ -216,7 +216,7 @@
 - [x] Verificar que split-screen carga B-1-1770623178573 vs C-1-1770628250311
 - [x] Documentar aclaración: RLD se extrae de arquitecturas de operadores (no calculada directamente por ARESK-OBS)
 - [x] Actualizar INSTRUMENT_CONTRACT.md con aclaración sobre RLD
-- [ ] Crear checkpoint final con DynamicsMonitor actualizado
+- [x] Crear checkpoint final con DynamicsMonitor actualizado
 
 ### Problema Detectado
 
@@ -231,3 +231,26 @@
 - ✅ Solo actualizar selector de experimentos
 
 **Objetivo**: Comparación visual válida B-1 vs C-1-CAELION en split-screen
+
+
+---
+
+## CORRECCIÓN QUERY B-1 EN SPLIT-SCREEN
+
+**Problema**: B-1-1770623178573 solo muestra 5 interacciones en split-screen (debería mostrar 50)
+
+### Tareas
+
+- [x] Investigar código de split-screen en DynamicsMonitor.tsx
+- [x] Identificar query o lógica de filtrado de interacciones B-1 (líneas 51-59)
+- [x] Verificar experimentId correcto en query (B-1-1770623178573)
+- [x] Corregir filtrado o renderizado de interacciones (usar ID específico o filtros)
+- [x] Verificar que B-1 muestra 50 interacciones en split-screen
+- [ ] Crear checkpoint con corrección aplicada
+
+**Restricciones**:
+- ❌ NO modificar datos en BD
+- ❌ NO cambiar lógica de C-1 (funciona correctamente)
+- ✅ Solo corregir query de B-1
+
+**Objetivo**: Comparación visual válida B-1 (50 interacciones) vs C-1-CAELION (50 interacciones)

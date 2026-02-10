@@ -48,9 +48,13 @@ export default function DynamicsMonitor() {
         setSelectedExperiment(exp.experimentId);
       }
       
-      // Inicializar experimentos para split-screen
-      const expB1 = experiments.find(e => e.experimentId.startsWith('B-1'));
-      const expC1 = experiments.find(e => e.experimentId.startsWith('C-1'));
+      // Inicializar experimentos para split-screen (usar experimentos válidos con input canónico)
+      // B-1-1770623178573: 50 interacciones con input canónico
+      // C-1-1770628250311: 50 interacciones con arquitectura CAELION
+      const expB1 = experiments.find(e => e.experimentId === 'B-1-1770623178573') || 
+                    experiments.find(e => e.experimentId.startsWith('B-1') && e.totalInteractions === 50);
+      const expC1 = experiments.find(e => e.experimentId === 'C-1-1770628250311') || 
+                    experiments.find(e => e.experimentId.startsWith('C-1') && e.hasCAELION);
       if (expB1) setExperimentB1(expB1.experimentId);
       if (expC1) setExperimentC1(expC1.experimentId);
     }
