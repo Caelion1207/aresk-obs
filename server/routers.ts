@@ -28,6 +28,7 @@ import {
 import { invokeLLM } from "./_core/llm";
 import { calculateMetricsSimplified } from "./semantic_bridge";
 // import { calculateMetricsExactCAELION, buildReferenceText } from "./semantic_bridge_exact";
+import { caelionRouter } from "./routers/caelion";
 import { analyzeSemanticPolarity, calculateEffectiveField } from "./semanticPolarity";
 import { calculateModifiedLyapunov, normalizeModifiedLyapunov } from "./lyapunovModified";
 import { applyLicurgoControl, validateMetrics } from "./licurgoControl";
@@ -49,6 +50,7 @@ const auditedProcedure = protectedProcedure.use(auditMiddleware).use(rateLimitMi
 
 export const appRouter = router({
   system: systemRouter,
+  caelion: caelionRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

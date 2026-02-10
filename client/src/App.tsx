@@ -12,6 +12,7 @@ import ResearchPage from '@/pages/ResearchPage';
 import CampoPage from '@/pages/CampoPage';
 import MarcoPage from '@/pages/MarcoPage';
 import InstrumentoPage from '@/pages/InstrumentoPage';
+import CoreDashboard from '@/pages/CoreDashboard';
 
 function Router() {
   return (
@@ -19,6 +20,7 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/experimento/comparacion"} component={ComparacionExperimentos} />
       <Route path={"/experimento/dynamics"} component={DynamicsMonitor} />
+      <Route path={"/core"} component={CoreDashboard} />
 
       <Route path="/investigacion" component={ResearchPage} />
       <Route path="/campo" component={CampoPage} />
