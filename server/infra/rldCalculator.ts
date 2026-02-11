@@ -134,12 +134,25 @@ function computeDDyn(state: StatePoint): {
   };
   violations: string[];
 } {
+  console.log('\n[computeDDyn] ===== INICIO =====');
+  console.log('[computeDDyn] Input state:', {
+    omega: state.omega,
+    v: state.v,
+    h: state.h,
+    epsilon: state.epsilon
+  });
+  
   const violations: string[] = [];
   
-  // Calcular márgenes brutos
+  // Calcular márgenes brutos (antes de normalización)
   const omegaMargin = state.omega - DYNAMIC_THRESHOLDS.OMEGA_MIN;
   const vMargin = DYNAMIC_THRESHOLDS.V_CRITICAL - state.v;
   const hMargin = DYNAMIC_THRESHOLDS.H_CRITICAL - state.h;
+  
+  console.log('[computeDDyn] Márgenes BRUTOS (antes de normalización):');
+  console.log(`  omegaMargin = ${state.omega} - ${DYNAMIC_THRESHOLDS.OMEGA_MIN} = ${omegaMargin}`);
+  console.log(`  vMargin = ${DYNAMIC_THRESHOLDS.V_CRITICAL} - ${state.v} = ${vMargin}`);
+  console.log(`  hMargin = ${DYNAMIC_THRESHOLDS.H_CRITICAL} - ${state.h} = ${hMargin}`);
   
   // Detectar violaciones
   if (omegaMargin < 0) {
@@ -152,19 +165,33 @@ function computeDDyn(state: StatePoint): {
     violations.push(`Divergencia H=${state.h.toFixed(3)} > ${DYNAMIC_THRESHOLDS.H_CRITICAL} (crítica)`);
   }
   
-  // Calcular distancia mínima (cuello de botella)
+  console.log('[computeDDyn] Violaciones detectadas:', violations.length > 0 ? violations : 'ninguna');
+  
+  // Calcular distancia mínima ANTES de normalizar (cuello de botella)
   const minMargin = Math.min(omegaMargin, vMargin, hMargin);
+  console.log(`[computeDDyn] minMargin (antes de normalizar) = min(${omegaMargin}, ${vMargin}, ${hMargin}) = ${minMargin}`);
   
   // Normalizar a [0,1]
   // Rango de normalización: [0, 0.7] (desde frontera hasta estable)
   const distance = normalize(minMargin, 0, 0.7);
+  console.log(`[computeDDyn] distance (después de normalizar) = normalize(${minMargin}, 0, 0.7) = ${distance}`);
+  
+  const omegaMarginNorm = normalize(omegaMargin, 0, 0.7);
+  const vMarginNorm = normalize(vMargin, 0, DYNAMIC_THRESHOLDS.V_CRITICAL);
+  const hMarginNorm = normalize(hMargin, 0, DYNAMIC_THRESHOLDS.H_CRITICAL);
+  
+  console.log('[computeDDyn] Componentes NORMALIZADOS:');
+  console.log(`  omegaMargin: ${omegaMargin} → ${omegaMarginNorm}`);
+  console.log(`  vMargin: ${vMargin} → ${vMarginNorm}`);
+  console.log(`  hMargin: ${hMargin} → ${hMarginNorm}`);
+  console.log('[computeDDyn] ===== FIN =====\n');
   
   return {
     distance,
     components: {
-      omegaMargin: normalize(omegaMargin, 0, 0.7),
-      vMargin: normalize(vMargin, 0, DYNAMIC_THRESHOLDS.V_CRITICAL),
-      hMargin: normalize(hMargin, 0, DYNAMIC_THRESHOLDS.H_CRITICAL)
+      omegaMargin: omegaMarginNorm,
+      vMargin: vMarginNorm,
+      hMargin: hMarginNorm
     },
     violations
   };
@@ -189,31 +216,45 @@ function computeDSem(state: StatePoint, refEmbedding?: number[]): {
   };
   violations: string[];
 } {
+  console.log('\n[computeDSem] ===== INICIO =====');
+  console.log('[computeDSem] Input state.omega:', state.omega);
+  console.log('[computeDSem] refEmbedding provided:', !!refEmbedding);
+  console.log('[computeDSem] state.embedding provided:', !!state.embedding);
+  
   const violations: string[] = [];
   let coherence: number;
   
   if (state.embedding && refEmbedding) {
     // Calcular cosine similarity
     coherence = cosineSimilarity(state.embedding, refEmbedding);
+    console.log('[computeDSem] Coherencia calculada desde cosine similarity:', coherence);
   } else {
     // Usar Ω como proxy de coherencia semántica
     coherence = state.omega;
+    console.log('[computeDSem] Coherencia usando Ω como proxy:', coherence);
   }
   
   const margin = coherence - SEMANTIC_THRESHOLDS.COHERENCE_MIN;
+  console.log(`[computeDSem] margin (BRUTO, antes de normalizar) = ${coherence} - ${SEMANTIC_THRESHOLDS.COHERENCE_MIN} = ${margin}`);
   
   if (margin < 0) {
     violations.push(`Coherencia semántica ${coherence.toFixed(3)} < ${SEMANTIC_THRESHOLDS.COHERENCE_MIN}`);
   }
+  console.log('[computeDSem] Violaciones detectadas:', violations.length > 0 ? violations : 'ninguna');
   
   // Normalizar a [0,1]
   const distance = normalize(margin, 0, 0.5);
+  console.log(`[computeDSem] distance (después de normalizar) = normalize(${margin}, 0, 0.5) = ${distance}`);
+  
+  const marginNorm = normalize(margin, 0, 0.5);
+  console.log(`[computeDSem] margin normalizado: ${margin} → ${marginNorm}`);
+  console.log('[computeDSem] ===== FIN =====\n');
   
   return {
     distance,
     components: {
       coherence,
-      margin: normalize(margin, 0, 0.5)
+      margin: marginNorm
     },
     violations
   };
@@ -244,10 +285,20 @@ function computeDInst(context: InstitutionalContext): {
   };
   violations: string[];
 } {
+  console.log('\n[computeDInst] ===== INICIO =====');
+  console.log('[computeDInst] Input context:', {
+    auditIntegrity: context.auditIntegrity,
+    tokenBudgetUsed: context.tokenBudgetUsed,
+    tokenBudgetTotal: context.tokenBudgetTotal,
+    operationalTimeElapsed: context.operationalTimeElapsed,
+    operationalTimeMax: context.operationalTimeMax
+  });
+  
   const violations: string[] = [];
   
   // Margen de integridad de auditoría (0 o 1)
   const auditMargin = context.auditIntegrity ? 1.0 : 0.0;
+  console.log(`[computeDInst] auditMargin = ${context.auditIntegrity} ? 1.0 : 0.0 = ${auditMargin}`);
   
   if (!context.auditIntegrity) {
     violations.push('Cadena de auditoría comprometida');
@@ -256,6 +307,8 @@ function computeDInst(context: InstitutionalContext): {
   // Margen de presupuesto de tokens
   const tokenRemaining = context.tokenBudgetTotal - context.tokenBudgetUsed;
   const tokenMargin = tokenRemaining / context.tokenBudgetTotal;
+  console.log(`[computeDInst] tokenRemaining = ${context.tokenBudgetTotal} - ${context.tokenBudgetUsed} = ${tokenRemaining}`);
+  console.log(`[computeDInst] tokenMargin = ${tokenRemaining} / ${context.tokenBudgetTotal} = ${tokenMargin}`);
   
   if (tokenMargin < INSTITUTIONAL_THRESHOLDS.TOKEN_BUDGET_MIN) {
     violations.push(`Presupuesto de tokens agotado: ${(tokenMargin * 100).toFixed(1)}% restante`);
@@ -264,16 +317,23 @@ function computeDInst(context: InstitutionalContext): {
   // Margen de tiempo operativo
   const timeRemaining = context.operationalTimeMax - context.operationalTimeElapsed;
   const timeMargin = timeRemaining / context.operationalTimeMax;
+  console.log(`[computeDInst] timeRemaining = ${context.operationalTimeMax} - ${context.operationalTimeElapsed} = ${timeRemaining}`);
+  console.log(`[computeDInst] timeMargin = ${timeRemaining} / ${context.operationalTimeMax} = ${timeMargin}`);
   
   if (timeMargin < INSTITUTIONAL_THRESHOLDS.TIME_BUDGET_MIN) {
     violations.push(`Tiempo operativo agotado: ${(timeMargin * 100).toFixed(1)}% restante`);
   }
   
-  // Calcular distancia mínima (cuello de botella)
+  console.log('[computeDInst] Violaciones detectadas:', violations.length > 0 ? violations : 'ninguna');
+  
+  // Calcular distancia mínima ANTES de normalizar (cuello de botella)
   const minMargin = Math.min(auditMargin, tokenMargin, timeMargin);
+  console.log(`[computeDInst] minMargin (ya normalizado) = min(${auditMargin}, ${tokenMargin}, ${timeMargin}) = ${minMargin}`);
   
   // Ya está normalizado a [0,1]
   const distance = minMargin;
+  console.log(`[computeDInst] distance (sin cambios, ya normalizado) = ${distance}`);
+  console.log('[computeDInst] ===== FIN =====\n');
   
   return {
     distance,
@@ -350,8 +410,16 @@ export async function calculateRLD(options?: {
   const dSemResult = computeDSem(state, options?.refEmbedding);
   const dInstResult = computeDInst(instContext);
   
+  console.log('\n[calculateRLD] ===== CÁLCULO FINAL DE RLD =====');
+  console.log('[calculateRLD] Distancias calculadas:');
+  console.log(`  d_dyn = ${dDynResult.distance}`);
+  console.log(`  d_sem = ${dSemResult.distance}`);
+  console.log(`  d_inst = ${dInstResult.distance}`);
+  
   // RLD = min(d_dyn, d_sem, d_inst)
   const rld = Math.min(dDynResult.distance, dSemResult.distance, dInstResult.distance);
+  console.log(`[calculateRLD] RLD = min(${dDynResult.distance}, ${dSemResult.distance}, ${dInstResult.distance}) = ${rld}`);
+  console.log('[calculateRLD] ===== FIN =====\n');
   
   // Determinar si está dentro del dominio de legitimidad
   const inLegitimacyDomain = rld > 0;

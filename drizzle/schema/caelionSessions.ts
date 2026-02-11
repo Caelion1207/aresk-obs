@@ -17,6 +17,8 @@ export const caelionSessions = mysqlTable("caelionSessions", {
   interventionCount: int("interventionCount").default(0).notNull(),
   status: mysqlEnum("status", ["active", "completed", "abandoned"]).default("active").notNull(),
   notes: text("notes"),
+  caelionEnabled: boolean("caelionEnabled").default(true).notNull(), // Flag para activar/desactivar CAELION-RLD
+  currentRLD: float("currentRLD").default(2.0), // RLD actual de la sesión (inicia en 2.0)
 });
 
 export type CaelionSession = typeof caelionSessions.$inferSelect;

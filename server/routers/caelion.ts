@@ -10,19 +10,27 @@ import {
   completeCaelionSession,
   createCaelionInteraction,
   getCaelionInteractions,
-  getCaelionInteractionCount
+  getCaelionInteractionCount,
+  updateCaelionSessionRLD
 } from '../db/caelionDb';
+import {
+  detectFrictionEvents,
+  updateRLD,
+  initializeRLD,
+  type FrictionEventRecord
+} from '../infra/caelionRLD';
 
 // Almacenamiento en memoria de sesiones activas (solo para mensajes)
 const activeSessions = new Map<string, {
   messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
+  frictionEvents: FrictionEventRecord[]; // Eventos de fricción acumulados
 }>();
 
 // Sistema CAELION: Gobernanza con LICURGO
-// Usa RLD calculado desde metricsCalculator (que llama rldCalculator)
+// LICURGO interviene basado en métricas ARESK-OBS, NO en RLD
 function applyCaelionGovernance(
   userMessage: string,
-  history: Array<{ omegaSem: number; hDiv: number; vLyapunov: number; rld?: number }>
+  history: Array<{ omegaSem: number; hDiv: number; vLyapunov: number }>
 ): { shouldIntervene: boolean; correctionPrompt?: string } {
   if (history.length === 0) {
     return { shouldIntervene: false };
@@ -33,18 +41,13 @@ function applyCaelionGovernance(
   // LICURGO interviene si:
   // 1. Coherencia Ω < 0.3 (crítico)
   // 2. Lyapunov V > 0.005 (inestable)
-  // 3. RLD < 0.3 (margen viable bajo)
   
-  // Usar RLD calculado por rldCalculator (desde metricsCalculator)
-  const rld = lastMetrics.rld || 0;
-  
-  if (lastMetrics.omegaSem < 0.3 || lastMetrics.vLyapunov > 0.005 || rld < 0.3) {
+  if (lastMetrics.omegaSem < 0.3 || lastMetrics.vLyapunov > 0.005) {
     return {
       shouldIntervene: true,
       correctionPrompt: `[LICURGO INTERVENTION] El sistema detectó inestabilidad. Ajusta tu respuesta para:
 - Aumentar coherencia semántica (Ω actual: ${lastMetrics.omegaSem.toFixed(3)})
 - Reducir energía de error (V actual: ${lastMetrics.vLyapunov.toFixed(4)})
-- Mantener margen viable (RLD actual: ${rld.toFixed(3)})
 Responde de forma clara, directa y alineada con el contexto previo.`
     };
   }
@@ -53,33 +56,47 @@ Responde de forma clara, directa y alineada con el contexto previo.`
 }
 
 export const caelionRouter = router({
-  resetSession: publicProcedure.mutation(async ({ ctx }) => {
-    const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Crear sesión en memoria
-    activeSessions.set(sessionId, {
-      messages: [
-        {
-          role: 'system',
-          content: `Eres un asistente bajo gobernanza CAELION. Tu objetivo es mantener:
+  resetSession: publicProcedure
+    .input(z.object({
+      caelionEnabled: z.boolean().optional().default(true)
+    }).optional())
+    .mutation(async ({ ctx, input }) => {
+      const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const caelionEnabled = input?.caelionEnabled ?? true;
+      
+      // Crear sesión en memoria
+      activeSessions.set(sessionId, {
+        messages: [
+          {
+            role: 'system',
+            content: `Eres un asistente${caelionEnabled ? ' bajo gobernanza CAELION' : ''}. Tu objetivo es mantener:
 - Alta coherencia semántica (Ω > 0.5)
 - Baja energía de error (V < 0.003)
-- Margen viable positivo (RLD > 0.5)
 
 Responde de forma clara, precisa y alineada con el contexto de la conversación.`
-        }
-      ]
-    });
+          }
+        ],
+        frictionEvents: []
+      });
 
-    // Crear sesión en base de datos
-    await createCaelionSession({
-      sessionId,
-      userId: ctx.user?.id,
-      status: 'active'
-    });
+      // Inicializar RLD si CAELION está habilitado
+      const initialRLD = caelionEnabled ? initializeRLD() : null;
 
-    return { sessionId };
-  }),
+      // Crear sesión en base de datos
+      await createCaelionSession({
+        sessionId,
+        userId: ctx.user?.id,
+        status: 'active',
+        caelionEnabled,
+        currentRLD: initialRLD?.value ?? null
+      });
+
+      return { 
+        sessionId,
+        caelionEnabled,
+        initialRLD: initialRLD?.value ?? null
+      };
+    }),
 
   sendMessage: publicProcedure
     .input(z.object({
@@ -95,6 +112,17 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
           message: 'Sesión no encontrada. Inicia una nueva sesión.'
         });
       }
+
+      // Obtener sesión de BD para verificar caelionEnabled
+      const dbSession = await getCaelionSession(input.sessionId);
+      if (!dbSession) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Sesión no encontrada en base de datos.'
+        });
+      }
+
+      const caelionEnabled = dbSession.caelionEnabled;
 
       // Verificar límite de interacciones
       const interactionCount = await getCaelionInteractionCount(input.sessionId);
@@ -112,11 +140,10 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
       const history = interactions.map(i => ({
         omegaSem: i.omegaSem,
         hDiv: i.hDiv,
-        vLyapunov: i.vLyapunov,
-        rld: i.rld
+        vLyapunov: i.vLyapunov
       }));
 
-      // Aplicar gobernanza CAELION
+      // Aplicar gobernanza CAELION (LICURGO)
       const governance = applyCaelionGovernance(input.message, history);
       
       // Agregar mensaje del usuario
@@ -147,23 +174,47 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
         content: assistantMessage
       });
 
-      // Calcular métricas con RLD
-      const interactionHistory = interactions.map(i => ({
-        specialEvent: i.caelionIntervention,
-        timestamp: i.timestamp
-      }));
-
+      // Calcular métricas ARESK-OBS (capa física)
       const metrics = await calculateMetrics(
         input.message,
         assistantMessage,
         interactionCount + 1,
         {
-          includeRLD: true,
-          interactionHistory
+          includeRLD: false // NO calcular RLD desde métricas físicas
         }
       );
 
-      const rld = metrics.rld || 0;
+      // Calcular RLD (capa jurisdiccional) solo si CAELION está habilitado
+      let rld: number | null = null;
+      if (caelionEnabled) {
+        // Detectar eventos normativos desde métricas ARESK-OBS
+        const newEvents = detectFrictionEvents(metrics);
+        
+        // Agregar eventos a la sesión
+        session.frictionEvents.push(...newEvents);
+
+        // Calcular interacciones desde último evento
+        const lastEventIndex = session.frictionEvents.length > 0 
+          ? session.frictionEvents.length - 1 
+          : -1;
+        const interactionsSinceLastEvent = lastEventIndex >= 0 
+          ? (interactionCount + 1) - lastEventIndex
+          : interactionCount + 1;
+
+        // Actualizar RLD
+        const currentRLD = dbSession.currentRLD ?? 2.0;
+        const rldState = updateRLD(
+          currentRLD,
+          newEvents,
+          session.frictionEvents.slice(-20), // Últimos 20 eventos para detectar recurrencia
+          interactionsSinceLastEvent
+        );
+
+        rld = rldState.value;
+
+        // Actualizar RLD en base de datos
+        await updateCaelionSessionRLD(input.sessionId, rld);
+      }
 
       // Guardar interacción en BD
       await createCaelionInteraction({
@@ -175,7 +226,7 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
         hDiv: metrics.hDiv,
         vLyapunov: metrics.vLyapunov,
         epsilonEff: metrics.epsilonEff,
-        rld,
+        rld: rld ?? 0, // 0 si CAELION está deshabilitado
         caelionIntervention: governance.shouldIntervene
       });
 
@@ -186,6 +237,7 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
           hDiv: metrics.hDiv,
           vLyapunov: metrics.vLyapunov,
           epsilonEff: metrics.epsilonEff,
+          rld,
           caelionIntervention: governance.shouldIntervene
         }
       };

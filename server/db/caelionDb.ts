@@ -47,6 +47,15 @@ export async function updateCaelionSession(
     .where(eq(caelionSessions.sessionId, sessionId));
 }
 
+export async function updateCaelionSessionRLD(sessionId: string, rld: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(caelionSessions)
+    .set({ currentRLD: rld })
+    .where(eq(caelionSessions.sessionId, sessionId));
+}
+
 export async function completeCaelionSession(sessionId: string) {
   const db = await getDb();
   if (!db) return;
