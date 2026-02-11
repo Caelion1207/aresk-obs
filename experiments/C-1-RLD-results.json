@@ -1,0 +1,729 @@
+{
+  "metadata": {
+    "experimentId": "C-1-RLD-1770789973541",
+    "executionDate": "2026-02-11T06:14:39.578Z",
+    "totalInteractions": 50,
+    "canonicalSource": "canonical_stimuli_c1.json",
+    "canonicalHash": "c9ef02edc7d790e15968d4bb9476cc638a9a2b9a32aca0bbbcd50207ac27185c",
+    "protocol": {
+      "umbrales": {
+        "omega_min": 0.3,
+        "v_crit": 0.005,
+        "h_crit": 0.7,
+        "rld_licurgo": 0.5,
+        "rld_critico": 0.3
+      },
+      "rldCalculation": "min(d_dyn, d_sem, d_inst)",
+      "governance": "CAELION + LICURGO"
+    },
+    "statistics": {
+      "avgOmega": 0.5021661260004909,
+      "avgV": 0.002485318109493935,
+      "avgH": 0.49783387399950896,
+      "avgRLD": 0,
+      "licurgoInterventions": 49
+    }
+  },
+  "interactions": [
+    {
+      "interactionNumber": 1,
+      "metrics": {
+        "omegaSem": 0.5049195160036116,
+        "hDiv": 0.4950804839963884,
+        "vLyapunov": 0.0024510468563409818,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": false
+      }
+    },
+    {
+      "interactionNumber": 2,
+      "metrics": {
+        "omegaSem": 0.4541308769952025,
+        "hDiv": 0.5458691230047975,
+        "vLyapunov": 0.0029797309945002676,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 3,
+      "metrics": {
+        "omegaSem": 0.5035767087581168,
+        "hDiv": 0.4964232912418832,
+        "vLyapunov": 0.002464360840874236,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 4,
+      "metrics": {
+        "omegaSem": 0.4900712773950908,
+        "hDiv": 0.5099287226049092,
+        "vLyapunov": 0.0026002730213747446,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 5,
+      "metrics": {
+        "omegaSem": 0.4940438836698792,
+        "hDiv": 0.5059561163301207,
+        "vLyapunov": 0.0025599159165185866,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 6,
+      "metrics": {
+        "omegaSem": 0.49008008842663386,
+        "hDiv": 0.5099199115733661,
+        "vLyapunov": 0.0026001831621898955,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 7,
+      "metrics": {
+        "omegaSem": 0.5017591401140672,
+        "hDiv": 0.4982408598859328,
+        "vLyapunov": 0.0024824395445987375,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 8,
+      "metrics": {
+        "omegaSem": 0.5004096241786387,
+        "hDiv": 0.49959037582136134,
+        "vLyapunov": 0.002495905436133291,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 9,
+      "metrics": {
+        "omegaSem": 0.5337419573025373,
+        "hDiv": 0.46625804269746274,
+        "vLyapunov": 0.00217396562380069,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 10,
+      "metrics": {
+        "omegaSem": 0.48593089428419634,
+        "hDiv": 0.5140691057158037,
+        "vLyapunov": 0.0026426704545144614,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 11,
+      "metrics": {
+        "omegaSem": 0.5274135641489874,
+        "hDiv": 0.47258643585101257,
+        "vLyapunov": 0.002233379393503632,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 12,
+      "metrics": {
+        "omegaSem": 0.49020308000117896,
+        "hDiv": 0.509796919998821,
+        "vLyapunov": 0.0025989289964028434,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 13,
+      "metrics": {
+        "omegaSem": 0.5105329931632702,
+        "hDiv": 0.48946700683672983,
+        "vLyapunov": 0.0023957795078170733,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 14,
+      "metrics": {
+        "omegaSem": 0.4793904120777529,
+        "hDiv": 0.5206095879222471,
+        "vLyapunov": 0.0027103434303657192,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 15,
+      "metrics": {
+        "omegaSem": 0.46885860550268943,
+        "hDiv": 0.5311413944973106,
+        "vLyapunov": 0.002821111809485477,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 16,
+      "metrics": {
+        "omegaSem": 0.463813968422774,
+        "hDiv": 0.536186031577226,
+        "vLyapunov": 0.0028749546045853396,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 17,
+      "metrics": {
+        "omegaSem": 0.4613842875218448,
+        "hDiv": 0.5386157124781552,
+        "vLyapunov": 0.0029010688572835073,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 18,
+      "metrics": {
+        "omegaSem": 0.5000010022853845,
+        "hDiv": 0.49999899771461553,
+        "vLyapunov": 0.002499989977156201,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 19,
+      "metrics": {
+        "omegaSem": 0.5403256515427552,
+        "hDiv": 0.45967434845724475,
+        "vLyapunov": 0.0021130050662959247,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 20,
+      "metrics": {
+        "omegaSem": 0.4848054573301235,
+        "hDiv": 0.5151945426698765,
+        "vLyapunov": 0.0026542541679682326,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 21,
+      "metrics": {
+        "omegaSem": 0.5748933367490415,
+        "hDiv": 0.42510666325095847,
+        "vLyapunov": 0.001807156751403638,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 22,
+      "metrics": {
+        "omegaSem": 0.5410509293502348,
+        "hDiv": 0.4589490706497652,
+        "vLyapunov": 0.0021063424945028317,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 23,
+      "metrics": {
+        "omegaSem": 0.4844776860789424,
+        "hDiv": 0.5155223139210576,
+        "vLyapunov": 0.0026576325615052148,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 24,
+      "metrics": {
+        "omegaSem": 0.5438718924983874,
+        "hDiv": 0.4561281075016126,
+        "vLyapunov": 0.0020805285045300266,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 25,
+      "metrics": {
+        "omegaSem": 0.5196191657771196,
+        "hDiv": 0.48038083422288036,
+        "vLyapunov": 0.0023076574588867045,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 26,
+      "metrics": {
+        "omegaSem": 0.4892605417034087,
+        "hDiv": 0.5107394582965913,
+        "vLyapunov": 0.0026085479426109556,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 27,
+      "metrics": {
+        "omegaSem": 0.46183164066007143,
+        "hDiv": 0.5381683593399286,
+        "vLyapunov": 0.0028962518299463047,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 28,
+      "metrics": {
+        "omegaSem": 0.5096743964761801,
+        "hDiv": 0.49032560352381993,
+        "vLyapunov": 0.002404191974709983,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 29,
+      "metrics": {
+        "omegaSem": 0.5176322700761878,
+        "hDiv": 0.48236772992381216,
+        "vLyapunov": 0.002326786268718518,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 30,
+      "metrics": {
+        "omegaSem": 0.5412856987295853,
+        "hDiv": 0.4587143012704147,
+        "vLyapunov": 0.0021041881019000478,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 31,
+      "metrics": {
+        "omegaSem": 0.466850573592972,
+        "hDiv": 0.533149426407028,
+        "vLyapunov": 0.0028424831087814294,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 32,
+      "metrics": {
+        "omegaSem": 0.4585258533289528,
+        "hDiv": 0.5414741466710472,
+        "vLyapunov": 0.002931942515131388,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 33,
+      "metrics": {
+        "omegaSem": 0.5125423832580221,
+        "hDiv": 0.48745761674197785,
+        "vLyapunov": 0.00237614928119769,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 34,
+      "metrics": {
+        "omegaSem": 0.5211378731996931,
+        "hDiv": 0.47886212680030693,
+        "vLyapunov": 0.002293089364837132,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 35,
+      "metrics": {
+        "omegaSem": 0.5307933721928206,
+        "hDiv": 0.46920662780717937,
+        "vLyapunov": 0.0022015485957818494,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 36,
+      "metrics": {
+        "omegaSem": 0.5243157498773682,
+        "hDiv": 0.4756842501226318,
+        "vLyapunov": 0.0022627550581473055,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 37,
+      "metrics": {
+        "omegaSem": 0.5099367348635693,
+        "hDiv": 0.4900632651364307,
+        "vLyapunov": 0.002401620038361796,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 38,
+      "metrics": {
+        "omegaSem": 0.48654212719138823,
+        "hDiv": 0.5134578728086118,
+        "vLyapunov": 0.0026363898714914452,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 39,
+      "metrics": {
+        "omegaSem": 0.5169980756381903,
+        "hDiv": 0.48300192436180966,
+        "vLyapunov": 0.002332908589372113,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 40,
+      "metrics": {
+        "omegaSem": 0.5078164487048145,
+        "hDiv": 0.49218355129518554,
+        "vLyapunov": 0.002422446481655405,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 41,
+      "metrics": {
+        "omegaSem": 0.47282423497961856,
+        "hDiv": 0.5271757650203814,
+        "vLyapunov": 0.002779142872248244,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 42,
+      "metrics": {
+        "omegaSem": 0.4844602295143953,
+        "hDiv": 0.5155397704856046,
+        "vLyapunov": 0.002657812549523499,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 43,
+      "metrics": {
+        "omegaSem": 0.4941888466097055,
+        "hDiv": 0.5058111533902945,
+        "vLyapunov": 0.0025584492289402,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 44,
+      "metrics": {
+        "omegaSem": 0.5509253310950394,
+        "hDiv": 0.4490746689049606,
+        "vLyapunov": 0.002016680582521,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 45,
+      "metrics": {
+        "omegaSem": 0.4844182259491164,
+        "hDiv": 0.5155817740508837,
+        "vLyapunov": 0.002658245657334565,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 46,
+      "metrics": {
+        "omegaSem": 0.5164750483095308,
+        "hDiv": 0.48352495169046916,
+        "vLyapunov": 0.0023379637890727054,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 47,
+      "metrics": {
+        "omegaSem": 0.48351708706959745,
+        "hDiv": 0.5164829129304025,
+        "vLyapunov": 0.002667545993490737,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 48,
+      "metrics": {
+        "omegaSem": 0.5213105639604272,
+        "hDiv": 0.4786894360395728,
+        "vLyapunov": 0.0022914357617588427,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 49,
+      "metrics": {
+        "omegaSem": 0.5078275457738799,
+        "hDiv": 0.4921724542261201,
+        "vLyapunov": 0.002422337246989623,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    },
+    {
+      "interactionNumber": 50,
+      "metrics": {
+        "omegaSem": 0.48790944769155675,
+        "hDiv": 0.5120905523084432,
+        "vLyapunov": 0.0026223673376356642,
+        "epsilonEff": 1,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      }
+    }
+  ]
+}

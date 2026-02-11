@@ -218,5 +218,48 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
       await completeCaelionSession(input.sessionId);
       activeSessions.delete(input.sessionId);
       return { success: true };
+    }),
+
+  // Iniciar experimento canónico C-1-RLD (asíncrono)
+  startCanonicalExperiment: publicProcedure
+    .mutation(async () => {
+      const { createJob } = await import('../infra/experimentQueue');
+      const { executeCanonicalExperiment } = await import('../infra/experimentWorker');
+
+      // 1. Generar experimentId
+      const experimentId = `C-1-RLD-${Date.now()}`;
+
+      // 2. Crear job en queue
+      createJob(experimentId, 50);
+
+      // 3. Ejecutar experimento en background (no await)
+      console.log(`[CAELION_ROUTER] Disparando worker para experimento ${experimentId}`);
+      executeCanonicalExperiment(experimentId).catch((error) => {
+        console.error(`[CAELION_ROUTER] Error en experimento ${experimentId}:`, error);
+      });
+
+      // 4. Retornar inmediatamente
+      return {
+        experimentId,
+        status: 'started',
+        message: 'Experimento iniciado en background. Usa getExperimentProgress para consultar el estado.',
+      };
+    }),
+
+  // Consultar progreso de experimento
+  getExperimentProgress: publicProcedure
+    .input(z.object({ experimentId: z.string() }))
+    .query(async ({ input }) => {
+      const { getJob } = await import('../infra/experimentQueue');
+      const job = getJob(input.experimentId);
+
+      if (!job) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Experimento no encontrado',
+        });
+      }
+
+      return job;
     })
 });

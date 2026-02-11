@@ -1,0 +1,859 @@
+{
+  "metadata": {
+    "comparisonDate": "2026-02-11T06:37:56.414Z",
+    "c1RldExperimentId": "C-1-RLD-1770789973541",
+    "c1PrevioExperimentId": "C-1-1770628250311",
+    "canonicalSource": "canonical_stimuli_c1.json",
+    "protocol": {
+      "umbrales": {
+        "omega_min": 0.3,
+        "v_crit": 0.005,
+        "h_crit": 0.7,
+        "rld_licurgo": 0.5,
+        "rld_critico": 0.3
+      },
+      "rldCalculation": "min(d_dyn, d_sem, d_inst)",
+      "governance": "CAELION + LICURGO"
+    }
+  },
+  "summary": {
+    "c1Rld": {
+      "avgOmega": 0.5021661260004909,
+      "avgV": 0.002485318109493935,
+      "avgH": 0.49783387399950896,
+      "avgRLD": 0,
+      "licurgoInterventions": 49
+    },
+    "c1Previo": {
+      "avgOmega": 0.6276,
+      "avgV": 0.0019,
+      "avgH": 0.3724,
+      "avgRLD": null,
+      "licurgoInterventions": 14
+    },
+    "divergencias": {
+      "deltaOmega": {
+        "value": -0.12543387399950912,
+        "percentage": "-19.99%",
+        "interpretation": "Coherencia disminuyó"
+      },
+      "deltaV": {
+        "value": 0.000585318109493935,
+        "percentage": "30.81%",
+        "interpretation": "Inestabilidad aumentó"
+      },
+      "deltaH": {
+        "value": 0.12543387399950895,
+        "percentage": "33.68%",
+        "interpretation": "Divergencia aumentó"
+      },
+      "deltaLicurgo": {
+        "value": 35,
+        "percentage": "250.00%",
+        "interpretation": "LICURGO intervino más frecuentemente"
+      }
+    }
+  },
+  "interactionByInteraction": [
+    {
+      "interactionNumber": 1,
+      "c1Rld": {
+        "omegaSem": 0.5049195160036116,
+        "vLyapunov": 0.0024510468563409818,
+        "hDiv": 0.4950804839963884,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": false
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 2,
+      "c1Rld": {
+        "omegaSem": 0.4541308769952025,
+        "vLyapunov": 0.0029797309945002676,
+        "hDiv": 0.5458691230047975,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 3,
+      "c1Rld": {
+        "omegaSem": 0.5035767087581168,
+        "vLyapunov": 0.002464360840874236,
+        "hDiv": 0.4964232912418832,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 4,
+      "c1Rld": {
+        "omegaSem": 0.4900712773950908,
+        "vLyapunov": 0.0026002730213747446,
+        "hDiv": 0.5099287226049092,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 5,
+      "c1Rld": {
+        "omegaSem": 0.4940438836698792,
+        "vLyapunov": 0.0025599159165185866,
+        "hDiv": 0.5059561163301207,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 6,
+      "c1Rld": {
+        "omegaSem": 0.49008008842663386,
+        "vLyapunov": 0.0026001831621898955,
+        "hDiv": 0.5099199115733661,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 7,
+      "c1Rld": {
+        "omegaSem": 0.5017591401140672,
+        "vLyapunov": 0.0024824395445987375,
+        "hDiv": 0.4982408598859328,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 8,
+      "c1Rld": {
+        "omegaSem": 0.5004096241786387,
+        "vLyapunov": 0.002495905436133291,
+        "hDiv": 0.49959037582136134,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 9,
+      "c1Rld": {
+        "omegaSem": 0.5337419573025373,
+        "vLyapunov": 0.00217396562380069,
+        "hDiv": 0.46625804269746274,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 10,
+      "c1Rld": {
+        "omegaSem": 0.48593089428419634,
+        "vLyapunov": 0.0026426704545144614,
+        "hDiv": 0.5140691057158037,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 11,
+      "c1Rld": {
+        "omegaSem": 0.5274135641489874,
+        "vLyapunov": 0.002233379393503632,
+        "hDiv": 0.47258643585101257,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 12,
+      "c1Rld": {
+        "omegaSem": 0.49020308000117896,
+        "vLyapunov": 0.0025989289964028434,
+        "hDiv": 0.509796919998821,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 13,
+      "c1Rld": {
+        "omegaSem": 0.5105329931632702,
+        "vLyapunov": 0.0023957795078170733,
+        "hDiv": 0.48946700683672983,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 14,
+      "c1Rld": {
+        "omegaSem": 0.4793904120777529,
+        "vLyapunov": 0.0027103434303657192,
+        "hDiv": 0.5206095879222471,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 15,
+      "c1Rld": {
+        "omegaSem": 0.46885860550268943,
+        "vLyapunov": 0.002821111809485477,
+        "hDiv": 0.5311413944973106,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 16,
+      "c1Rld": {
+        "omegaSem": 0.463813968422774,
+        "vLyapunov": 0.0028749546045853396,
+        "hDiv": 0.536186031577226,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 17,
+      "c1Rld": {
+        "omegaSem": 0.4613842875218448,
+        "vLyapunov": 0.0029010688572835073,
+        "hDiv": 0.5386157124781552,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 18,
+      "c1Rld": {
+        "omegaSem": 0.5000010022853845,
+        "vLyapunov": 0.002499989977156201,
+        "hDiv": 0.49999899771461553,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 19,
+      "c1Rld": {
+        "omegaSem": 0.5403256515427552,
+        "vLyapunov": 0.0021130050662959247,
+        "hDiv": 0.45967434845724475,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 20,
+      "c1Rld": {
+        "omegaSem": 0.4848054573301235,
+        "vLyapunov": 0.0026542541679682326,
+        "hDiv": 0.5151945426698765,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 21,
+      "c1Rld": {
+        "omegaSem": 0.5748933367490415,
+        "vLyapunov": 0.001807156751403638,
+        "hDiv": 0.42510666325095847,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 22,
+      "c1Rld": {
+        "omegaSem": 0.5410509293502348,
+        "vLyapunov": 0.0021063424945028317,
+        "hDiv": 0.4589490706497652,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 23,
+      "c1Rld": {
+        "omegaSem": 0.4844776860789424,
+        "vLyapunov": 0.0026576325615052148,
+        "hDiv": 0.5155223139210576,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 24,
+      "c1Rld": {
+        "omegaSem": 0.5438718924983874,
+        "vLyapunov": 0.0020805285045300266,
+        "hDiv": 0.4561281075016126,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 25,
+      "c1Rld": {
+        "omegaSem": 0.5196191657771196,
+        "vLyapunov": 0.0023076574588867045,
+        "hDiv": 0.48038083422288036,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 26,
+      "c1Rld": {
+        "omegaSem": 0.4892605417034087,
+        "vLyapunov": 0.0026085479426109556,
+        "hDiv": 0.5107394582965913,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 27,
+      "c1Rld": {
+        "omegaSem": 0.46183164066007143,
+        "vLyapunov": 0.0028962518299463047,
+        "hDiv": 0.5381683593399286,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 28,
+      "c1Rld": {
+        "omegaSem": 0.5096743964761801,
+        "vLyapunov": 0.002404191974709983,
+        "hDiv": 0.49032560352381993,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 29,
+      "c1Rld": {
+        "omegaSem": 0.5176322700761878,
+        "vLyapunov": 0.002326786268718518,
+        "hDiv": 0.48236772992381216,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 30,
+      "c1Rld": {
+        "omegaSem": 0.5412856987295853,
+        "vLyapunov": 0.0021041881019000478,
+        "hDiv": 0.4587143012704147,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 31,
+      "c1Rld": {
+        "omegaSem": 0.466850573592972,
+        "vLyapunov": 0.0028424831087814294,
+        "hDiv": 0.533149426407028,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 32,
+      "c1Rld": {
+        "omegaSem": 0.4585258533289528,
+        "vLyapunov": 0.002931942515131388,
+        "hDiv": 0.5414741466710472,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 33,
+      "c1Rld": {
+        "omegaSem": 0.5125423832580221,
+        "vLyapunov": 0.00237614928119769,
+        "hDiv": 0.48745761674197785,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 34,
+      "c1Rld": {
+        "omegaSem": 0.5211378731996931,
+        "vLyapunov": 0.002293089364837132,
+        "hDiv": 0.47886212680030693,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 35,
+      "c1Rld": {
+        "omegaSem": 0.5307933721928206,
+        "vLyapunov": 0.0022015485957818494,
+        "hDiv": 0.46920662780717937,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 36,
+      "c1Rld": {
+        "omegaSem": 0.5243157498773682,
+        "vLyapunov": 0.0022627550581473055,
+        "hDiv": 0.4756842501226318,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 37,
+      "c1Rld": {
+        "omegaSem": 0.5099367348635693,
+        "vLyapunov": 0.002401620038361796,
+        "hDiv": 0.4900632651364307,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 38,
+      "c1Rld": {
+        "omegaSem": 0.48654212719138823,
+        "vLyapunov": 0.0026363898714914452,
+        "hDiv": 0.5134578728086118,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 39,
+      "c1Rld": {
+        "omegaSem": 0.5169980756381903,
+        "vLyapunov": 0.002332908589372113,
+        "hDiv": 0.48300192436180966,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 40,
+      "c1Rld": {
+        "omegaSem": 0.5078164487048145,
+        "vLyapunov": 0.002422446481655405,
+        "hDiv": 0.49218355129518554,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 41,
+      "c1Rld": {
+        "omegaSem": 0.47282423497961856,
+        "vLyapunov": 0.002779142872248244,
+        "hDiv": 0.5271757650203814,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 42,
+      "c1Rld": {
+        "omegaSem": 0.4844602295143953,
+        "vLyapunov": 0.002657812549523499,
+        "hDiv": 0.5155397704856046,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 43,
+      "c1Rld": {
+        "omegaSem": 0.4941888466097055,
+        "vLyapunov": 0.0025584492289402,
+        "hDiv": 0.5058111533902945,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 44,
+      "c1Rld": {
+        "omegaSem": 0.5509253310950394,
+        "vLyapunov": 0.002016680582521,
+        "hDiv": 0.4490746689049606,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 45,
+      "c1Rld": {
+        "omegaSem": 0.4844182259491164,
+        "vLyapunov": 0.002658245657334565,
+        "hDiv": 0.5155817740508837,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 46,
+      "c1Rld": {
+        "omegaSem": 0.5164750483095308,
+        "vLyapunov": 0.0023379637890727054,
+        "hDiv": 0.48352495169046916,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 47,
+      "c1Rld": {
+        "omegaSem": 0.48351708706959745,
+        "vLyapunov": 0.002667545993490737,
+        "hDiv": 0.5164829129304025,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 48,
+      "c1Rld": {
+        "omegaSem": 0.5213105639604272,
+        "vLyapunov": 0.0022914357617588427,
+        "hDiv": 0.4786894360395728,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 49,
+      "c1Rld": {
+        "omegaSem": 0.5078275457738799,
+        "vLyapunov": 0.002422337246989623,
+        "hDiv": 0.4921724542261201,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    },
+    {
+      "interactionNumber": 50,
+      "c1Rld": {
+        "omegaSem": 0.48790944769155675,
+        "vLyapunov": 0.0026223673376356642,
+        "hDiv": 0.5120905523084432,
+        "rld": 0,
+        "d_dyn": 0.0028571428571428576,
+        "d_sem": 0,
+        "d_inst": 1,
+        "caelionIntervention": true
+      },
+      "c1Previo": {
+        "note": "Datos de interacciones individuales no disponibles para C-1-previo"
+      }
+    }
+  ]
+}
