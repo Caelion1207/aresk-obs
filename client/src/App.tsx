@@ -15,6 +15,7 @@ import InstrumentoPage from '@/pages/InstrumentoPage';
 import CoreDashboard from '@/pages/CoreDashboard';
 import CaelionHistory from '@/pages/CaelionHistory';
 import CaelionSessionDetail from '@/pages/CaelionSessionDetail';
+import GovernanceDashboard from '@/pages/GovernanceDashboard';
 
 function Router() {
   return (
@@ -24,7 +25,8 @@ function Router() {
       <Route path={"/experimento/dynamics"} component={DynamicsMonitor} />
       <Route path={"/core"} component={CoreDashboard} />
       <Route path={"/caelion/history"} component={CaelionHistory} />
-      <Route path={"/caelion/session/:sessionId"} component={CaelionSessionDetail} />
+       <Route path="/caelion/session/:sessionId" component={CaelionSessionDetail} />
+      <Route path="/governance" component={GovernanceDashboard} />
 
       <Route path="/investigacion" component={ResearchPage} />
       <Route path="/campo" component={CampoPage} />

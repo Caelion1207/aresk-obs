@@ -1,11 +1,16 @@
 // Calculador de métricas para ARESK-OBS
 // Calcula Ω, H, V, ε desde embeddings semánticos
+// Ahora incluye RLD (Reserva de Legitimidad Dinámica)
+
+import { calculateRLD, type RLDCalculation } from './rldCalculator';
 
 interface Metrics {
   omegaSem: number;
   hDiv: number;
   vLyapunov: number;
   epsilonEff: number;
+  rld?: number; // Reserva de Legitimidad Dinámica
+  rldDetails?: RLDCalculation; // Detalles completos de RLD
 }
 
 // Función simplificada para calcular cosine similarity
@@ -44,7 +49,11 @@ function generateEmbedding(text: string): number[] {
 export async function calculateMetrics(
   userMessage: string,
   assistantResponse: string,
-  interactionNumber: number
+  interactionNumber: number,
+  options?: {
+    includeRLD?: boolean;
+    interactionHistory?: Array<{ specialEvent: boolean; timestamp: Date }>;
+  }
 ): Promise<Metrics> {
   // Generar embeddings
   const userEmb = generateEmbedding(userMessage);
@@ -65,10 +74,28 @@ export async function calculateMetrics(
   const lengthRatio = Math.min(outputLength / (inputLength || 1), 2);
   const epsilonEff = Math.max(0, Math.min(1, lengthRatio / 2));
   
+  // Calcular RLD si se solicita
+  let rld: number | undefined;
+  let rldDetails: RLDCalculation | undefined;
+  
+  if (options?.includeRLD) {
+    try {
+      rldDetails = await calculateRLD({
+        interactionHistory: options.interactionHistory
+      });
+      rld = rldDetails.rld;
+    } catch (error) {
+      console.error('Error calculating RLD:', error);
+      rld = undefined;
+    }
+  }
+
   return {
     omegaSem,
     hDiv,
     vLyapunov,
-    epsilonEff
+    epsilonEff,
+    rld,
+    rldDetails
   };
 }

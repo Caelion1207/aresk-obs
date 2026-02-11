@@ -144,14 +144,23 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
         content: assistantMessage
       });
 
-      // Calcular métricas
+      // Calcular métricas con RLD
+      const interactionHistory = interactions.map(i => ({
+        specialEvent: i.caelionIntervention,
+        timestamp: i.timestamp
+      }));
+
       const metrics = await calculateMetrics(
         input.message,
         assistantMessage,
-        interactionCount + 1
+        interactionCount + 1,
+        {
+          includeRLD: true,
+          interactionHistory
+        }
       );
 
-      const rld = Math.max(0, Math.min(1, metrics.omegaSem - metrics.hDiv));
+      const rld = metrics.rld || 0;
 
       // Guardar interacción en BD
       await createCaelionInteraction({
