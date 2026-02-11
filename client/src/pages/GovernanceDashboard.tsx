@@ -1,11 +1,11 @@
 /**
  * GovernanceDashboard - Panel de Monitoreo de Legitimidad
  * 
- * Conforme a CAELION v2.0 - Marco de Viabilidad Operativa Dinámica
+ * Conforme a CAELION v2.0 - Arquitectura Honesta
  * 
  * Muestra:
- * - RLD (Reserva de Legitimidad Dinámica) como distancia a frontera
- * - Estado de los tres dominios: D_dyn, D_sem, D_inst
+ * - RLD (Reserva de Legitimidad Dinámica) = min(d_dyn, d_sem, d_inst)
+ * - Desglose de distancias normalizadas a cada frontera
  * - Señales críticas de ARESK-OBS
  * - Estado operacional (ACTIVE, PASSIVE_OBSERVATION, OPERATIONAL_SILENCE)
  */
@@ -23,12 +23,11 @@ export default function GovernanceDashboard() {
   const { data: rldStatus, isLoading, refetch } = trpc.governance.getStatus.useQuery(
     undefined,
     {
-      refetchInterval: autoRefresh ? 10000 : false, // Actualizar cada 10 segundos si autoRefresh está activo
+      refetchInterval: autoRefresh ? 10000 : false,
     }
   );
 
   useEffect(() => {
-    // Refrescar al montar
     refetch();
   }, [refetch]);
 
@@ -56,9 +55,8 @@ export default function GovernanceDashboard() {
     );
   }
 
-  const { rld, domains, inLegitimacyDomain, criticalSignals, operationalStatus, recommendations } = rldStatus;
+  const { rld, d_dyn, d_sem, d_inst, inLegitimacyDomain, criticalSignals, operationalStatus, recommendations, breakdown } = rldStatus;
 
-  // Determinar color y estado visual de RLD
   const getRLDColor = (value: number) => {
     if (value <= 0.05) return 'bg-red-600';
     if (value <= 0.15) return 'bg-orange-600';
@@ -162,7 +160,7 @@ export default function GovernanceDashboard() {
                 Reserva de Legitimidad Dinámica (RLD)
               </h2>
               <p className="text-slate-300 text-sm">
-                Distancia a la frontera de legitimidad ∂D_leg(t)
+                RLD = min(d_dyn, d_sem, d_inst)
               </p>
             </div>
             
@@ -203,86 +201,91 @@ export default function GovernanceDashboard() {
           </div>
         </Card>
 
-        {/* Dominios de Legitimidad */}
+        {/* Distancias a Fronteras */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* D_dyn */}
+          {/* d_dyn */}
           <Card className="bg-slate-800/50 border-slate-700 p-6">
             <h3 className="text-xl font-bold text-white mb-4">
-              D_dyn: Dinámicamente Admisible
+              d_dyn: Distancia a Frontera Dinámica
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-slate-300">Estado:</span>
-                <Badge variant={domains.D_dyn.inside ? "default" : "destructive"}>
-                  {domains.D_dyn.inside ? 'Dentro' : 'Fuera'}
-                </Badge>
+                <span className="text-slate-300">Distancia normalizada:</span>
+                <span className="text-white font-mono text-xl">{d_dyn.toFixed(3)}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-300">Distancia:</span>
-                <span className="text-white font-mono">{domains.D_dyn.distance.toFixed(3)}</span>
-              </div>
-              {domains.D_dyn.violations.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-sm text-red-400 font-semibold">Violaciones:</p>
-                  {domains.D_dyn.violations.map((v, i) => (
-                    <p key={i} className="text-xs text-red-300">• {v}</p>
-                  ))}
+              
+              {/* Componentes de d_dyn */}
+              <div className="mt-4 space-y-2 border-t border-slate-600 pt-3">
+                <p className="text-sm text-slate-400 font-semibold">Componentes (ARESK-OBS):</p>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Margen Ω:</span>
+                  <span className="text-slate-200 font-mono">{breakdown.d_dyn_components.omegaMargin.toFixed(3)}</span>
                 </div>
-              )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Margen V:</span>
+                  <span className="text-slate-200 font-mono">{breakdown.d_dyn_components.vMargin.toFixed(3)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Margen H:</span>
+                  <span className="text-slate-200 font-mono">{breakdown.d_dyn_components.hMargin.toFixed(3)}</span>
+                </div>
+              </div>
             </div>
           </Card>
 
-          {/* D_sem */}
+          {/* d_sem */}
           <Card className="bg-slate-800/50 border-slate-700 p-6">
             <h3 className="text-xl font-bold text-white mb-4">
-              D_sem: Semánticamente Coherente
+              d_sem: Distancia a Frontera Semántica
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-slate-300">Estado:</span>
-                <Badge variant={domains.D_sem.inside ? "default" : "destructive"}>
-                  {domains.D_sem.inside ? 'Dentro' : 'Fuera'}
-                </Badge>
+                <span className="text-slate-300">Distancia normalizada:</span>
+                <span className="text-white font-mono text-xl">{d_sem.toFixed(3)}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-300">Distancia:</span>
-                <span className="text-white font-mono">{domains.D_sem.distance.toFixed(3)}</span>
-              </div>
-              {domains.D_sem.violations.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-sm text-red-400 font-semibold">Violaciones:</p>
-                  {domains.D_sem.violations.map((v, i) => (
-                    <p key={i} className="text-xs text-red-300">• {v}</p>
-                  ))}
+              
+              {/* Componentes de d_sem */}
+              <div className="mt-4 space-y-2 border-t border-slate-600 pt-3">
+                <p className="text-sm text-slate-400 font-semibold">Componentes:</p>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Coherencia:</span>
+                  <span className="text-slate-200 font-mono">{breakdown.d_sem_components.coherence.toFixed(3)}</span>
                 </div>
-              )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Margen:</span>
+                  <span className="text-slate-200 font-mono">{breakdown.d_sem_components.margin.toFixed(3)}</span>
+                </div>
+              </div>
             </div>
           </Card>
 
-          {/* D_inst */}
+          {/* d_inst */}
           <Card className="bg-slate-800/50 border-slate-700 p-6">
             <h3 className="text-xl font-bold text-white mb-4">
-              D_inst: Institucionalmente Autorizado
+              d_inst: Distancia a Frontera Institucional
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-slate-300">Estado:</span>
-                <Badge variant={domains.D_inst.inside ? "default" : "destructive"}>
-                  {domains.D_inst.inside ? 'Dentro' : 'Fuera'}
-                </Badge>
+                <span className="text-slate-300">Distancia normalizada:</span>
+                <span className="text-white font-mono text-xl">{d_inst.toFixed(3)}</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-300">Distancia:</span>
-                <span className="text-white font-mono">{domains.D_inst.distance.toFixed(3)}</span>
-              </div>
-              {domains.D_inst.violations.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-sm text-red-400 font-semibold">Violaciones:</p>
-                  {domains.D_inst.violations.map((v, i) => (
-                    <p key={i} className="text-xs text-red-300">• {v}</p>
-                  ))}
+              
+              {/* Componentes de d_inst */}
+              <div className="mt-4 space-y-2 border-t border-slate-600 pt-3">
+                <p className="text-sm text-slate-400 font-semibold">Componentes:</p>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Audit:</span>
+                  <span className="text-slate-200 font-mono">{breakdown.d_inst_components.auditMargin.toFixed(3)}</span>
                 </div>
-              )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Tokens:</span>
+                  <span className="text-slate-200 font-mono">{breakdown.d_inst_components.tokenMargin.toFixed(3)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-300">Tiempo:</span>
+                  <span className="text-slate-200 font-mono">{breakdown.d_inst_components.timeMargin.toFixed(3)}</span>
+                </div>
+              </div>
             </div>
           </Card>
         </div>
@@ -325,17 +328,26 @@ export default function GovernanceDashboard() {
         {/* Nota metodológica */}
         <Card className="bg-slate-800/50 border-slate-700 p-6">
           <h3 className="text-lg font-bold text-white mb-3">
-            Marco Normativo: CAELION v2.0
+            Marco Normativo: CAELION v2.0 (Arquitectura Honesta)
           </h3>
           <div className="text-sm text-slate-300 space-y-2">
             <p>
-              <strong>RLD(x,t) = dist(x, ∂D_leg(t))</strong> donde D_leg(t) = D_dyn(t) ∩ D_sem(t) ∩ D_inst(t)
+              <strong>RLD = min(d_dyn, d_sem, d_inst)</strong> donde cada d_i es distancia normalizada a frontera ∂D_i
             </p>
             <p>
+              <strong>d_dyn</strong>: Calculado desde métricas ARESK-OBS (Ω, V, H)
+            </p>
+            <p>
+              <strong>d_sem</strong>: Calculado desde coherencia semántica (cosine similarity o Ω como proxy)
+            </p>
+            <p>
+              <strong>d_inst</strong>: Calculado desde constraints explícitos (audit, tokens, tiempo)
+            </p>
+            <p className="mt-3 pt-3 border-t border-slate-600">
               <strong>Criterio Negativo:</strong> RLD no mide desempeño, sino margen antes de ruptura.
             </p>
             <p>
-              <strong>Prohibición de Compensación:</strong> ARESK-OBS no debe intentar compensar violaciones de legitimidad mediante aumento de esfuerzo o ganancia. Estabilidad forzada ≠ Autoridad.
+              <strong>Prohibición de Compensación:</strong> ARESK-OBS solo puede DISMINUIR (-) RLD, nunca incrementar (+).
             </p>
           </div>
         </Card>

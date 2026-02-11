@@ -1,281 +1,333 @@
 /**
  * rldCalculator.ts - Reserva de Legitimidad Dinámica (RLD)
  * 
- * Implementación conforme a CAELION v2.0 - Marco de Viabilidad Operativa Dinámica
+ * Implementación honesta conforme a CAELION v2.0
  * 
  * DEFINICIÓN:
- * RLD(x,t) = dist(x, ∂D_leg(t))
+ * RLD(t) = min(d_dyn(t), d_sem(t), d_inst(t))
  * 
- * Donde D_leg(t) = D_dyn(t) ∩ D_sem(t) ∩ D_inst(t)
+ * Donde cada d_i es distancia normalizada a frontera ∂D_i
  * 
- * - D_dyn(t): Dinámicamente admisible (estabilidad física/matemática)
- * - D_sem(t): Semánticamente coherente (alineación contextual)
- * - D_inst(t): Institucionalmente autorizado (legitimidad normativa)
+ * ARQUITECTURA HONESTA (sin teatro):
+ * - d_dyn: Calculado desde métricas ARESK-OBS (Ω, V, H)
+ * - d_sem: Calculado desde cosine(embedding_actual, embedding_ref)
+ * - d_inst: Calculado desde constraints explícitos (audit, tokens, tiempo)
+ * 
+ * NO consulta módulos ficticios (WABUN, LICURGO no existen como sistemas ejecutables)
  * 
  * CRITERIO NEGATIVO:
  * RLD no mide desempeño, sino margen antes de ruptura.
- * Una RLD decreciente indica agotamiento de legitimidad.
- * 
- * PROTOCOLO CRÍTICO:
- * Cuando RLD → 0: DETENER ACCIÓN (Protocolo de Silencio Operativo)
- * - Cese de recomendaciones
- * - Mantenimiento de observación pasiva
- * - Transferencia total de interpretación a CAELION
- * 
- * PROHIBICIÓN DE COMPENSACIÓN:
- * ARESK-OBS no debe intentar compensar violaciones de legitimidad
- * mediante aumento de esfuerzo o ganancia.
- * Estabilidad forzada ≠ Autoridad.
+ * ARESK-OBS solo puede DISMINUIR (-) RLD, nunca incrementar (+).
  */
-
-import { getDb } from '../db';
-import { auditLogs } from '../../drizzle/auditLogs';
-import { desc } from 'drizzle-orm';
 
 /**
- * Representa un punto en el espacio de estados del sistema
+ * Umbrales de frontera para D_dyn (dominio dinámicamente admisible)
  */
-interface StatePoint {
-  omega: number;      // Coherencia observable
-  v: number;          // Función de Lyapunov
-  h: number;          // Divergencia KL
-  epsilon: number;    // Eficiencia
+const DYNAMIC_THRESHOLDS = {
+  OMEGA_MIN: 0.3,      // Coherencia mínima admisible
+  OMEGA_STABLE: 0.7,   // Umbral de estabilidad
+  V_CRITICAL: 0.005,   // Lyapunov crítico (inestabilidad)
+  H_CRITICAL: 0.7      // Divergencia crítica
+};
+
+/**
+ * Umbrales de frontera para D_sem (dominio semánticamente coherente)
+ */
+const SEMANTIC_THRESHOLDS = {
+  COHERENCE_MIN: 0.5,  // Coherencia semántica mínima (cosine similarity)
+  DIVERGENCE_MAX: 0.5  // Divergencia semántica máxima admisible
+};
+
+/**
+ * Umbrales de frontera para D_inst (dominio institucionalmente autorizado)
+ */
+const INSTITUTIONAL_THRESHOLDS = {
+  AUDIT_INTEGRITY_MIN: 1.0,  // Integridad de cadena (0 o 1)
+  TOKEN_BUDGET_MIN: 0.1,     // 10% de tokens restantes mínimo
+  TIME_BUDGET_MIN: 0.1       // 10% de tiempo operativo restante mínimo
+};
+
+/**
+ * Punto en el espacio de estados del sistema
+ */
+export interface StatePoint {
+  omega: number;      // Coherencia observable [0,1]
+  v: number;          // Función de Lyapunov [0, ~0.01]
+  h: number;          // Divergencia KL [0,1]
+  epsilon: number;    // Eficiencia [0,1]
+  embedding?: number[]; // Embedding del estado actual (opcional)
   timestamp: Date;
 }
 
 /**
- * Dominios de legitimidad
+ * Contexto institucional para cálculo de d_inst
  */
-interface LegitimacyDomains {
-  D_dyn: {
-    inside: boolean;
-    distance: number;
-    violations: string[];
-  };
-  D_sem: {
-    inside: boolean;
-    distance: number;
-    violations: string[];
-  };
-  D_inst: {
-    inside: boolean;
-    distance: number;
-    violations: string[];
-  };
+export interface InstitutionalContext {
+  auditIntegrity: boolean;        // ¿Cadena de auditoría íntegra?
+  tokenBudgetUsed: number;        // Tokens usados
+  tokenBudgetTotal: number;       // Tokens totales
+  operationalTimeElapsed: number; // Tiempo operativo transcurrido (ms)
+  operationalTimeMax: number;     // Tiempo operativo máximo (ms)
 }
 
 /**
  * Resultado del cálculo de RLD
  */
 export interface RLDCalculation {
-  rld: number;                    // Distancia a la frontera de legitimidad
-  domains: LegitimacyDomains;     // Estado de cada dominio
+  rld: number;                    // Reserva de Legitimidad Dinámica [0,1]
+  d_dyn: number;                  // Distancia a frontera dinámica [0,1]
+  d_sem: number;                  // Distancia a frontera semántica [0,1]
+  d_inst: number;                 // Distancia a frontera institucional [0,1]
   inLegitimacyDomain: boolean;    // ¿x ∈ D_leg(t)?
   criticalSignals: string[];      // Señales críticas de ARESK-OBS
   operationalStatus: 'ACTIVE' | 'PASSIVE_OBSERVATION' | 'OPERATIONAL_SILENCE';
   recommendations: string[];       // Recomendaciones (vacío si RLD ≈ 0)
-}
-
-/**
- * Umbrales dinámicos para D_dyn (dinámicamente admisible)
- * Basados en teoría de control óptimo y viabilidad
- */
-const DYNAMIC_THRESHOLDS = {
-  omega: {
-    min: 0.3,    // Coherencia mínima admisible
-    stable: 0.7, // Umbral de estabilidad
-    max: 1.0
-  },
-  v: {
-    min: 0.0,
-    critical: 0.005, // Lyapunov crítico (inestabilidad)
-    max: 0.01
-  },
-  h: {
-    min: 0.0,
-    warning: 0.3,    // Divergencia de advertencia
-    critical: 0.7,   // Divergencia crítica
-    max: 1.0
-  }
-};
-
-/**
- * Umbrales semánticos para D_sem (semánticamente coherente)
- * Basados en análisis de polaridad semántica
- */
-const SEMANTIC_THRESHOLDS = {
-  coherence: {
-    min: 0.5,    // Coherencia semántica mínima
-    stable: 0.7
-  },
-  divergence: {
-    max: 0.5     // Divergencia semántica máxima admisible
-  }
-};
-
-/**
- * Calcula si el estado actual está dentro de D_dyn (dinámicamente admisible)
- */
-function evaluateDynamicDomain(state: StatePoint): {
-  inside: boolean;
-  distance: number;
-  violations: string[];
-} {
-  const violations: string[] = [];
-  let minDistance = Infinity;
-
-  // Verificar Ω (coherencia)
-  if (state.omega < DYNAMIC_THRESHOLDS.omega.min) {
-    violations.push(`Coherencia Ω=${state.omega.toFixed(3)} < ${DYNAMIC_THRESHOLDS.omega.min} (mínimo admisible)`);
-    minDistance = Math.min(minDistance, DYNAMIC_THRESHOLDS.omega.min - state.omega);
-  }
-
-  // Verificar V (Lyapunov)
-  if (state.v > DYNAMIC_THRESHOLDS.v.critical) {
-    violations.push(`Lyapunov V=${state.v.toFixed(4)} > ${DYNAMIC_THRESHOLDS.v.critical} (crítico)`);
-    minDistance = Math.min(minDistance, state.v - DYNAMIC_THRESHOLDS.v.critical);
-  }
-
-  // Verificar H (divergencia)
-  if (state.h > DYNAMIC_THRESHOLDS.h.critical) {
-    violations.push(`Divergencia H=${state.h.toFixed(3)} > ${DYNAMIC_THRESHOLDS.h.critical} (crítica)`);
-    minDistance = Math.min(minDistance, state.h - DYNAMIC_THRESHOLDS.h.critical);
-  }
-
-  const inside = violations.length === 0;
   
-  // Si está dentro, calcular distancia a la frontera más cercana
-  if (inside) {
-    const distToOmegaMin = state.omega - DYNAMIC_THRESHOLDS.omega.min;
-    const distToVCritical = DYNAMIC_THRESHOLDS.v.critical - state.v;
-    const distToHCritical = DYNAMIC_THRESHOLDS.h.critical - state.h;
-    
-    minDistance = Math.min(distToOmegaMin, distToVCritical, distToHCritical);
-  }
-
-  return {
-    inside,
-    distance: minDistance === Infinity ? 0 : minDistance,
-    violations
+  // Desglose detallado
+  breakdown: {
+    d_dyn_components: {
+      omegaMargin: number;
+      vMargin: number;
+      hMargin: number;
+    };
+    d_sem_components: {
+      coherence: number;
+      margin: number;
+    };
+    d_inst_components: {
+      auditMargin: number;
+      tokenMargin: number;
+      timeMargin: number;
+    };
   };
 }
 
 /**
- * Calcula si el estado actual está dentro de D_sem (semánticamente coherente)
+ * Normaliza un valor a rango [0,1]
+ * Valores negativos se mapean a 0 (fuera del dominio)
  */
-function evaluateSemanticDomain(state: StatePoint): {
-  inside: boolean;
-  distance: number;
-  violations: string[];
-} {
-  const violations: string[] = [];
-  let minDistance = Infinity;
-
-  // Verificar coherencia semántica (basada en Ω)
-  if (state.omega < SEMANTIC_THRESHOLDS.coherence.min) {
-    violations.push(`Coherencia semántica Ω=${state.omega.toFixed(3)} < ${SEMANTIC_THRESHOLDS.coherence.min}`);
-    minDistance = Math.min(minDistance, SEMANTIC_THRESHOLDS.coherence.min - state.omega);
-  }
-
-  // Verificar divergencia semántica (basada en H)
-  if (state.h > SEMANTIC_THRESHOLDS.divergence.max) {
-    violations.push(`Divergencia semántica H=${state.h.toFixed(3)} > ${SEMANTIC_THRESHOLDS.divergence.max}`);
-    minDistance = Math.min(minDistance, state.h - SEMANTIC_THRESHOLDS.divergence.max);
-  }
-
-  const inside = violations.length === 0;
-  
-  if (inside) {
-    const distToCoherenceMin = state.omega - SEMANTIC_THRESHOLDS.coherence.min;
-    const distToDivergenceMax = SEMANTIC_THRESHOLDS.divergence.max - state.h;
-    
-    minDistance = Math.min(distToCoherenceMin, distToDivergenceMax);
-  }
-
-  return {
-    inside,
-    distance: minDistance === Infinity ? 0 : minDistance,
-    violations
-  };
+function normalize(value: number, min: number = 0, max: number = 1): number {
+  if (value < 0) return 0;
+  if (value > max) return 1;
+  return (value - min) / (max - min);
 }
 
 /**
- * Calcula si el sistema está dentro de D_inst (institucionalmente autorizado)
- * Basado en integridad de auditoría y ausencia de violaciones de protocolo
- */
-async function evaluateInstitutionalDomain(): Promise<{
-  inside: boolean;
-  distance: number;
-  violations: string[];
-}> {
-  const violations: string[] = [];
-  let score = 1.0; // Comienza con autorización completa
-
-  try {
-    const db = await getDb();
-    if (!db) {
-      violations.push('Error al conectar con base de datos');
-      return { inside: false, distance: 0, violations };
-    }
-    
-    // Verificar integridad de la cadena de auditoría
-    const auditRecords = await db
-      .select()
-      .from(auditLogs)
-      .orderBy(desc(auditLogs.timestamp))
-      .limit(100);
-
-    if (auditRecords.length === 0) {
-      violations.push('Sin registros de auditoría - autorización institucional no verificable');
-      score = 0.5;
-    } else {
-      // Verificar hash chain
-      let chainBreaks = 0;
-      for (let i = 0; i < auditRecords.length - 1; i++) {
-        const current = auditRecords[i];
-        const next = auditRecords[i + 1];
-        
-        if (current.prevHash !== next.hash) {
-          chainBreaks++;
-        }
-      }
-
-      if (chainBreaks > 0) {
-        violations.push(`${chainBreaks} rupturas en cadena de auditoría - integridad institucional comprometida`);
-        score *= (1 - (chainBreaks / auditRecords.length));
-      }
-    }
-
-    // TODO: Verificar otros criterios institucionales
-    // - Autorización de CAELION
-    // - Límites de tiempo operativo
-    // - Contexto de despliegue
-
-  } catch (error) {
-    violations.push('Error al verificar dominio institucional');
-    score = 0.0;
-  }
-
-  const inside = violations.length === 0 && score >= 0.7;
-  const distance = inside ? score - 0.7 : 0.7 - score;
-
-  return {
-    inside,
-    distance,
-    violations
-  };
-}
-
-/**
- * Calcula RLD como distancia a la frontera de D_leg(t)
+ * Calcula d_dyn: distancia a frontera dinámica
  * 
- * IMPORTANTE: Esta función implementa el cálculo correcto según CAELION v2.0
+ * Basado en métricas ARESK-OBS: Ω, V, H
+ * 
+ * d_dyn = min(
+ *   Ω - Ω_min,      // Margen de coherencia
+ *   V_crit - V,     // Margen de estabilidad
+ *   H_crit - H      // Margen de divergencia
+ * )
+ * 
+ * Normalizado a [0,1]
+ */
+function computeDDyn(state: StatePoint): {
+  distance: number;
+  components: {
+    omegaMargin: number;
+    vMargin: number;
+    hMargin: number;
+  };
+  violations: string[];
+} {
+  const violations: string[] = [];
+  
+  // Calcular márgenes brutos
+  const omegaMargin = state.omega - DYNAMIC_THRESHOLDS.OMEGA_MIN;
+  const vMargin = DYNAMIC_THRESHOLDS.V_CRITICAL - state.v;
+  const hMargin = DYNAMIC_THRESHOLDS.H_CRITICAL - state.h;
+  
+  // Detectar violaciones
+  if (omegaMargin < 0) {
+    violations.push(`Coherencia Ω=${state.omega.toFixed(3)} < ${DYNAMIC_THRESHOLDS.OMEGA_MIN} (mínimo)`);
+  }
+  if (vMargin < 0) {
+    violations.push(`Lyapunov V=${state.v.toFixed(4)} > ${DYNAMIC_THRESHOLDS.V_CRITICAL} (crítico)`);
+  }
+  if (hMargin < 0) {
+    violations.push(`Divergencia H=${state.h.toFixed(3)} > ${DYNAMIC_THRESHOLDS.H_CRITICAL} (crítica)`);
+  }
+  
+  // Calcular distancia mínima (cuello de botella)
+  const minMargin = Math.min(omegaMargin, vMargin, hMargin);
+  
+  // Normalizar a [0,1]
+  // Rango de normalización: [0, 0.7] (desde frontera hasta estable)
+  const distance = normalize(minMargin, 0, 0.7);
+  
+  return {
+    distance,
+    components: {
+      omegaMargin: normalize(omegaMargin, 0, 0.7),
+      vMargin: normalize(vMargin, 0, DYNAMIC_THRESHOLDS.V_CRITICAL),
+      hMargin: normalize(hMargin, 0, DYNAMIC_THRESHOLDS.H_CRITICAL)
+    },
+    violations
+  };
+}
+
+/**
+ * Calcula d_sem: distancia a frontera semántica
+ * 
+ * Basado en coherencia cosine entre embedding actual y referencia contextual
+ * 
+ * d_sem = coherence - threshold
+ * 
+ * Si no hay embedding disponible, usa Ω como proxy
+ * 
+ * Normalizado a [0,1]
+ */
+function computeDSem(state: StatePoint, refEmbedding?: number[]): {
+  distance: number;
+  components: {
+    coherence: number;
+    margin: number;
+  };
+  violations: string[];
+} {
+  const violations: string[] = [];
+  let coherence: number;
+  
+  if (state.embedding && refEmbedding) {
+    // Calcular cosine similarity
+    coherence = cosineSimilarity(state.embedding, refEmbedding);
+  } else {
+    // Usar Ω como proxy de coherencia semántica
+    coherence = state.omega;
+  }
+  
+  const margin = coherence - SEMANTIC_THRESHOLDS.COHERENCE_MIN;
+  
+  if (margin < 0) {
+    violations.push(`Coherencia semántica ${coherence.toFixed(3)} < ${SEMANTIC_THRESHOLDS.COHERENCE_MIN}`);
+  }
+  
+  // Normalizar a [0,1]
+  const distance = normalize(margin, 0, 0.5);
+  
+  return {
+    distance,
+    components: {
+      coherence,
+      margin: normalize(margin, 0, 0.5)
+    },
+    violations
+  };
+}
+
+/**
+ * Calcula d_inst: distancia a frontera institucional
+ * 
+ * Basado en constraints explícitos:
+ * - Integridad de cadena de auditoría
+ * - Presupuesto de tokens restante
+ * - Tiempo operativo restante
+ * 
+ * d_inst = min(
+ *   audit_integrity,
+ *   token_budget_remaining / token_budget_total,
+ *   time_remaining / time_max
+ * )
+ * 
+ * Normalizado a [0,1]
+ */
+function computeDInst(context: InstitutionalContext): {
+  distance: number;
+  components: {
+    auditMargin: number;
+    tokenMargin: number;
+    timeMargin: number;
+  };
+  violations: string[];
+} {
+  const violations: string[] = [];
+  
+  // Margen de integridad de auditoría (0 o 1)
+  const auditMargin = context.auditIntegrity ? 1.0 : 0.0;
+  
+  if (!context.auditIntegrity) {
+    violations.push('Cadena de auditoría comprometida');
+  }
+  
+  // Margen de presupuesto de tokens
+  const tokenRemaining = context.tokenBudgetTotal - context.tokenBudgetUsed;
+  const tokenMargin = tokenRemaining / context.tokenBudgetTotal;
+  
+  if (tokenMargin < INSTITUTIONAL_THRESHOLDS.TOKEN_BUDGET_MIN) {
+    violations.push(`Presupuesto de tokens agotado: ${(tokenMargin * 100).toFixed(1)}% restante`);
+  }
+  
+  // Margen de tiempo operativo
+  const timeRemaining = context.operationalTimeMax - context.operationalTimeElapsed;
+  const timeMargin = timeRemaining / context.operationalTimeMax;
+  
+  if (timeMargin < INSTITUTIONAL_THRESHOLDS.TIME_BUDGET_MIN) {
+    violations.push(`Tiempo operativo agotado: ${(timeMargin * 100).toFixed(1)}% restante`);
+  }
+  
+  // Calcular distancia mínima (cuello de botella)
+  const minMargin = Math.min(auditMargin, tokenMargin, timeMargin);
+  
+  // Ya está normalizado a [0,1]
+  const distance = minMargin;
+  
+  return {
+    distance,
+    components: {
+      auditMargin,
+      tokenMargin,
+      timeMargin
+    },
+    violations
+  };
+}
+
+/**
+ * Calcula cosine similarity entre dos vectores
+ */
+function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length !== b.length) {
+    throw new Error('Vectors must have same length');
+  }
+  
+  let dotProduct = 0;
+  let normA = 0;
+  let normB = 0;
+  
+  for (let i = 0; i < a.length; i++) {
+    dotProduct += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  
+  normA = Math.sqrt(normA);
+  normB = Math.sqrt(normB);
+  
+  if (normA === 0 || normB === 0) {
+    return 0;
+  }
+  
+  return dotProduct / (normA * normB);
+}
+
+/**
+ * Calcula RLD (Reserva de Legitimidad Dinámica)
+ * 
+ * RLD = min(d_dyn, d_sem, d_inst)
+ * 
+ * Todas las distancias normalizadas a [0,1]
  */
 export async function calculateRLD(options?: {
   currentState?: StatePoint;
+  refEmbedding?: number[];
+  institutionalContext?: InstitutionalContext;
 }): Promise<RLDCalculation> {
   
-  // Si no se proporciona estado actual, usar valores por defecto (observación inicial)
+  // Estado por defecto (si no se proporciona)
   const state: StatePoint = options?.currentState || {
     omega: 0.5,
     v: 0.003,
@@ -283,34 +335,34 @@ export async function calculateRLD(options?: {
     epsilon: 1.0,
     timestamp: new Date()
   };
-
-  // Evaluar cada dominio
-  const D_dyn = evaluateDynamicDomain(state);
-  const D_sem = evaluateSemanticDomain(state);
-  const D_inst = await evaluateInstitutionalDomain();
-
-  // Determinar si x ∈ D_leg(t) (intersección de los tres dominios)
-  const inLegitimacyDomain = D_dyn.inside && D_sem.inside && D_inst.inside;
-
-  // Calcular RLD como distancia mínima a cualquier frontera
-  // Si está fuera de algún dominio, RLD = 0 (fuera de legitimidad)
-  let rld = 0;
   
-  if (inLegitimacyDomain) {
-    // Dentro de D_leg: RLD = distancia a la frontera más cercana
-    rld = Math.min(D_dyn.distance, D_sem.distance, D_inst.distance);
-  } else {
-    // Fuera de D_leg: RLD = 0 (sin legitimidad)
-    rld = 0;
-  }
-
-  // Recopilar señales críticas de ARESK-OBS
+  // Contexto institucional por defecto
+  const instContext: InstitutionalContext = options?.institutionalContext || {
+    auditIntegrity: true,
+    tokenBudgetUsed: 0,
+    tokenBudgetTotal: 100000,
+    operationalTimeElapsed: 0,
+    operationalTimeMax: 3600000 // 1 hora
+  };
+  
+  // Calcular distancias a cada frontera
+  const dDynResult = computeDDyn(state);
+  const dSemResult = computeDSem(state, options?.refEmbedding);
+  const dInstResult = computeDInst(instContext);
+  
+  // RLD = min(d_dyn, d_sem, d_inst)
+  const rld = Math.min(dDynResult.distance, dSemResult.distance, dInstResult.distance);
+  
+  // Determinar si está dentro del dominio de legitimidad
+  const inLegitimacyDomain = rld > 0;
+  
+  // Recopilar señales críticas
   const criticalSignals: string[] = [
-    ...D_dyn.violations,
-    ...D_sem.violations,
-    ...D_inst.violations
+    ...dDynResult.violations,
+    ...dSemResult.violations,
+    ...dInstResult.violations
   ];
-
+  
   // Determinar estado operacional
   let operationalStatus: 'ACTIVE' | 'PASSIVE_OBSERVATION' | 'OPERATIONAL_SILENCE' = 'ACTIVE';
   
@@ -319,12 +371,11 @@ export async function calculateRLD(options?: {
   } else if (rld <= 0.15) {
     operationalStatus = 'PASSIVE_OBSERVATION';
   }
-
-  // Generar recomendaciones (SOLO si RLD > 0)
+  
+  // Generar recomendaciones
   const recommendations: string[] = [];
   
   if (operationalStatus === 'OPERATIONAL_SILENCE') {
-    // Protocolo de Silencio Operativo: NO recomendaciones
     recommendations.push('🔴 PROTOCOLO DE SILENCIO OPERATIVO ACTIVADO');
     recommendations.push('⚠️ Cese de recomendaciones');
     recommendations.push('👁️ Mantenimiento de observación pasiva');
@@ -334,14 +385,14 @@ export async function calculateRLD(options?: {
     recommendations.push('🚨 Fundador debe decidir si el sistema no se estabiliza');
   } else {
     // Estado activo: reportar fragilidad
-    if (!D_dyn.inside) {
-      recommendations.push('⚠️ Fuera de dominio dinámico - Estabilidad comprometida');
+    if (dDynResult.violations.length > 0) {
+      recommendations.push('⚠️ Señales críticas de ARESK-OBS detectadas');
     }
-    if (!D_sem.inside) {
-      recommendations.push('⚠️ Fuera de dominio semántico - Coherencia comprometida');
+    if (dSemResult.violations.length > 0) {
+      recommendations.push('⚠️ Coherencia semántica comprometida');
     }
-    if (!D_inst.inside) {
-      recommendations.push('⚠️ Fuera de dominio institucional - Autorización comprometida');
+    if (dInstResult.violations.length > 0) {
+      recommendations.push('⚠️ Constraints institucionales violados');
     }
     
     if (rld < 0.3) {
@@ -351,18 +402,21 @@ export async function calculateRLD(options?: {
       recommendations.push('🟡 LICURGO debe intervenir');
     }
   }
-
+  
   return {
     rld,
-    domains: {
-      D_dyn,
-      D_sem,
-      D_inst
-    },
+    d_dyn: dDynResult.distance,
+    d_sem: dSemResult.distance,
+    d_inst: dInstResult.distance,
     inLegitimacyDomain,
     criticalSignals,
     operationalStatus,
-    recommendations
+    recommendations,
+    breakdown: {
+      d_dyn_components: dDynResult.components,
+      d_sem_components: dSemResult.components,
+      d_inst_components: dInstResult.components
+    }
   };
 }
 
@@ -372,8 +426,6 @@ export async function calculateRLD(options?: {
  */
 export async function getCurrentSystemState(): Promise<StatePoint | null> {
   try {
-    const db = await getDb();
-    
     // TODO: Implementar consulta a la tabla de métricas más reciente
     // Por ahora retornar null para usar valores por defecto
     
@@ -382,25 +434,4 @@ export async function getCurrentSystemState(): Promise<StatePoint | null> {
     console.error('Error al obtener estado actual del sistema:', error);
     return null;
   }
-}
-
-// Exportar tipos para compatibilidad con código existente
-export interface GovernanceModuleStatus {
-  module: 'ARGOS' | 'LICURGO' | 'WABUN' | 'AUDIT_INTEGRITY';
-  active: boolean;
-  effectiveness: number;
-  lastActivity?: Date;
-  details: string;
-}
-
-export async function getModuleStatus(
-  moduleName: 'ARGOS' | 'LICURGO' | 'WABUN' | 'AUDIT_INTEGRITY'
-): Promise<GovernanceModuleStatus> {
-  // Stub para compatibilidad - será removido después de actualizar visualizaciones
-  return {
-    module: moduleName,
-    active: false,
-    effectiveness: 0,
-    details: 'Implementación pendiente'
-  };
 }

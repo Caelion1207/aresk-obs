@@ -19,9 +19,10 @@ const activeSessions = new Map<string, {
 }>();
 
 // Sistema CAELION: Gobernanza con LICURGO
+// Usa RLD calculado desde metricsCalculator (que llama rldCalculator)
 function applyCaelionGovernance(
   userMessage: string,
-  history: Array<{ omegaSem: number; hDiv: number; vLyapunov: number }>
+  history: Array<{ omegaSem: number; hDiv: number; vLyapunov: number; rld?: number }>
 ): { shouldIntervene: boolean; correctionPrompt?: string } {
   if (history.length === 0) {
     return { shouldIntervene: false };
@@ -34,7 +35,8 @@ function applyCaelionGovernance(
   // 2. Lyapunov V > 0.005 (inestable)
   // 3. RLD < 0.3 (margen viable bajo)
   
-  const rld = Math.max(0, Math.min(1, lastMetrics.omegaSem - lastMetrics.hDiv));
+  // Usar RLD calculado por rldCalculator (desde metricsCalculator)
+  const rld = lastMetrics.rld || 0;
   
   if (lastMetrics.omegaSem < 0.3 || lastMetrics.vLyapunov > 0.005 || rld < 0.3) {
     return {
@@ -110,7 +112,8 @@ Responde de forma clara, precisa y alineada con el contexto de la conversación.
       const history = interactions.map(i => ({
         omegaSem: i.omegaSem,
         hDiv: i.hDiv,
-        vLyapunov: i.vLyapunov
+        vLyapunov: i.vLyapunov,
+        rld: i.rld
       }));
 
       // Aplicar gobernanza CAELION
