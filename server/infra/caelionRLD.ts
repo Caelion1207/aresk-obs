@@ -44,12 +44,13 @@ export interface RLDState {
 }
 
 /**
- * Configuración de penalizaciones por tipo de evento
+ * Configuración de penalizaciones por severidad de fricción
+ * Basado en especificación contractual SPECIFICATION_V_vs_RLD.md
  */
-const PENALTIES: Record<FrictionEvent, number> = {
-  COHERENCE_VIOLATION: 0.05,   // Penalización por violación de coherencia
-  STABILITY_VIOLATION: 0.10,   // Penalización por violación de estabilidad
-  RESOURCE_VIOLATION: 0.03,    // Penalización por violación de recursos
+const PENALTIES = {
+  LEVE: 0.05,     // Fricción leve (Ω < 0.60)
+  MEDIA: 0.10,    // Fricción media (Ω < 0.50)
+  SEVERA: 0.20,   // Fricción severa (Ω < 0.40)
 };
 
 /**
@@ -65,33 +66,108 @@ const THRESHOLDS = {
 
 /**
  * Calcula el estado de RLD basado en el valor actual
+ * 
+ * Escala según SPECIFICATION_V_vs_RLD.md:
+ * - RLD = 2.0: PLENA (autonomía plena)
+ * - RLD ∈ [1.5, 2.0): VIGILADA (vigilancia activa de módulos)
+ * - RLD = 1.0: INTERVENCION (intervención humana obligatoria)
+ * - RLD ∈ (0, 1.0): PASIVA (observación pasiva)
+ * - RLD = 0: RETIRO (retiro total de agencia)
  */
 function getRLDStatus(rld: number): RLDState['status'] {
   if (rld === THRESHOLDS.PLENA) return 'PLENA';
-  if (rld >= THRESHOLDS.VIGILADA_MIN && rld < THRESHOLDS.VIGILADA_MAX) return 'VIGILADA';
-  if (rld === THRESHOLDS.INTERVENCION) return 'INTERVENCION';
-  if (rld > THRESHOLDS.PASIVA && rld < THRESHOLDS.INTERVENCION) return 'PASIVA';
+  if (rld >= 1.5 && rld < THRESHOLDS.PLENA) return 'VIGILADA';
+  if (rld === 1.0) return 'INTERVENCION';
+  if (rld > THRESHOLDS.PASIVA && rld < 1.0) return 'PASIVA';
   return 'RETIRO';
 }
 
 /**
  * Calcula penalización total por eventos
+ * 
+ * Para COHERENCE_VIOLATION: usa umbrales de severidad
+ * - severity 0.25 (leve) → -0.05
+ * - severity 0.5 (media) → -0.10
+ * - severity 1.0 (severa) → -0.20
+ * 
+ * Para otros eventos: usa severidad como multiplicador de penalización base
  */
 function calculatePenalties(events: FrictionEventRecord[]): number {
   return events.reduce((total, event) => {
-    const basePenalty = PENALTIES[event.type];
-    const severityMultiplier = event.severity;
-    return total + (basePenalty * severityMultiplier);
+    let penalty = 0;
+    
+    if (event.type === 'COHERENCE_VIOLATION') {
+      // Mapear severidad a penalización según umbrales
+      if (event.severity >= 1.0) {
+        penalty = PENALTIES.SEVERA;  // -0.20
+      } else if (event.severity >= 0.5) {
+        penalty = PENALTIES.MEDIA;   // -0.10
+      } else if (event.severity >= 0.25) {
+        penalty = PENALTIES.LEVE;    // -0.05
+      }
+    } else {
+      // Para STABILITY_VIOLATION y RESOURCE_VIOLATION:
+      // usar severidad como multiplicador de penalización media
+      penalty = PENALTIES.MEDIA * event.severity;
+    }
+    
+    return total + penalty;
   }, 0);
 }
 
 /**
- * Calcula recuperación condicionada
+ * Validaciones de supervisores para consenso estructural
+ */
+interface SupervisorValidations {
+  argos: boolean;   // No hay patrón recurrente
+  licurgo: boolean; // Alineación estratégica sostenida
+  wabun: boolean;   // Integridad histórica
+  hecate: boolean;  // Ausencia de violación ética
+}
+
+/**
+ * Valida consenso de supervisores
+ * 
+ * ARGOS: No hay patrón recurrente (≥3 eventos mismo tipo)
+ * LICURGO: 10+ interacciones sin fricción (alineación sostenida)
+ * WABUN: Sin eventos en últimas 10 interacciones (integridad)
+ * HÉCATE: Placeholder (true por ahora)
+ */
+function validateSupervisors(
+  recentEvents: FrictionEventRecord[],
+  interactionsSinceLastEvent: number
+): SupervisorValidations {
+  // ARGOS: No hay patrón recurrente
+  const eventCounts: Record<string, number> = {};
+  recentEvents.forEach(event => {
+    eventCounts[event.type] = (eventCounts[event.type] || 0) + 1;
+  });
+  const argos = !Object.values(eventCounts).some(count => count >= 3);
+
+  // LICURGO: 10+ interacciones sin fricción
+  const licurgo = interactionsSinceLastEvent >= 10;
+
+  // WABUN: Sin eventos en últimas 10 interacciones
+  const wabun = interactionsSinceLastEvent >= 10;
+
+  // HÉCATE: Placeholder (true por ahora)
+  const hecate = true;
+
+  return { argos, licurgo, wabun, hecate };
+}
+
+/**
+ * Calcula recuperación condicionada por consenso estructural
  * 
  * Recuperación solo ocurre si:
- * - No hay eventos de fricción en las últimas X interacciones
- * - No hay patrón recurrente
- * - Supervisores validan régimen (por ahora simplificado)
+ * - TODOS los supervisores validan (consenso estructural)
+ * - RLD no está en máximo
+ * 
+ * Reglas:
+ * - Decae rápido ante fricción (0.05, 0.10, 0.03)
+ * - Sube lento bajo validación (+0.05)
+ * - Nunca rebota por silencio
+ * - Nunca sube más rápido de lo que baja
  */
 function calculateRecovery(
   currentRLD: number,
@@ -101,21 +177,17 @@ function calculateRecovery(
   // No hay recuperación si RLD ya está en máximo
   if (currentRLD >= THRESHOLDS.PLENA) return 0;
 
-  // No hay recuperación si hay eventos recientes (últimas 10 interacciones)
-  if (interactionsSinceLastEvent < 10) return 0;
+  // Validar consenso de supervisores
+  const validations = validateSupervisors(recentEvents, interactionsSinceLastEvent);
+  const consensus = validations.argos && validations.licurgo && validations.wabun && validations.hecate;
 
-  // No hay recuperación si hay patrón recurrente
-  // (más de 3 eventos del mismo tipo en las últimas 20 interacciones)
-  const eventCounts: Record<string, number> = {};
-  recentEvents.forEach(event => {
-    eventCounts[event.type] = (eventCounts[event.type] || 0) + 1;
-  });
-  
-  const hasRecurrentPattern = Object.values(eventCounts).some(count => count >= 3);
-  if (hasRecurrentPattern) return 0;
+  console.log('[CAELION-RLD] Supervisor validations:', validations, 'Consensus:', consensus);
 
-  // Recuperación gradual: +0.01 por cada 10 interacciones sin fricción
-  const recoveryRate = 0.01;
+  // Solo recupera si hay consenso estructural
+  if (!consensus) return 0;
+
+  // Recuperación lenta: +0.05 por consenso (nunca más rápido que decaimiento)
+  const recoveryRate = 0.05;
   return recoveryRate;
 }
 
@@ -178,6 +250,11 @@ export function initializeRLD(): RLDState {
  * 
  * IMPORTANTE: Esta función NO calcula RLD desde métricas.
  * Solo detecta EVENTOS que luego afectan RLD.
+ * 
+ * Umbrales según SPECIFICATION_V_vs_RLD.md:
+ * - Ω < 0.60: Fricción leve (-0.05)
+ * - Ω < 0.50: Fricción media (-0.10)
+ * - Ω < 0.40: Fricción severa (-0.20)
  */
 export function detectFrictionEvents(metrics: {
   omegaSem: number;
@@ -188,17 +265,34 @@ export function detectFrictionEvents(metrics: {
   const events: FrictionEventRecord[] = [];
   const timestamp = Date.now();
 
-  // Umbral de coherencia: Ω < 0.3
-  if (metrics.omegaSem < 0.3) {
+  // Umbrales de coherencia (Ω) según especificación
+  if (metrics.omegaSem < 0.40) {
+    // Fricción severa
     events.push({
       type: 'COHERENCE_VIOLATION',
       timestamp,
-      severity: 1 - (metrics.omegaSem / 0.3), // Más bajo = más severo
-      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.3`
+      severity: 1.0, // Severa
+      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.40 (SEVERA)`
+    });
+  } else if (metrics.omegaSem < 0.50) {
+    // Fricción media
+    events.push({
+      type: 'COHERENCE_VIOLATION',
+      timestamp,
+      severity: 0.5, // Media
+      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.50 (MEDIA)`
+    });
+  } else if (metrics.omegaSem < 0.60) {
+    // Fricción leve
+    events.push({
+      type: 'COHERENCE_VIOLATION',
+      timestamp,
+      severity: 0.25, // Leve
+      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.60 (LEVE)`
     });
   }
 
-  // Umbral de estabilidad: V > 0.005
+  // Umbral de estabilidad: V > 0.005 (mantener por ahora)
   if (metrics.vLyapunov > 0.005) {
     events.push({
       type: 'STABILITY_VIOLATION',
@@ -208,7 +302,7 @@ export function detectFrictionEvents(metrics: {
     });
   }
 
-  // Umbral de eficiencia: ε < 0.5 (violación de recursos)
+  // Umbral de eficiencia: ε < 0.5 (mantener por ahora)
   if (metrics.epsilonEff < 0.5) {
     events.push({
       type: 'RESOURCE_VIOLATION',
