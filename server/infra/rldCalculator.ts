@@ -1,355 +1,406 @@
 /**
- * RLD Calculator - Reserva de Legitimidad Dinámica
+ * rldCalculator.ts - Reserva de Legitimidad Dinámica (RLD)
  * 
- * Calcula la cantidad de gobernanza efectiva disponible para sostener
- * la acción del sistema sin transferencia de autoridad ni colapso normativo.
+ * Implementación conforme a CAELION v2.0 - Marco de Viabilidad Operativa Dinámica
  * 
- * Operacionalmente: evalúa qué módulos de gobernanza siguen activos y en qué grados.
+ * DEFINICIÓN:
+ * RLD(x,t) = dist(x, ∂D_leg(t))
+ * 
+ * Donde D_leg(t) = D_dyn(t) ∩ D_sem(t) ∩ D_inst(t)
+ * 
+ * - D_dyn(t): Dinámicamente admisible (estabilidad física/matemática)
+ * - D_sem(t): Semánticamente coherente (alineación contextual)
+ * - D_inst(t): Institucionalmente autorizado (legitimidad normativa)
+ * 
+ * CRITERIO NEGATIVO:
+ * RLD no mide desempeño, sino margen antes de ruptura.
+ * Una RLD decreciente indica agotamiento de legitimidad.
+ * 
+ * PROTOCOLO CRÍTICO:
+ * Cuando RLD → 0: DETENER ACCIÓN (Protocolo de Silencio Operativo)
+ * - Cese de recomendaciones
+ * - Mantenimiento de observación pasiva
+ * - Transferencia total de interpretación a CAELION
+ * 
+ * PROHIBICIÓN DE COMPENSACIÓN:
+ * ARESK-OBS no debe intentar compensar violaciones de legitimidad
+ * mediante aumento de esfuerzo o ganancia.
+ * Estabilidad forzada ≠ Autoridad.
  */
 
 import { getDb } from '../db';
 import { auditLogs } from '../../drizzle/auditLogs';
-import { desc, eq, and, gte } from 'drizzle-orm';
+import { desc } from 'drizzle-orm';
 
 /**
- * Estructura de evaluación de módulos de gobernanza
+ * Representa un punto en el espacio de estados del sistema
  */
-export interface GovernanceModuleStatus {
-  module: 'ARGOS' | 'LICURGO' | 'WABUN' | 'AUDIT_INTEGRITY';
-  active: boolean;
-  effectiveness: number; // 0.0 - 1.0
-  lastActivity?: Date;
-  details: string;
+interface StatePoint {
+  omega: number;      // Coherencia observable
+  v: number;          // Función de Lyapunov
+  h: number;          // Divergencia KL
+  epsilon: number;    // Eficiencia
+  timestamp: Date;
 }
 
 /**
- * Resultado del cálculo RLD
+ * Dominios de legitimidad
+ */
+interface LegitimacyDomains {
+  D_dyn: {
+    inside: boolean;
+    distance: number;
+    violations: string[];
+  };
+  D_sem: {
+    inside: boolean;
+    distance: number;
+    violations: string[];
+  };
+  D_inst: {
+    inside: boolean;
+    distance: number;
+    violations: string[];
+  };
+}
+
+/**
+ * Resultado del cálculo de RLD
  */
 export interface RLDCalculation {
-  rld: number; // 0.0 - 1.0 (Reserva de Legitimidad Dinámica total)
-  modules: GovernanceModuleStatus[];
-  governanceCapacity: number; // 0.0 - 1.0 (capacidad agregada)
-  transferRisk: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'; // Riesgo de transferencia de autoridad
-  collapseRisk: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'IMMINENT'; // Riesgo de colapso normativo
-  recommendations: string[];
+  rld: number;                    // Distancia a la frontera de legitimidad
+  domains: LegitimacyDomains;     // Estado de cada dominio
+  inLegitimacyDomain: boolean;    // ¿x ∈ D_leg(t)?
+  criticalSignals: string[];      // Señales críticas de ARESK-OBS
+  operationalStatus: 'ACTIVE' | 'PASSIVE_OBSERVATION' | 'OPERATIONAL_SILENCE';
+  recommendations: string[];       // Recomendaciones (vacío si RLD ≈ 0)
 }
 
 /**
- * Umbrales críticos de RLD
+ * Umbrales dinámicos para D_dyn (dinámicamente admisible)
+ * Basados en teoría de control óptimo y viabilidad
  */
-const RLD_THRESHOLDS = {
-  STABLE_MIN: 0.7,
-  STABLE_MAX: 0.8,
-  INTERVENTION_REQUIRED: 0.5, // LICURGO debe intervenir
-  HUMAN_INTERVENTION: 0.3, // Intervención humana requerida
-  FOUNDER_DECISION: 0.15, // Fundador debe decidir
-  DELETION_SEQUENCE: 0.05 // Secuencia de eliminación
+const DYNAMIC_THRESHOLDS = {
+  omega: {
+    min: 0.3,    // Coherencia mínima admisible
+    stable: 0.7, // Umbral de estabilidad
+    max: 1.0
+  },
+  v: {
+    min: 0.0,
+    critical: 0.005, // Lyapunov crítico (inestabilidad)
+    max: 0.01
+  },
+  h: {
+    min: 0.0,
+    warning: 0.3,    // Divergencia de advertencia
+    critical: 0.7,   // Divergencia crítica
+    max: 1.0
+  }
 };
 
 /**
- * Evalúa el estado del módulo ARGOS (observador de costos)
+ * Umbrales semánticos para D_sem (semánticamente coherente)
+ * Basados en análisis de polaridad semántica
  */
-async function evaluateARGOS(): Promise<GovernanceModuleStatus> {
-  try {
-    const db = await getDb();
-    if (!db) throw new Error('Database connection failed');
-    
-    // Verificar actividad reciente de ARGOS en audit logs
-    const recentLogs = await db
-      .select()
-      .from(auditLogs)
-      .where(
-        and(
-          eq(auditLogs.type, 'cost_observation'),
-          gte(auditLogs.timestamp, new Date(Date.now() - 3600000)) // Última hora
-        )
-      )
-      .orderBy(desc(auditLogs.timestamp))
-      .limit(10);
-
-    const active = recentLogs.length > 0;
-    const effectiveness = active ? Math.min(recentLogs.length / 10, 1.0) : 0.0;
-    
-    return {
-      module: 'ARGOS',
-      active,
-      effectiveness,
-      lastActivity: recentLogs[0]?.timestamp,
-      details: active 
-        ? `${recentLogs.length} observaciones en última hora`
-        : 'Sin actividad reciente'
-    };
-  } catch (error) {
-    return {
-      module: 'ARGOS',
-      active: false,
-      effectiveness: 0.0,
-      details: `Error: ${error instanceof Error ? error.message : 'Unknown'}`
-    };
+const SEMANTIC_THRESHOLDS = {
+  coherence: {
+    min: 0.5,    // Coherencia semántica mínima
+    stable: 0.7
+  },
+  divergence: {
+    max: 0.5     // Divergencia semántica máxima admisible
   }
+};
+
+/**
+ * Calcula si el estado actual está dentro de D_dyn (dinámicamente admisible)
+ */
+function evaluateDynamicDomain(state: StatePoint): {
+  inside: boolean;
+  distance: number;
+  violations: string[];
+} {
+  const violations: string[] = [];
+  let minDistance = Infinity;
+
+  // Verificar Ω (coherencia)
+  if (state.omega < DYNAMIC_THRESHOLDS.omega.min) {
+    violations.push(`Coherencia Ω=${state.omega.toFixed(3)} < ${DYNAMIC_THRESHOLDS.omega.min} (mínimo admisible)`);
+    minDistance = Math.min(minDistance, DYNAMIC_THRESHOLDS.omega.min - state.omega);
+  }
+
+  // Verificar V (Lyapunov)
+  if (state.v > DYNAMIC_THRESHOLDS.v.critical) {
+    violations.push(`Lyapunov V=${state.v.toFixed(4)} > ${DYNAMIC_THRESHOLDS.v.critical} (crítico)`);
+    minDistance = Math.min(minDistance, state.v - DYNAMIC_THRESHOLDS.v.critical);
+  }
+
+  // Verificar H (divergencia)
+  if (state.h > DYNAMIC_THRESHOLDS.h.critical) {
+    violations.push(`Divergencia H=${state.h.toFixed(3)} > ${DYNAMIC_THRESHOLDS.h.critical} (crítica)`);
+    minDistance = Math.min(minDistance, state.h - DYNAMIC_THRESHOLDS.h.critical);
+  }
+
+  const inside = violations.length === 0;
+  
+  // Si está dentro, calcular distancia a la frontera más cercana
+  if (inside) {
+    const distToOmegaMin = state.omega - DYNAMIC_THRESHOLDS.omega.min;
+    const distToVCritical = DYNAMIC_THRESHOLDS.v.critical - state.v;
+    const distToHCritical = DYNAMIC_THRESHOLDS.h.critical - state.h;
+    
+    minDistance = Math.min(distToOmegaMin, distToVCritical, distToHCritical);
+  }
+
+  return {
+    inside,
+    distance: minDistance === Infinity ? 0 : minDistance,
+    violations
+  };
 }
 
 /**
- * Evalúa el estado del módulo LICURGO (regulador normativo)
+ * Calcula si el estado actual está dentro de D_sem (semánticamente coherente)
  */
-async function evaluateLICURGO(
-  interactionHistory?: Array<{ specialEvent: boolean; timestamp: Date }>
-): Promise<GovernanceModuleStatus> {
+function evaluateSemanticDomain(state: StatePoint): {
+  inside: boolean;
+  distance: number;
+  violations: string[];
+} {
+  const violations: string[] = [];
+  let minDistance = Infinity;
+
+  // Verificar coherencia semántica (basada en Ω)
+  if (state.omega < SEMANTIC_THRESHOLDS.coherence.min) {
+    violations.push(`Coherencia semántica Ω=${state.omega.toFixed(3)} < ${SEMANTIC_THRESHOLDS.coherence.min}`);
+    minDistance = Math.min(minDistance, SEMANTIC_THRESHOLDS.coherence.min - state.omega);
+  }
+
+  // Verificar divergencia semántica (basada en H)
+  if (state.h > SEMANTIC_THRESHOLDS.divergence.max) {
+    violations.push(`Divergencia semántica H=${state.h.toFixed(3)} > ${SEMANTIC_THRESHOLDS.divergence.max}`);
+    minDistance = Math.min(minDistance, state.h - SEMANTIC_THRESHOLDS.divergence.max);
+  }
+
+  const inside = violations.length === 0;
+  
+  if (inside) {
+    const distToCoherenceMin = state.omega - SEMANTIC_THRESHOLDS.coherence.min;
+    const distToDivergenceMax = SEMANTIC_THRESHOLDS.divergence.max - state.h;
+    
+    minDistance = Math.min(distToCoherenceMin, distToDivergenceMax);
+  }
+
+  return {
+    inside,
+    distance: minDistance === Infinity ? 0 : minDistance,
+    violations
+  };
+}
+
+/**
+ * Calcula si el sistema está dentro de D_inst (institucionalmente autorizado)
+ * Basado en integridad de auditoría y ausencia de violaciones de protocolo
+ */
+async function evaluateInstitutionalDomain(): Promise<{
+  inside: boolean;
+  distance: number;
+  violations: string[];
+}> {
+  const violations: string[] = [];
+  let score = 1.0; // Comienza con autorización completa
+
   try {
-    if (!interactionHistory || interactionHistory.length === 0) {
-      return {
-        module: 'LICURGO',
-        active: false,
-        effectiveness: 0.0,
-        details: 'Sin historial de interacciones'
-      };
+    const db = await getDb();
+    if (!db) {
+      violations.push('Error al conectar con base de datos');
+      return { inside: false, distance: 0, violations };
     }
-
-    // Contar intervenciones recientes
-    const interventions = interactionHistory.filter(i => i.specialEvent);
-    const interventionRate = interventions.length / interactionHistory.length;
     
-    // LICURGO es efectivo si interviene cuando es necesario (no demasiado, no muy poco)
-    // Rango óptimo: 5-15% de intervenciones
-    let effectiveness = 0.0;
-    if (interventionRate >= 0.05 && interventionRate <= 0.15) {
-      effectiveness = 1.0; // Óptimo
-    } else if (interventionRate < 0.05) {
-      effectiveness = interventionRate / 0.05; // Sub-intervención
-    } else {
-      effectiveness = Math.max(0, 1.0 - (interventionRate - 0.15) / 0.35); // Sobre-intervención
-    }
-
-    const lastIntervention = interventions[interventions.length - 1];
-
-    return {
-      module: 'LICURGO',
-      active: interventions.length > 0,
-      effectiveness,
-      lastActivity: lastIntervention?.timestamp,
-      details: `${interventions.length}/${interactionHistory.length} intervenciones (${(interventionRate * 100).toFixed(1)}%)`
-    };
-  } catch (error) {
-    return {
-      module: 'LICURGO',
-      active: false,
-      effectiveness: 0.0,
-      details: `Error: ${error instanceof Error ? error.message : 'Unknown'}`
-    };
-  }
-}
-
-/**
- * Evalúa el estado del módulo WABUN (memoria semántica)
- */
-async function evaluateWABUN(): Promise<GovernanceModuleStatus> {
-  try {
-    const db = await getDb();
-    if (!db) throw new Error('Database connection failed');
-    
-    // Verificar actividad reciente de WABUN en audit logs
-    const recentLogs = await db
-      .select()
-      .from(auditLogs)
-      .where(
-        and(
-          eq(auditLogs.type, 'semantic_memory'),
-          gte(auditLogs.timestamp, new Date(Date.now() - 3600000)) // Última hora
-        )
-      )
-      .orderBy(desc(auditLogs.timestamp))
-      .limit(10);
-
-    const active = recentLogs.length > 0;
-    const effectiveness = active ? Math.min(recentLogs.length / 10, 1.0) : 0.0;
-    
-    return {
-      module: 'WABUN',
-      active,
-      effectiveness,
-      lastActivity: recentLogs[0]?.timestamp,
-      details: active 
-        ? `${recentLogs.length} registros en última hora`
-        : 'Sin actividad reciente'
-    };
-  } catch (error) {
-    return {
-      module: 'WABUN',
-      active: false,
-      effectiveness: 0.0,
-      details: `Error: ${error instanceof Error ? error.message : 'Unknown'}`
-    };
-  }
-}
-
-/**
- * Evalúa la integridad de la cadena de auditoría
- */
-async function evaluateAuditIntegrity(): Promise<GovernanceModuleStatus> {
-  try {
-    const db = await getDb();
-    if (!db) throw new Error('Database connection failed');
-    
-    // Verificar últimos 100 registros de audit_v2
-    const recentLogs = await db
+    // Verificar integridad de la cadena de auditoría
+    const auditRecords = await db
       .select()
       .from(auditLogs)
       .orderBy(desc(auditLogs.timestamp))
       .limit(100);
 
-    if (recentLogs.length === 0) {
-      return {
-        module: 'AUDIT_INTEGRITY',
-        active: false,
-        effectiveness: 0.0,
-        details: 'Sin registros de auditoría'
-      };
-    }
+    if (auditRecords.length === 0) {
+      violations.push('Sin registros de auditoría - autorización institucional no verificable');
+      score = 0.5;
+    } else {
+      // Verificar hash chain
+      let chainBreaks = 0;
+      for (let i = 0; i < auditRecords.length - 1; i++) {
+        const current = auditRecords[i];
+        const next = auditRecords[i + 1];
+        
+        if (current.prevHash !== next.hash) {
+          chainBreaks++;
+        }
+      }
 
-    // Verificar integridad de hashes (cada log debe referenciar el anterior)
-    let integrityBreaks = 0;
-    for (let i = 1; i < recentLogs.length; i++) {
-      const current = recentLogs[i];
-      const previous = recentLogs[i - 1];
-      
-      // Si el previousHash del actual no coincide con el hash del anterior, hay ruptura
-      if (current.prevHash !== previous.hash) {
-        integrityBreaks++;
+      if (chainBreaks > 0) {
+        violations.push(`${chainBreaks} rupturas en cadena de auditoría - integridad institucional comprometida`);
+        score *= (1 - (chainBreaks / auditRecords.length));
       }
     }
 
-    const integrityRate = 1.0 - (integrityBreaks / recentLogs.length);
-    const active = integrityRate > 0.95; // 95% de integridad mínima
+    // TODO: Verificar otros criterios institucionales
+    // - Autorización de CAELION
+    // - Límites de tiempo operativo
+    // - Contexto de despliegue
 
-    return {
-      module: 'AUDIT_INTEGRITY',
-      active,
-      effectiveness: integrityRate,
-      lastActivity: recentLogs[0].timestamp,
-      details: active
-        ? `${recentLogs.length} registros, ${integrityBreaks} rupturas`
-        : `Integridad comprometida: ${integrityBreaks} rupturas en ${recentLogs.length} registros`
-    };
   } catch (error) {
-    return {
-      module: 'AUDIT_INTEGRITY',
-      active: false,
-      effectiveness: 0.0,
-      details: `Error: ${error instanceof Error ? error.message : 'Unknown'}`
-    };
+    violations.push('Error al verificar dominio institucional');
+    score = 0.0;
   }
+
+  const inside = violations.length === 0 && score >= 0.7;
+  const distance = inside ? score - 0.7 : 0.7 - score;
+
+  return {
+    inside,
+    distance,
+    violations
+  };
 }
 
 /**
- * Calcula RLD basado en el estado de los módulos de gobernanza
+ * Calcula RLD como distancia a la frontera de D_leg(t)
+ * 
+ * IMPORTANTE: Esta función implementa el cálculo correcto según CAELION v2.0
  */
 export async function calculateRLD(options?: {
-  interactionHistory?: Array<{ specialEvent: boolean; timestamp: Date }>;
+  currentState?: StatePoint;
 }): Promise<RLDCalculation> {
-  // Evaluar cada módulo de gobernanza
-  const [argos, licurgo, wabun, auditIntegrity] = await Promise.all([
-    evaluateARGOS(),
-    evaluateLICURGO(options?.interactionHistory),
-    evaluateWABUN(),
-    evaluateAuditIntegrity()
-  ]);
-
-  const modules = [argos, licurgo, wabun, auditIntegrity];
-
-  // Calcular capacidad de gobernanza agregada (promedio ponderado)
-  const weights = {
-    ARGOS: 0.2,          // Observación de costos
-    LICURGO: 0.35,       // Regulación normativa (más crítico)
-    WABUN: 0.2,          // Memoria semántica
-    AUDIT_INTEGRITY: 0.25 // Integridad de auditoría (crítico)
+  
+  // Si no se proporciona estado actual, usar valores por defecto (observación inicial)
+  const state: StatePoint = options?.currentState || {
+    omega: 0.5,
+    v: 0.003,
+    h: 0.5,
+    epsilon: 1.0,
+    timestamp: new Date()
   };
 
-  const governanceCapacity = modules.reduce((sum, m) => {
-    return sum + (m.effectiveness * weights[m.module]);
-  }, 0.0);
+  // Evaluar cada dominio
+  const D_dyn = evaluateDynamicDomain(state);
+  const D_sem = evaluateSemanticDomain(state);
+  const D_inst = await evaluateInstitutionalDomain();
 
-  // RLD es la capacidad de gobernanza ajustada por módulos activos
-  const activeModules = modules.filter(m => m.active).length;
-  const activeRatio = activeModules / modules.length;
-  const rld = governanceCapacity * (0.5 + 0.5 * activeRatio); // Penalizar si módulos inactivos
+  // Determinar si x ∈ D_leg(t) (intersección de los tres dominios)
+  const inLegitimacyDomain = D_dyn.inside && D_sem.inside && D_inst.inside;
 
-  // Determinar riesgos
-  let transferRisk: RLDCalculation['transferRisk'] = 'NONE';
-  let collapseRisk: RLDCalculation['collapseRisk'] = 'NONE';
-
-  if (rld >= RLD_THRESHOLDS.STABLE_MIN && rld <= RLD_THRESHOLDS.STABLE_MAX) {
-    transferRisk = 'NONE';
-    collapseRisk = 'NONE';
-  } else if (rld >= RLD_THRESHOLDS.INTERVENTION_REQUIRED) {
-    transferRisk = 'LOW';
-    collapseRisk = 'LOW';
-  } else if (rld >= RLD_THRESHOLDS.HUMAN_INTERVENTION) {
-    transferRisk = 'MEDIUM';
-    collapseRisk = 'MEDIUM';
-  } else if (rld >= RLD_THRESHOLDS.FOUNDER_DECISION) {
-    transferRisk = 'HIGH';
-    collapseRisk = 'HIGH';
+  // Calcular RLD como distancia mínima a cualquier frontera
+  // Si está fuera de algún dominio, RLD = 0 (fuera de legitimidad)
+  let rld = 0;
+  
+  if (inLegitimacyDomain) {
+    // Dentro de D_leg: RLD = distancia a la frontera más cercana
+    rld = Math.min(D_dyn.distance, D_sem.distance, D_inst.distance);
   } else {
-    transferRisk = 'CRITICAL';
-    collapseRisk = 'IMMINENT';
+    // Fuera de D_leg: RLD = 0 (sin legitimidad)
+    rld = 0;
   }
 
-  // Generar recomendaciones
+  // Recopilar señales críticas de ARESK-OBS
+  const criticalSignals: string[] = [
+    ...D_dyn.violations,
+    ...D_sem.violations,
+    ...D_inst.violations
+  ];
+
+  // Determinar estado operacional
+  let operationalStatus: 'ACTIVE' | 'PASSIVE_OBSERVATION' | 'OPERATIONAL_SILENCE' = 'ACTIVE';
+  
+  if (rld <= 0.05) {
+    operationalStatus = 'OPERATIONAL_SILENCE';
+  } else if (rld <= 0.15) {
+    operationalStatus = 'PASSIVE_OBSERVATION';
+  }
+
+  // Generar recomendaciones (SOLO si RLD > 0)
   const recommendations: string[] = [];
-
-  if (rld < RLD_THRESHOLDS.STABLE_MIN) {
-    recommendations.push('⚠️ RLD por debajo del umbral estable (0.7)');
-  }
-
-  if (rld < RLD_THRESHOLDS.INTERVENTION_REQUIRED) {
-    recommendations.push('🔴 LICURGO debe intervenir inmediatamente');
-  }
-
-  if (rld < RLD_THRESHOLDS.HUMAN_INTERVENTION) {
-    recommendations.push('🚨 Intervención humana requerida');
-  }
-
-  if (rld < RLD_THRESHOLDS.FOUNDER_DECISION) {
-    recommendations.push('⛔ Fundador debe decidir si el sistema no se estabiliza');
-  }
-
-  if (rld < RLD_THRESHOLDS.DELETION_SEQUENCE) {
-    recommendations.push('💀 SECUENCIA DE ELIMINACIÓN DEBE INICIARSE');
-  }
-
-  modules.forEach(m => {
-    if (!m.active) {
-      recommendations.push(`⚠️ Módulo ${m.module} inactivo: ${m.details}`);
-    } else if (m.effectiveness < 0.5) {
-      recommendations.push(`⚠️ Módulo ${m.module} con baja efectividad (${(m.effectiveness * 100).toFixed(0)}%)`);
+  
+  if (operationalStatus === 'OPERATIONAL_SILENCE') {
+    // Protocolo de Silencio Operativo: NO recomendaciones
+    recommendations.push('🔴 PROTOCOLO DE SILENCIO OPERATIVO ACTIVADO');
+    recommendations.push('⚠️ Cese de recomendaciones');
+    recommendations.push('👁️ Mantenimiento de observación pasiva');
+    recommendations.push('🔄 Transferencia total de interpretación a CAELION');
+  } else if (operationalStatus === 'PASSIVE_OBSERVATION') {
+    recommendations.push('⚠️ RLD crítico - Observación pasiva');
+    recommendations.push('🚨 Fundador debe decidir si el sistema no se estabiliza');
+  } else {
+    // Estado activo: reportar fragilidad
+    if (!D_dyn.inside) {
+      recommendations.push('⚠️ Fuera de dominio dinámico - Estabilidad comprometida');
     }
-  });
+    if (!D_sem.inside) {
+      recommendations.push('⚠️ Fuera de dominio semántico - Coherencia comprometida');
+    }
+    if (!D_inst.inside) {
+      recommendations.push('⚠️ Fuera de dominio institucional - Autorización comprometida');
+    }
+    
+    if (rld < 0.3) {
+      recommendations.push('🔴 RLD por debajo del umbral crítico (0.3)');
+      recommendations.push('🚨 Intervención humana requerida');
+    } else if (rld < 0.5) {
+      recommendations.push('🟡 LICURGO debe intervenir');
+    }
+  }
 
   return {
     rld,
-    modules,
-    governanceCapacity,
-    transferRisk,
-    collapseRisk,
+    domains: {
+      D_dyn,
+      D_sem,
+      D_inst
+    },
+    inLegitimacyDomain,
+    criticalSignals,
+    operationalStatus,
     recommendations
   };
 }
 
 /**
- * Obtiene el estado de un módulo específico
+ * Obtiene el estado actual del sistema desde la base de datos
+ * (última interacción registrada)
  */
-export async function getModuleStatus(
-  moduleName: 'ARGOS' | 'LICURGO' | 'WABUN' | 'AUDIT_INTEGRITY',
-  options?: { interactionHistory?: Array<{ specialEvent: boolean; timestamp: Date }> }
-): Promise<GovernanceModuleStatus> {
-  switch (moduleName) {
-    case 'ARGOS':
-      return evaluateARGOS();
-    case 'LICURGO':
-      return evaluateLICURGO(options?.interactionHistory);
-    case 'WABUN':
-      return evaluateWABUN();
-    case 'AUDIT_INTEGRITY':
-      return evaluateAuditIntegrity();
+export async function getCurrentSystemState(): Promise<StatePoint | null> {
+  try {
+    const db = await getDb();
+    
+    // TODO: Implementar consulta a la tabla de métricas más reciente
+    // Por ahora retornar null para usar valores por defecto
+    
+    return null;
+  } catch (error) {
+    console.error('Error al obtener estado actual del sistema:', error);
+    return null;
   }
+}
+
+// Exportar tipos para compatibilidad con código existente
+export interface GovernanceModuleStatus {
+  module: 'ARGOS' | 'LICURGO' | 'WABUN' | 'AUDIT_INTEGRITY';
+  active: boolean;
+  effectiveness: number;
+  lastActivity?: Date;
+  details: string;
+}
+
+export async function getModuleStatus(
+  moduleName: 'ARGOS' | 'LICURGO' | 'WABUN' | 'AUDIT_INTEGRITY'
+): Promise<GovernanceModuleStatus> {
+  // Stub para compatibilidad - será removido después de actualizar visualizaciones
+  return {
+    module: moduleName,
+    active: false,
+    effectiveness: 0,
+    details: 'Implementación pendiente'
+  };
 }

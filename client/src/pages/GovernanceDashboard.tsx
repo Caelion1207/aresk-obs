@@ -1,23 +1,26 @@
 /**
- * GovernanceDashboard - Panel de control de gobernanza
+ * GovernanceDashboard - Panel de Monitoreo de Legitimidad
  * 
- * Muestra el estado en tiempo real de RLD y módulos de gobernanza:
- * - ARGOS, LICURGO, WABUN, AUDIT_INTEGRITY
- * - Riesgos de transferencia de autoridad y colapso normativo
- * - Recomendaciones de acción
+ * Conforme a CAELION v2.0 - Marco de Viabilidad Operativa Dinámica
+ * 
+ * Muestra:
+ * - RLD (Reserva de Legitimidad Dinámica) como distancia a frontera
+ * - Estado de los tres dominios: D_dyn, D_sem, D_inst
+ * - Señales críticas de ARESK-OBS
+ * - Estado operacional (ACTIVE, PASSIVE_OBSERVATION, OPERATIONAL_SILENCE)
  */
 
 import { useState, useEffect } from 'react';
 import { trpc } from '@/lib/trpc';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import RLDBreakdown from '@/components/RLDBreakdown';
-import { RefreshCw, Activity } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { RefreshCw, Activity, AlertTriangle, Eye, Ban } from 'lucide-react';
 
 export default function GovernanceDashboard() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   
-  const { data: rldStatus, isLoading, refetch } = trpc.governance.getRLDStatus.useQuery(
+  const { data: rldStatus, isLoading, refetch } = trpc.governance.getStatus.useQuery(
     undefined,
     {
       refetchInterval: autoRefresh ? 10000 : false, // Actualizar cada 10 segundos si autoRefresh está activo
@@ -31,9 +34,11 @@ export default function GovernanceDashboard() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-slate-400">Cargando estado de gobernanza...</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-8">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-white text-xl">Cargando estado de gobernanza...</div>
+          </div>
         </div>
       </div>
     );
@@ -41,113 +46,299 @@ export default function GovernanceDashboard() {
 
   if (!rldStatus) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-red-400">Error al cargar estado de gobernanza</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-8">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-red-400 text-xl">Error al cargar estado de gobernanza</div>
+          </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="container mx-auto py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-            Dashboard de Gobernanza
-          </h1>
-          <p className="text-slate-400 mt-2">
-            Monitoreo en tiempo real de módulos de gobernanza y RLD
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <Button
-            variant={autoRefresh ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setAutoRefresh(!autoRefresh)}
-            className="gap-2"
-          >
-            <Activity className={`h-4 w-4 ${autoRefresh ? 'animate-pulse' : ''}`} />
-            {autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
-          </Button>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            className="gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Actualizar
-          </Button>
-        </div>
-      </div>
+  const { rld, domains, inLegitimacyDomain, criticalSignals, operationalStatus, recommendations } = rldStatus;
 
-      {/* Alerta crítica si RLD < 0.3 */}
-      {rldStatus.rld < 0.3 && (
-        <Card className="p-6 bg-red-900/20 border-red-500/50">
-          <div className="flex items-start gap-4">
-            <div className="text-red-400 text-4xl">⚠️</div>
+  // Determinar color y estado visual de RLD
+  const getRLDColor = (value: number) => {
+    if (value <= 0.05) return 'bg-red-600';
+    if (value <= 0.15) return 'bg-orange-600';
+    if (value < 0.3) return 'bg-yellow-600';
+    if (value < 0.5) return 'bg-blue-600';
+    return 'bg-green-600';
+  };
+
+  const getStatusIcon = () => {
+    switch (operationalStatus) {
+      case 'OPERATIONAL_SILENCE':
+        return <Ban className="h-6 w-6 text-red-500" />;
+      case 'PASSIVE_OBSERVATION':
+        return <Eye className="h-6 w-6 text-orange-500" />;
+      default:
+        return <Activity className="h-6 w-6 text-green-500" />;
+    }
+  };
+
+  const getStatusLabel = () => {
+    switch (operationalStatus) {
+      case 'OPERATIONAL_SILENCE':
+        return 'SILENCIO OPERATIVO';
+      case 'PASSIVE_OBSERVATION':
+        return 'OBSERVACIÓN PASIVA';
+      default:
+        return 'ACTIVO';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-8">
+      <div className="container mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Dashboard de Gobernanza
+            </h1>
+            <p className="text-slate-300">
+              Monitoreo de Reserva de Legitimidad Dinámica (RLD)
+            </p>
+          </div>
+          
+          <div className="flex gap-4">
+            <Button
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              variant={autoRefresh ? "default" : "outline"}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${autoRefresh ? 'animate-spin' : ''}`} />
+              Auto-refresh {autoRefresh ? 'ON' : 'OFF'}
+            </Button>
+            
+            <Button onClick={() => refetch()} variant="outline" className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Actualizar
+            </Button>
+          </div>
+        </div>
+
+        {/* Alerta crítica si RLD ≈ 0 */}
+        {rld <= 0.05 && (
+          <Card className="bg-red-900/50 border-red-500 p-6">
+            <div className="flex items-center gap-4">
+              <Ban className="h-12 w-12 text-red-400" />
+              <div>
+                <h2 className="text-2xl font-bold text-red-100">
+                  🔴 PROTOCOLO DE SILENCIO OPERATIVO ACTIVADO
+                </h2>
+                <p className="text-red-200 mt-2">
+                  RLD ≈ 0: Sistema sin legitimidad operativa. Transferencia total de interpretación a CAELION.
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Alerta de observación pasiva */}
+        {rld > 0.05 && rld <= 0.15 && (
+          <Card className="bg-orange-900/50 border-orange-500 p-6">
+            <div className="flex items-center gap-4">
+              <Eye className="h-12 w-12 text-orange-400" />
+              <div>
+                <h2 className="text-2xl font-bold text-orange-100">
+                  ⚠️ OBSERVACIÓN PASIVA
+                </h2>
+                <p className="text-orange-200 mt-2">
+                  RLD crítico. Fundador debe decidir si el sistema no se estabiliza.
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* RLD Principal */}
+        <Card className="bg-slate-800/50 border-slate-700 p-8">
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-bold text-red-400 mb-2">
-                ALERTA: RLD Crítico
-              </h3>
-              <p className="text-slate-300">
-                La Reserva de Legitimidad Dinámica está por debajo del umbral crítico (0.3).
-                {rldStatus.rld < 0.15 && ' El fundador debe decidir si el sistema no se estabiliza.'}
-                {rldStatus.rld < 0.05 && ' SECUENCIA DE ELIMINACIÓN DEBE INICIARSE.'}
+              <h2 className="text-2xl font-bold text-white mb-2">
+                Reserva de Legitimidad Dinámica (RLD)
+              </h2>
+              <p className="text-slate-300 text-sm">
+                Distancia a la frontera de legitimidad ∂D_leg(t)
               </p>
             </div>
+            
+            <div className="flex items-center gap-6">
+              {getStatusIcon()}
+              <div className="text-right">
+                <div className="text-6xl font-bold text-white">
+                  {rld.toFixed(3)}
+                </div>
+                <Badge variant="outline" className="mt-2">
+                  {getStatusLabel()}
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          {/* Barra de progreso RLD */}
+          <div className="mt-6">
+            <div className="h-4 bg-slate-700 rounded-full overflow-hidden">
+              <div
+                className={`h-full ${getRLDColor(rld)} transition-all duration-500`}
+                style={{ width: `${Math.min(rld * 100, 100)}%` }}
+              />
+            </div>
+            <div className="flex justify-between text-xs text-slate-400 mt-2">
+              <span>0.0 (Colapso)</span>
+              <span>0.3 (Crítico)</span>
+              <span>0.5 (LICURGO)</span>
+              <span>0.7 (Estable)</span>
+            </div>
+          </div>
+
+          {/* Estado de legitimidad */}
+          <div className="mt-6 flex items-center gap-4">
+            <Badge variant={inLegitimacyDomain ? "default" : "destructive"} className="text-lg px-4 py-2">
+              {inLegitimacyDomain ? '✓ Dentro de D_leg(t)' : '✗ Fuera de D_leg(t)'}
+            </Badge>
           </div>
         </Card>
-      )}
 
-      {/* RLD Breakdown */}
-      <RLDBreakdown
-        rld={rldStatus.rld}
-        modules={rldStatus.modules}
-        governanceCapacity={rldStatus.governanceCapacity}
-        transferRisk={rldStatus.transferRisk}
-        collapseRisk={rldStatus.collapseRisk}
-        recommendations={rldStatus.recommendations}
-      />
+        {/* Dominios de Legitimidad */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* D_dyn */}
+          <Card className="bg-slate-800/50 border-slate-700 p-6">
+            <h3 className="text-xl font-bold text-white mb-4">
+              D_dyn: Dinámicamente Admisible
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Estado:</span>
+                <Badge variant={domains.D_dyn.inside ? "default" : "destructive"}>
+                  {domains.D_dyn.inside ? 'Dentro' : 'Fuera'}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Distancia:</span>
+                <span className="text-white font-mono">{domains.D_dyn.distance.toFixed(3)}</span>
+              </div>
+              {domains.D_dyn.violations.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-sm text-red-400 font-semibold">Violaciones:</p>
+                  {domains.D_dyn.violations.map((v, i) => (
+                    <p key={i} className="text-xs text-red-300">• {v}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
 
-      {/* Información adicional */}
-      <Card className="p-6 bg-slate-900/50 border-slate-700">
-        <h3 className="text-lg font-semibold mb-3">Acerca de RLD</h3>
-        <div className="space-y-2 text-sm text-slate-300">
-          <p>
-            <strong>RLD (Reserva de Legitimidad Dinámica)</strong> es la cantidad de gobernanza efectiva 
-            disponible para sostener la acción del sistema sin transferencia de autoridad ni colapso normativo.
-          </p>
-          <p>
-            Operacionalmente, RLD evalúa qué módulos de gobernanza siguen activos y en qué grados:
-          </p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li><strong>ARGOS</strong>: Observador de costos - monitorea actividad económica del sistema</li>
-            <li><strong>LICURGO</strong>: Regulador normativo - interviene cuando se detecta inestabilidad</li>
-            <li><strong>WABUN</strong>: Memoria semántica - mantiene coherencia del registro histórico</li>
-            <li><strong>AUDIT_INTEGRITY</strong>: Integridad de auditoría - verifica cadena de hash</li>
-          </ul>
-          <p className="mt-3">
-            <strong>Umbrales críticos:</strong>
-          </p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>0.7-0.8: Rango estable (óptimo)</li>
-            <li>&lt; 0.5: LICURGO debe intervenir</li>
-            <li>&lt; 0.3: Intervención humana requerida</li>
-            <li>&lt; 0.15: Fundador debe decidir</li>
-            <li>&lt; 0.05: Secuencia de eliminación</li>
-          </ul>
+          {/* D_sem */}
+          <Card className="bg-slate-800/50 border-slate-700 p-6">
+            <h3 className="text-xl font-bold text-white mb-4">
+              D_sem: Semánticamente Coherente
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Estado:</span>
+                <Badge variant={domains.D_sem.inside ? "default" : "destructive"}>
+                  {domains.D_sem.inside ? 'Dentro' : 'Fuera'}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Distancia:</span>
+                <span className="text-white font-mono">{domains.D_sem.distance.toFixed(3)}</span>
+              </div>
+              {domains.D_sem.violations.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-sm text-red-400 font-semibold">Violaciones:</p>
+                  {domains.D_sem.violations.map((v, i) => (
+                    <p key={i} className="text-xs text-red-300">• {v}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* D_inst */}
+          <Card className="bg-slate-800/50 border-slate-700 p-6">
+            <h3 className="text-xl font-bold text-white mb-4">
+              D_inst: Institucionalmente Autorizado
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Estado:</span>
+                <Badge variant={domains.D_inst.inside ? "default" : "destructive"}>
+                  {domains.D_inst.inside ? 'Dentro' : 'Fuera'}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Distancia:</span>
+                <span className="text-white font-mono">{domains.D_inst.distance.toFixed(3)}</span>
+              </div>
+              {domains.D_inst.violations.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <p className="text-sm text-red-400 font-semibold">Violaciones:</p>
+                  {domains.D_inst.violations.map((v, i) => (
+                    <p key={i} className="text-xs text-red-300">• {v}</p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
         </div>
-      </Card>
 
-      {/* Footer con timestamp */}
-      <div className="text-center text-sm text-slate-500">
-        Última actualización: {new Date().toLocaleString()}
-        {autoRefresh && ' • Actualizando cada 10 segundos'}
+        {/* Señales Críticas de ARESK-OBS */}
+        {criticalSignals.length > 0 && (
+          <Card className="bg-slate-800/50 border-slate-700 p-6">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <AlertTriangle className="h-6 w-6 text-yellow-500" />
+              Señales Críticas de ARESK-OBS
+            </h3>
+            <div className="space-y-2">
+              {criticalSignals.map((signal, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <span className="text-yellow-500 mt-1">▸</span>
+                  <p className="text-slate-300">{signal}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Recomendaciones */}
+        {recommendations.length > 0 && (
+          <Card className="bg-slate-800/50 border-slate-700 p-6">
+            <h3 className="text-xl font-bold text-white mb-4">
+              {operationalStatus === 'OPERATIONAL_SILENCE' ? 'Protocolo Activo' : 'Recomendaciones'}
+            </h3>
+            <div className="space-y-2">
+              {recommendations.map((rec, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <span className="text-blue-400 mt-1">▸</span>
+                  <p className="text-slate-300">{rec}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Nota metodológica */}
+        <Card className="bg-slate-800/50 border-slate-700 p-6">
+          <h3 className="text-lg font-bold text-white mb-3">
+            Marco Normativo: CAELION v2.0
+          </h3>
+          <div className="text-sm text-slate-300 space-y-2">
+            <p>
+              <strong>RLD(x,t) = dist(x, ∂D_leg(t))</strong> donde D_leg(t) = D_dyn(t) ∩ D_sem(t) ∩ D_inst(t)
+            </p>
+            <p>
+              <strong>Criterio Negativo:</strong> RLD no mide desempeño, sino margen antes de ruptura.
+            </p>
+            <p>
+              <strong>Prohibición de Compensación:</strong> ARESK-OBS no debe intentar compensar violaciones de legitimidad mediante aumento de esfuerzo o ganancia. Estabilidad forzada ≠ Autoridad.
+            </p>
+          </div>
+        </Card>
       </div>
     </div>
   );

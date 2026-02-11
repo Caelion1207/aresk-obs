@@ -25,7 +25,7 @@ function Router() {
       <Route path={"/experimento/dynamics"} component={DynamicsMonitor} />
       <Route path={"/core"} component={CoreDashboard} />
       <Route path={"/caelion/history"} component={CaelionHistory} />
-       <Route path="/caelion/session/:sessionId" component={CaelionSessionDetail} />
+      <Route path="/caelion/session/:sessionId" component={CaelionSessionDetail} />
       <Route path="/governance" component={GovernanceDashboard} />
 
       <Route path="/investigacion" component={ResearchPage} />

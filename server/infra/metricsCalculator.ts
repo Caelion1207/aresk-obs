@@ -80,9 +80,8 @@ export async function calculateMetrics(
   
   if (options?.includeRLD) {
     try {
-      rldDetails = await calculateRLD({
-        interactionHistory: options.interactionHistory
-      });
+      rldDetails = await calculateRLD();
+      // TODO: Pasar currentState cuando esté disponible
       rld = rldDetails.rld;
     } catch (error) {
       console.error('Error calculating RLD:', error);

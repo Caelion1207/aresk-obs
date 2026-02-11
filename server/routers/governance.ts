@@ -1,45 +1,36 @@
-import { z } from 'zod';
+/**
+ * Governance Router - Endpoints para monitoreo de gobernanza
+ */
+
 import { publicProcedure, router } from '../_core/trpc';
-import { calculateRLD, getModuleStatus } from '../infra/rldCalculator';
+import { calculateRLD, type RLDCalculation } from '../infra/rldCalculator';
 
 export const governanceRouter = router({
   /**
-   * Obtener estado completo de RLD con desglose por módulos
+   * Obtiene el estado actual de RLD y módulos de gobernanza
    */
-  getRLDStatus: publicProcedure
-    .query(async () => {
-      const rldCalculation = await calculateRLD();
-      return rldCalculation;
-    }),
-
-  /**
-   * Obtener estado de un módulo específico
-   */
-  getModuleStatus: publicProcedure
-    .input(z.object({
-      module: z.enum(['ARGOS', 'LICURGO', 'WABUN', 'AUDIT_INTEGRITY'])
-    }))
-    .query(async ({ input }) => {
-      const status = await getModuleStatus(input.module);
-      return status;
-    }),
-
-  /**
-   * Obtener historial de RLD (últimas 24 horas)
-   * Para gráfica de evolución temporal
-   */
-  getRLDHistory: publicProcedure
-    .query(async () => {
-      // TODO: Implementar almacenamiento de snapshots de RLD en BD
-      // Por ahora retornar cálculo actual
+  getStatus: publicProcedure
+    .query(async (): Promise<RLDCalculation> => {
       const current = await calculateRLD();
+      return current;
+    }),
+
+  /**
+   * Obtiene historial de RLD (últimas 24 horas)
+   * TODO: Implementar almacenamiento de snapshots en BD
+   */
+  getHistory: publicProcedure
+    .query(async () => {
+      const current = await calculateRLD();
+      
+      // Por ahora retornar solo snapshot actual
+      // TODO: Consultar tabla de snapshots históricos
       return {
         snapshots: [{
           timestamp: new Date(),
           rld: current.rld,
-          governanceCapacity: current.governanceCapacity,
-          transferRisk: current.transferRisk,
-          collapseRisk: current.collapseRisk
+          inLegitimacyDomain: current.inLegitimacyDomain,
+          operationalStatus: current.operationalStatus
         }]
       };
     })
