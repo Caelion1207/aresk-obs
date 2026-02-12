@@ -1,0 +1,18 @@
+{
+  "query": "SELECT \n  sessionId,\n  currentRLD,\n  totalInteractions,\n  status,\n  caelionEnabled,\n  startedAt\nFROM caelionSessions\nORDER BY startedAt DESC\nLIMIT 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute SELECT \n  sessionId,\n  currentRLD,\n  totalInteractions,\n  status,\n  caelionEnabled,\n  startedAt\nFROM caelionSessions\nORDER BY startedAt DESC\nLIMIT 1;",
+  "rows": [
+    {
+      "sessionId": "session-1770876207158-gffqus65g",
+      "currentRLD": "1.95",
+      "totalInteractions": "0",
+      "status": "active",
+      "caelionEnabled": "1",
+      "startedAt": "2026-02-12 06:03:27"
+    }
+  ],
+  "messages": [],
+  "stdout": "sessionId\tcurrentRLD\ttotalInteractions\tstatus\tcaelionEnabled\tstartedAt\nsession-1770876207158-gffqus65g\t1.95\t0\tactive\t1\t2026-02-12 06:03:27\n",
+  "stderr": "",
+  "execution_time_ms": 346
+}

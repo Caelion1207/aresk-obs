@@ -73,12 +73,14 @@ const THRESHOLDS = {
  * - RLD = 1.0: INTERVENCION (intervención humana obligatoria)
  * - RLD ∈ (0, 1.0): PASIVA (observación pasiva)
  * - RLD = 0: RETIRO (retiro total de agencia)
+ * 
+ * Nota: RLD ∈ (1.0, 1.5) se clasifica como PASIVA (zona de degradación)
  */
 function getRLDStatus(rld: number): RLDState['status'] {
   if (rld === THRESHOLDS.PLENA) return 'PLENA';
   if (rld >= 1.5 && rld < THRESHOLDS.PLENA) return 'VIGILADA';
   if (rld === 1.0) return 'INTERVENCION';
-  if (rld > THRESHOLDS.PASIVA && rld < 1.0) return 'PASIVA';
+  if (rld > THRESHOLDS.PASIVA && rld < 1.5) return 'PASIVA'; // Extendido hasta 1.5
   return 'RETIRO';
 }
 

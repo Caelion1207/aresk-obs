@@ -1,0 +1,65 @@
+{
+  "query": "-- Ver sesiones CAELION activas\nSELECT \n  id,\n  sessionId,\n  userId,\n  caelionEnabled,\n  currentRLD,\n  totalInteractions,\n  status,\n  startedAt,\n  completedAt\nFROM caelionSessions\nORDER BY startedAt DESC\nLIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2dHuGejaB9KJLvX.3ad583a027c2 --database JW6GZLBSW7tW5drfiLvsL8 --execute -- Ver sesiones CAELION activas\nSELECT \n  id,\n  sessionId,\n  userId,\n  caelionEnabled,\n  currentRLD,\n  totalInteractions,\n  status,\n  startedAt,\n  completedAt\nFROM caelionSessions\nORDER BY startedAt DESC\nLIMIT 5;",
+  "rows": [
+    {
+      "id": "150002",
+      "sessionId": "session-1770876207158-gffqus65g",
+      "userId": "NULL",
+      "caelionEnabled": "1",
+      "currentRLD": "1.95",
+      "totalInteractions": "0",
+      "status": "active",
+      "startedAt": "2026-02-12 06:03:27",
+      "completedAt": "NULL"
+    },
+    {
+      "id": "150001",
+      "sessionId": "session-1770875532485-dzz0zg755",
+      "userId": "1",
+      "caelionEnabled": "1",
+      "currentRLD": "2",
+      "totalInteractions": "0",
+      "status": "active",
+      "startedAt": "2026-02-12 05:52:12",
+      "completedAt": "NULL"
+    },
+    {
+      "id": "120001",
+      "sessionId": "session-1770802019175-z8fwrv0oa",
+      "userId": "1",
+      "caelionEnabled": "1",
+      "currentRLD": "2",
+      "totalInteractions": "0",
+      "status": "active",
+      "startedAt": "2026-02-11 09:26:59",
+      "completedAt": "NULL"
+    },
+    {
+      "id": "90012",
+      "sessionId": "session-1770792775411-0aul1h185",
+      "userId": "1",
+      "caelionEnabled": "1",
+      "currentRLD": "2",
+      "totalInteractions": "0",
+      "status": "active",
+      "startedAt": "2026-02-11 06:52:55",
+      "completedAt": "NULL"
+    },
+    {
+      "id": "90011",
+      "sessionId": "session-1770792765160-j0elv0a0j",
+      "userId": "1",
+      "caelionEnabled": "1",
+      "currentRLD": "2",
+      "totalInteractions": "0",
+      "status": "active",
+      "startedAt": "2026-02-11 06:52:45",
+      "completedAt": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tsessionId\tuserId\tcaelionEnabled\tcurrentRLD\ttotalInteractions\tstatus\tstartedAt\tcompletedAt\n150002\tsession-1770876207158-gffqus65g\tNULL\t1\t1.95\t0\tactive\t2026-02-12 06:03:27\tNULL\n150001\tsession-1770875532485-dzz0zg755\t1\t1\t2\t0\tactive\t2026-02-12 05:52:12\tNULL\n120001\tsession-1770802019175-z8fwrv0oa\t1\t1\t2\t0\tactive\t2026-02-11 09:26:59\tNULL\n90012\tsession-1770792775411-0aul1h185\t1\t1\t2\t0\tactive\t2026-02-11 06:52:55\tNULL\n90011\tsession-1770792765160-j0elv0a0j\t1\t1\t2\t0\tactive\t2026-02-11 06:52:45\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 491
+}
