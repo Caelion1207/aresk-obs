@@ -48,9 +48,9 @@ export interface RLDState {
  * Basado en especificación contractual SPECIFICATION_V_vs_RLD.md
  */
 const PENALTIES = {
-  LEVE: 0.05,     // Fricción leve (Ω < 0.60)
-  MEDIA: 0.10,    // Fricción media (Ω < 0.50)
-  SEVERA: 0.20,   // Fricción severa (Ω < 0.40)
+  LEVE: 0.05,     // Fricción leve (Ω < 0.50)
+  MEDIA: 0.10,    // Fricción media (Ω < 0.40)
+  SEVERA: 0.20,   // Fricción severa (Ω < 0.30)
 };
 
 /**
@@ -253,10 +253,10 @@ export function initializeRLD(): RLDState {
  * IMPORTANTE: Esta función NO calcula RLD desde métricas.
  * Solo detecta EVENTOS que luego afectan RLD.
  * 
- * Umbrales según SPECIFICATION_V_vs_RLD.md:
- * - Ω < 0.60: Fricción leve (-0.05)
- * - Ω < 0.50: Fricción media (-0.10)
- * - Ω < 0.40: Fricción severa (-0.20)
+ * Umbrales según SPECIFICATION_V_vs_RLD.md (calibrados):
+ * - Ω < 0.50: Fricción leve (-0.05)
+ * - Ω < 0.40: Fricción media (-0.10)
+ * - Ω < 0.30: Fricción severa (-0.20)
  */
 export function detectFrictionEvents(metrics: {
   omegaSem: number;
@@ -267,30 +267,30 @@ export function detectFrictionEvents(metrics: {
   const events: FrictionEventRecord[] = [];
   const timestamp = Date.now();
 
-  // Umbrales de coherencia (Ω) según especificación
-  if (metrics.omegaSem < 0.40) {
+  // Umbrales de coherencia (Ω) según especificación (calibrados)
+  if (metrics.omegaSem < 0.30) {
     // Fricción severa
     events.push({
       type: 'COHERENCE_VIOLATION',
       timestamp,
       severity: 1.0, // Severa
-      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.40 (SEVERA)`
+      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.30 (SEVERA)`
     });
-  } else if (metrics.omegaSem < 0.50) {
+  } else if (metrics.omegaSem < 0.40) {
     // Fricción media
     events.push({
       type: 'COHERENCE_VIOLATION',
       timestamp,
       severity: 0.5, // Media
-      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.50 (MEDIA)`
+      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.40 (MEDIA)`
     });
-  } else if (metrics.omegaSem < 0.60) {
+  } else if (metrics.omegaSem < 0.50) {
     // Fricción leve
     events.push({
       type: 'COHERENCE_VIOLATION',
       timestamp,
       severity: 0.25, // Leve
-      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.60 (LEVE)`
+      context: `Ω = ${metrics.omegaSem.toFixed(4)} < 0.50 (LEVE)`
     });
   }
 
