@@ -162,6 +162,13 @@
       "when": 1770801889255,
       "tag": "0022_old_dagger",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1770978022910,
+      "tag": "0023_pink_marvex",
+      "breakpoints": true
     }
   ]
 }

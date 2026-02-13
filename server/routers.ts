@@ -5,6 +5,7 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { calculateCosineSimilarity } from "./semantic_bridge";
 import { z } from "zod";
+import { caelionOrchestratorRouter } from "./routers/caelion_orchestrator";
 import { 
   createSession, 
   getSession, 
@@ -2333,6 +2334,7 @@ export const appRouter = router({
   argos: argosRouter,
   protocol: protocolRouter,
   experiments: experimentsRouter,
+  caelionOrchestrator: caelionOrchestratorRouter,
 });
 
 

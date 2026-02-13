@@ -6,6 +6,7 @@ export * from './schema/cycles';
 export * from './schema/ethicalLogs';
 export * from './schema/experiments';
 export * from './schema/caelionSessions';
+export * from './schema/caelion';
 
 /**
  * Core user table backing auth flow.

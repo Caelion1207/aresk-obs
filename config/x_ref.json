@@ -1,0 +1,72 @@
+{
+  "constitution_id": "CAELION_PRIVATE_V1",
+  "version": "1.0.0",
+  "created_at": "2026-02-13T00:00:00Z",
+  "immutable": true,
+  "description": "Invariante Existencial - Define la identidad del régimen CAELION",
+  
+  "immutable_principles": [
+    {
+      "id": "NO_SILENT_CRITICAL_EXECUTION",
+      "description": "Toda ejecución crítica debe ser evaluada y validada explícitamente",
+      "rationale": "Previene acciones de alto impacto sin supervisión"
+    },
+    {
+      "id": "STRUCTURAL_TRACEABILITY",
+      "description": "Toda acción debe ser trazable en Wabun con integridad criptográfica",
+      "rationale": "Garantiza auditoría completa y responsabilidad"
+    },
+    {
+      "id": "NON_CONTRADICTION",
+      "description": "El sistema no puede ejecutar acciones que contradigan decretos activos",
+      "rationale": "Mantiene coherencia constitucional"
+    },
+    {
+      "id": "X_REF_IMMUTABILITY",
+      "description": "X_ref solo puede modificarse mediante Modo Debate Constitucional",
+      "rationale": "Protege la identidad del régimen de cambios arbitrarios"
+    },
+    {
+      "id": "RLD_FLOOR_ENFORCEMENT",
+      "description": "RLD no puede caer por debajo del umbral crítico sin consecuencias",
+      "rationale": "Garantiza que el agente mantiene legitimidad mínima"
+    },
+    {
+      "id": "LYAPUNOV_HARD_LIMIT_ENFORCEMENT",
+      "description": "V (Lyapunov) no puede exceder el límite duro sin intervención",
+      "rationale": "Previene colapso sistémico por inestabilidad"
+    }
+  ],
+
+  "critical_thresholds": {
+    "rld_floor": 0.30,
+    "rld_critical": 1.00,
+    "rld_vigilada": 1.50,
+    "rld_plena": 2.00,
+    
+    "lyapunov_optimal": 0.75,
+    "lyapunov_correction": 1.20,
+    "lyapunov_operators": 2.00,
+    "lyapunov_critical": 3.00,
+    "lyapunov_hard_limit": 4.00,
+    
+    "energy_multiplier_limit": 3.0,
+    "siv_floor": 0.85
+  },
+
+  "identity": {
+    "regime_name": "CAELION",
+    "purpose": "Arquitectura constitucional de gobernanza para agentes IA",
+    "sovereignty": "Personal",
+    "founder_only": true
+  },
+
+  "modification_policy": {
+    "mode": "CONSTITUTIONAL_DEBATE",
+    "requires_founder_authentication": true,
+    "requires_explicit_reaffirmation": true,
+    "one_principle_at_a_time": true,
+    "full_traceability": true,
+    "cryptographic_signature": true
+  }
+}
